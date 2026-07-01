@@ -176,14 +176,28 @@
             <input type="number" id="p-stock" value="50" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" />
           </div>
 
-          <div class="col-span-full">
-            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Primary Cover Image URL</label>
-            <input type="text" id="p-image" value="/placeholder_acc.png" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" />
+          <!-- Cover Image Upload -->
+          <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Upload Cover Image</label>
+              <input type="file" id="p-image-file" accept="image/*" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2 text-white mt-1 focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-cyan-50 file:text-black hover:file:bg-cyan-400" onchange="uploadCoverImage()" />
+            </div>
+            <div>
+              <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Cover Image URL</label>
+              <input type="text" id="p-image" value="/placeholder_acc.png" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" />
+            </div>
           </div>
 
-          <div class="col-span-full">
-            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Gallery Images (Comma separated list for sliding show)</label>
-            <input type="text" id="p-images" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" placeholder="/s25_case.jpg, /s25_case_back.jpg, /s25_case_side.jpg" />
+          <!-- Gallery Images Upload -->
+          <div class="col-span-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Upload Gallery (Multi)</label>
+              <input type="file" id="p-gallery-files" accept="image/*" multiple class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2 text-white mt-1 focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-cyan-50 file:text-black hover:file:bg-cyan-400" onchange="uploadGalleryImages()" />
+            </div>
+            <div>
+              <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Gallery Image URLs (Comma separated)</label>
+              <input type="text" id="p-images" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" placeholder="/s25_case.jpg, /s25_case_back.jpg, /s25_case_side.jpg" />
+            </div>
           </div>
 
           <div class="col-span-full">
@@ -202,6 +216,14 @@
           <div id="specs-container" class="space-y-2">
             <!-- Dynamic rows will inject here -->
           </div>
+        </div>
+
+        <!-- Help Note for Storage Bucket -->
+        <div class="p-3.5 bg-zinc-800/40 rounded-xl border border-zinc-700/30 text-[10px] text-zinc-400 space-y-1 mt-4">
+          <p class="font-bold text-cyan-400">💡 Enable Image Uploads in Supabase Storage:</p>
+          <p>1. Go to your **Supabase Dashboard** &rarr; **Storage** menu.</p>
+          <p>2. Create a new **public** bucket named <code class="text-white bg-zinc-800 px-1 py-0.5 rounded">accessories</code>.</p>
+          <p>3. Set bucket policy to allow **Insert** and **Select** for anonymous users (or all users) so uploads work directly.</p>
         </div>
 
         <!-- Action buttons -->
@@ -417,6 +439,96 @@
       } catch (err) {
         console.error("Save error:", err);
         showError("Failed to save product: " + err.message);
+      }
+    }
+
+    // Upload Cover Image file to Supabase storage bucket
+    async function uploadCoverImage() {
+      const fileInput = document.getElementById('p-image-file');
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      if (!supabaseClient) {
+        showError("Please configure Supabase connection keys first.");
+        return;
+      }
+
+      showSuccess("Uploading cover image to Supabase 'accessories' bucket...");
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `cover-images/${fileName}`;
+
+        const { data, error } = await supabaseClient
+          .storage
+          .from('accessories')
+          .upload(filePath, file);
+
+        if (error) {
+          if (error.message.includes("Object not found") || error.message.includes("does not exist")) {
+            throw new Error("Bucket 'accessories' not found. Please create a public bucket named 'accessories' in your Supabase Storage dashboard.");
+          }
+          throw error;
+        }
+
+        const { data: { publicUrl } } = supabaseClient
+          .storage
+          .from('accessories')
+          .getPublicUrl(filePath);
+
+        document.getElementById('p-image').value = publicUrl;
+        showSuccess("Cover image uploaded successfully!");
+      } catch (err) {
+        console.error("Upload error:", err);
+        showError(err.message || "Failed to upload cover image.");
+      }
+    }
+
+    // Upload Gallery files to Supabase storage bucket
+    async function uploadGalleryImages() {
+      const fileInput = document.getElementById('p-gallery-files');
+      const files = fileInput.files;
+      if (files.length === 0) return;
+
+      if (!supabaseClient) {
+        showError("Please configure Supabase connection keys first.");
+        return;
+      }
+
+      showSuccess(`Uploading ${files.length} gallery images to Supabase 'accessories' bucket...`);
+      try {
+        const uploadedUrls = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}-${i}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const filePath = `gallery-images/${fileName}`;
+
+          const { error } = await supabaseClient
+            .storage
+            .from('accessories')
+            .upload(filePath, file);
+
+          if (error) throw error;
+
+          const { data: { publicUrl } } = supabaseClient
+            .storage
+            .from('accessories')
+            .getPublicUrl(filePath);
+
+          uploadedUrls.push(publicUrl);
+        }
+
+        const currentVal = document.getElementById('p-images').value;
+        const combined = currentVal 
+          ? currentVal.split(',').map(s => s.trim()).concat(uploadedUrls).filter(Boolean).join(', ')
+          : uploadedUrls.join(', ');
+
+        document.getElementById('p-images').value = combined;
+        showSuccess("Gallery images uploaded successfully!");
+      } catch (err) {
+        console.error("Gallery upload error:", err);
+        showError(err.message || "Failed to upload gallery images.");
       }
     }
 
