@@ -42,7 +42,7 @@ CREATE TABLE stores (
 
 -- Insert local default store
 INSERT INTO stores (name, address, latitude, longitude, contact_number, is_active)
-VALUES ('Smart Care & Mobile Point - Headquarters', 'Shop No. 5, Jan Aushadhi Block, Main Market, Sector 15, Dwarka, New Delhi, India', 28.5921, 77.0465, '+919999999999', true);
+VALUES ('Smart Care & Mobile Point - Headquarters', 'Shop no 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001', 28.4312, 76.9856, '+919999999999', true);
 
 -- --------------------------------------------------
 -- 3. Medicines Catalogue (Jan Aushadhi Kendra Catalog)
