@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Care - Accessories Product Uploader</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Supabase CDN Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+    }
+    .glass-card {
+      background: rgba(24, 24, 27, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans pb-16">
+
+  <!-- Glow Backgrounds -->
+  <div class="fixed top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
+
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-6">
+      <div>
+        <h1 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <svg class="h-6 w-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+          </svg>
+          Smart Care Accessories Portal
+        </h1>
+        <p class="text-xs text-zinc-400 mt-1">Standalone Product Uploader console connected directly to your cloud Supabase database.</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="openForm()" class="px-4 py-2.5 rounded-xl bg-cyan-500 text-black font-bold text-xs hover:bg-cyan-400 transition-all shadow-lg flex items-center gap-1.5 select-none">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Upload New Product
+        </button>
+      </div>
+    </div>
+
+    <!-- DB Connection Panel (Visible to check connection status) -->
+    <div class="glass-card rounded-2xl p-5 space-y-3">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+        Supabase Live Status Connection
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div>
+          <label class="block text-[10px] text-zinc-500 uppercase font-semibold">Supabase Project URL</label>
+          <input type="text" id="db-url" value="https://ljsbgoffvcnqpplmljza.supabase.co" readonly class="w-full bg-zinc-800/40 border border-zinc-700/50 rounded-lg px-3 py-2 text-zinc-300 mt-1 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-[10px] text-zinc-500 uppercase font-semibold">Publishable Anon Key</label>
+          <input type="text" id="db-key" value="sb_publishable_zcxs5-J0ZM1MhKzjCde2Hg_iU5JTcd9" class="w-full bg-zinc-800/40 border border-zinc-700/50 rounded-lg px-3 py-2 text-zinc-300 mt-1 focus:outline-none focus:border-cyan-500" placeholder="Paste your anon public key" onchange="initializeSupabase()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Bars -->
+    <div id="notice-success" class="hidden p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span id="success-message">Success! Database updated.</span>
+    </div>
+    <div id="notice-error" class="hidden p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold flex items-center gap-2">
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      <span id="error-message">Error updating database.</span>
+    </div>
+
+    <!-- Products List Catalogue -->
+    <div class="glass-card rounded-3xl border border-zinc-800/80 overflow-hidden">
+      <div class="p-5 border-b border-zinc-800/60 flex flex-col sm:flex-row justify-between gap-4 items-center">
+        <h2 class="text-sm font-bold text-white uppercase tracking-wider">Live Accessories Inventory</h2>
+        <div class="relative w-full sm:max-w-xs">
+          <input type="text" id="search-input" placeholder="Search listing name, category..." oninput="renderTable()" class="w-full bg-zinc-800/40 border border-zinc-700/50 rounded-xl py-2 pl-4 pr-4 text-xs text-white focus:outline-none focus:ring-1 focus:ring-cyan-500" />
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-zinc-800/30 border-b border-zinc-800/60 text-zinc-400 font-bold uppercase tracking-wider">
+              <th class="p-4">Product Specs</th>
+              <th class="p-4">Category</th>
+              <th class="p-4">Brand</th>
+              <th class="p-4 text-right">Price</th>
+              <th class="p-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody" class="divide-y divide-zinc-800/60">
+            <tr>
+              <td colSpan="5" class="p-12 text-center text-zinc-500">Loading products from Supabase...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Form Modal popup -->
+  <div id="modal-container" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
+    <div class="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto my-8">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+        <h3 id="modal-title" class="text-base font-bold text-white">Upload New Accessory</h3>
+        <button onclick="closeForm()" class="p-1 text-zinc-400 hover:text-white">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <form id="product-form" onsubmit="saveProduct(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="edit-id" />
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <div class="col-span-full">
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Product Name *</label>
+            <input type="text" id="p-name" required class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none focus:ring-1 focus:ring-cyan-500" placeholder="e.g. Spigen S25 Liquid Air Case" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Brand *</label>
+            <input type="text" id="p-brand" required class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none focus:ring-1 focus:ring-cyan-500" placeholder="e.g. Spigen, Anker, Generic" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Category *</label>
+            <select id="p-category" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+              <option value="Chargers">Chargers</option>
+              <option value="Cables">Cables</option>
+              <option value="Tempered Glass">Tempered Glass</option>
+              <option value="Cases">Cases</option>
+              <option value="Earbuds">Earbuds</option>
+              <option value="Power Banks">Power Banks</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Price (INR) *</label>
+            <input type="number" id="p-price" required class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none focus:ring-1 focus:ring-cyan-500" placeholder="e.g. 199" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Stock Inventory Quantity</label>
+            <input type="number" id="p-stock" value="50" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" />
+          </div>
+
+          <div class="col-span-full">
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Primary Cover Image URL</label>
+            <input type="text" id="p-image" value="/placeholder_acc.png" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" />
+          </div>
+
+          <div class="col-span-full">
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Gallery Images (Comma separated list for sliding show)</label>
+            <input type="text" id="p-images" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none" placeholder="/s25_case.jpg, /s25_case_back.jpg, /s25_case_side.jpg" />
+          </div>
+
+          <div class="col-span-full">
+            <label class="block text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Product Description</label>
+            <textarea id="p-desc" rows="3" class="w-full bg-zinc-800/50 border border-zinc-700/50 rounded-xl px-3 py-2.5 text-white mt-1 focus:outline-none focus:ring-1 focus:ring-cyan-500 resize-none" placeholder="Provide details on construction, drop protectors..."></textarea>
+          </div>
+
+        </div>
+
+        <!-- Spec builder section -->
+        <div class="space-y-3 pt-3 border-t border-zinc-800">
+          <div class="flex justify-between items-center">
+            <span class="block text-[10px] text-white font-bold uppercase tracking-wider">Specifications Checklist</span>
+            <button type="button" onclick="addSpecRow()" class="text-[10px] font-bold text-cyan-400 hover:underline">+ Add Spec Field</button>
+          </div>
+          <div id="specs-container" class="space-y-2">
+            <!-- Dynamic rows will inject here -->
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex gap-2 justify-end pt-4 border-t border-zinc-800">
+          <button type="button" onclick="closeForm()" class="px-4 py-2 rounded-xl bg-zinc-800 text-zinc-400 font-semibold hover:bg-zinc-700">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-cyan-500 text-black font-bold hover:bg-cyan-400 flex items-center gap-1">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            Save Product
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    let supabaseClient = null;
+    let productsList = [];
+
+    // Initialize Supabase Client
+    function initializeSupabase() {
+      const url = document.getElementById('db-url').value;
+      const key = document.getElementById('db-key').value;
+      
+      if (url && key) {
+        try {
+          supabaseClient = supabase.createClient(url, key);
+          console.log("Supabase Client initialized successfully!");
+          fetchProducts();
+        } catch (e) {
+          console.error("Initialization error:", e);
+          showError("Initialization failed: Check URL and Key.");
+        }
+      }
+    }
+
+    // Fetch products
+    async function fetchProducts() {
+      if (!supabaseClient) return;
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('accessories')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        productsList = data || [];
+        renderTable();
+      } catch (err) {
+        console.error("Fetch error:", err);
+        showError("Failed to fetch products: " + err.message);
+      }
+    }
+
+    // Render Table rows
+    function renderTable() {
+      const tbody = document.getElementById('products-tbody');
+      const search = document.getElementById('search-input').value.toLowerCase();
+      
+      const filtered = productsList.filter(p => {
+        return (
+          p.name.toLowerCase().includes(search) ||
+          p.brand.toLowerCase().includes(search) ||
+          p.category.toLowerCase().includes(search)
+        );
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colSpan="5" class="p-12 text-center text-zinc-500">No accessories found matching search terms.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(prod => {
+        const priceFormatted = new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }).format(prod.price);
+
+        const img = (prod.images && prod.images.length > 0) ? prod.images[0] : prod.image || '/placeholder_acc.png';
+
+        return `
+          <tr class="hover:bg-zinc-800/10 transition-colors border-b border-zinc-800/40">
+            <td class="p-4 font-bold text-white">
+              <div class="flex items-center gap-3">
+                <img src="${img}" alt="${prod.name}" class="h-10 w-10 rounded-lg bg-zinc-800 border border-zinc-700/50 object-cover flex-shrink-0" onerror="this.src='/placeholder_acc.png'" />
+                <div class="truncate max-w-[280px]">
+                  <p class="font-semibold text-white truncate">${prod.name}</p>
+                  <p class="text-[10px] text-zinc-500 truncate">${prod.description || ''}</p>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 text-zinc-400">${prod.category}</td>
+            <td class="p-4 text-zinc-400">${prod.brand}</td>
+            <td class="p-4 text-right font-bold text-white">${priceFormatted}</td>
+            <td class="p-4">
+              <div class="flex items-center justify-center gap-2">
+                <button onclick="editProduct('${prod.id}')" class="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-cyan-500/10 text-zinc-400 hover:text-cyan-400 border border-zinc-700/50">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </button>
+                <button onclick="deleteProduct('${prod.id}')" class="p-1.5 rounded-lg bg-zinc-800/60 hover:bg-red-500/10 text-zinc-400 hover:text-red-400 border border-zinc-700/50">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Control
+    function openForm() {
+      document.getElementById('edit-id').value = '';
+      document.getElementById('modal-title').innerText = 'Upload New Accessory';
+      document.getElementById('product-form').reset();
+      document.getElementById('specs-container').innerHTML = '';
+      addSpecRow('Warranty', '1 Year');
+      document.getElementById('modal-container').classList.remove('hidden');
+    }
+
+    function closeForm() {
+      document.getElementById('modal-container').classList.add('hidden');
+    }
+
+    // Spec rows helpers
+    function addSpecRow(key = '', val = '') {
+      const container = document.getElementById('specs-container');
+      const div = document.createElement('div');
+      div.className = 'flex gap-2 items-center spec-row';
+      div.innerHTML = `
+        <input type="text" placeholder="Key (e.g. Color)" value="${key}" class="w-1/2 bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none" />
+        <input type="text" placeholder="Value (e.g. Grey)" value="${val}" class="w-1/2 bg-zinc-800 border border-zinc-700 rounded-lg px-2 py-1.5 text-white focus:outline-none" />
+        <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-500 font-bold px-1">Remove</button>
+      `;
+      container.appendChild(div);
+    }
+
+    // Save Product
+    async function saveProduct(e) {
+      e.preventDefault();
+      clearNotices();
+      
+      const id = document.getElementById('edit-id').value;
+      const name = document.getElementById('p-name').value;
+      const brand = document.getElementById('p-brand').value;
+      const category = document.getElementById('p-category').value;
+      const price = parseFloat(document.getElementById('p-price').value);
+      const stock = parseInt(document.getElementById('p-stock').value) || 50;
+      const image = document.getElementById('p-image').value;
+      const imagesInput = document.getElementById('p-images').value;
+      const desc = document.getElementById('p-desc').value;
+
+      // Specifications builder object
+      const specsObject = {};
+      const rows = document.querySelectorAll('.spec-row');
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const k = inputs[0].value.trim();
+        const v = inputs[1].value.trim();
+        if (k) {
+          specsObject[k] = v;
+        }
+      });
+
+      const imagesArray = imagesInput
+        ? imagesInput.split(',').map(s => s.trim()).filter(Boolean)
+        : [image];
+
+      const payload = {
+        name,
+        brand,
+        category,
+        price,
+        stock_quantity: stock,
+        images: imagesArray,
+        description: desc,
+        specifications: specsObject,
+        is_active: true
+      };
+
+      if (!supabaseClient) {
+        showError("Supabase client not initialized. Check your credentials.");
+        return;
+      }
+
+      try {
+        if (id) {
+          // Update DB
+          const { error } = await supabaseClient
+            .from('accessories')
+            .update(payload)
+            .eq('id', id);
+
+          if (error) throw error;
+          showSuccess("Product details updated successfully!");
+        } else {
+          // Insert DB
+          const { error } = await supabaseClient
+            .from('accessories')
+            .insert([payload]);
+
+          if (error) throw error;
+          showSuccess("Product uploaded successfully to your Supabase cloud!");
+        }
+        closeForm();
+        fetchProducts();
+      } catch (err) {
+        console.error("Save error:", err);
+        showError("Failed to save product: " + err.message);
+      }
+    }
+
+    // Edit Product trigger
+    function editProduct(id) {
+      const prod = productsList.find(p => p.id === id);
+      if (!prod) return;
+
+      document.getElementById('edit-id').value = prod.id;
+      document.getElementById('modal-title').innerText = 'Modify Product details';
+      
+      document.getElementById('p-name').value = prod.name;
+      document.getElementById('p-brand').value = prod.brand;
+      document.getElementById('p-category').value = prod.category;
+      document.getElementById('p-price').value = prod.price;
+      document.getElementById('p-stock').value = prod.stock_quantity || 50;
+      document.getElementById('p-image').value = prod.image || '';
+      document.getElementById('p-images').value = prod.images ? prod.images.join(', ') : '';
+      document.getElementById('p-desc').value = prod.description || '';
+
+      const container = document.getElementById('specs-container');
+      container.innerHTML = '';
+      if (prod.specifications) {
+        Object.entries(prod.specifications).forEach(([k, v]) => {
+          addSpecRow(k, v);
+        });
+      }
+      
+      if (container.children.length === 0) {
+        addSpecRow('Warranty', '1 Year');
+      }
+
+      document.getElementById('modal-container').classList.remove('hidden');
+    }
+
+    // Delete Product
+    async function deleteProduct(id) {
+      if (!confirm("Are you sure you want to delete this accessory?")) return;
+      clearNotices();
+
+      try {
+        const { error } = await supabaseClient
+          .from('accessories')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        showSuccess("Product deleted successfully from your Supabase DB!");
+        fetchProducts();
+      } catch (err) {
+        console.error("Delete error:", err);
+        showError("Failed to delete product: " + err.message);
+      }
+    }
+
+    // Notice helper
+    function showSuccess(msg) {
+      document.getElementById('success-message').innerText = msg;
+      document.getElementById('notice-success').classList.remove('hidden');
+      setTimeout(clearNotices, 4000);
+    }
+
+    function showError(msg) {
+      document.getElementById('error-message').innerText = msg;
+      document.getElementById('notice-error').classList.remove('hidden');
+      setTimeout(clearNotices, 6000);
+    }
+
+    function clearNotices() {
+      document.getElementById('notice-success').classList.add('hidden');
+      document.getElementById('notice-error').classList.add('hidden');
+    }
+
+    // Boot
+    window.onload = initializeSupabase;
+  </script>
+</body>
+</html>
