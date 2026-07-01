@@ -232,7 +232,7 @@ CREATE TABLE articles (
 -- --------------------------------------------------
 -- Indexes for Queries at 10M Scale
 -- --------------------------------------------------
-CREATE INDEX idx_medicines_search ON medicines USING gin(to_tsvector('english', generic_name || ' ' || COALESCE(brand_name, '') || ' ' || array_to_string(symptoms, ' ') || ' ' || array_to_string(diseases, ' ')));
+CREATE INDEX idx_medicines_names ON medicines (generic_name, brand_name);
 CREATE INDEX idx_accessories_category ON accessories (category, brand);
 CREATE INDEX idx_accessories_price ON accessories (price);
 CREATE INDEX idx_orders_user ON orders (user_id);

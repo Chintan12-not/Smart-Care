@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Search, 
   ShoppingBag, 
@@ -21,6 +21,7 @@ import {
 import { useCart } from "@/hooks/useCart";
 import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function AccessoriesPage() {
   const { addToCart } = useCart();
@@ -31,6 +32,50 @@ export default function AccessoriesPage() {
   
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [addedItemName, setAddedItemName] = useState("");
+
+  const [products, setProducts] = useState<AccessoryProduct[]>(MOCK_ACCESSORIES);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadProducts() {
+      if (!isSupabaseConfigured()) {
+        console.log("Supabase not configured, using mock accessories.");
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("accessories")
+          .select("*")
+          .eq("is_active", true);
+
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const mapped: AccessoryProduct[] = data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            brand: item.brand,
+            price: Number(item.price),
+            rating: Number(item.rating_avg || 0.0),
+            reviewsCount: Number(item.reviews_count || 0),
+            image: (item.images && item.images.length > 0) ? item.images[0] : "/placeholder_acc.png",
+            images: item.images || [],
+            specifications: item.specifications || {},
+            description: item.description || ""
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error("Error loading products from Supabase:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
 
   const handleOpenSpecs = (product: AccessoryProduct) => {
     setSelectedProduct(product);
@@ -57,7 +102,7 @@ export default function AccessoriesPage() {
     setTimeout(() => setAddedItemName(""), 2000);
   };
 
-  const filteredProducts = MOCK_ACCESSORIES.filter((prod) => {
+  const filteredProducts = products.filter((prod) => {
     const matchesSearch = 
       prod.name.toLowerCase().includes(search.toLowerCase()) ||
       prod.brand.toLowerCase().includes(search.toLowerCase()) ||
