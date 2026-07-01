@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+:root {
+  /* System Brand Colors - Light Mode (Stripe/Apple Inspired) */
+  --background: #fafafa;
+  --foreground: #09090b;
+  
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  
+  --primary: #10b981; /* Emerald/Health primary */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #06b6d4; /* Cyan/Tech primary */
+  --secondary-foreground: #ffffff;
+  
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: rgba(16, 185, 129, 0.4);
+  
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(9, 9, 11, 0.08);
+  
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.dark {
+  /* System Brand Colors - Dark Mode (Sleek Linear/Notion Inspired) */
+  --background: #030303;
+  --foreground: #f4f4f5;
+  
+  --card: #09090b;
+  --card-foreground: #f4f4f5;
+  
+  --primary: #10b981;
+  --primary-foreground: #09090b;
+  
+  --secondary: #06b6d4;
+  --secondary-foreground: #09090b;
+  
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+  
+  --border: #27272a;
+  --input: #27272a;
+  --ring: rgba(16, 185, 129, 0.6);
+  
+  --glass-bg: rgba(9, 9, 11, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Fallback automatic system dark mode preference */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #030303;
+    --foreground: #f4f4f5;
+    
+    --card: #09090b;
+    --card-foreground: #f4f4f5;
+    
+    --primary: #10b981;
+    --primary-foreground: #09090b;
+    
+    --secondary: #06b6d4;
+    --secondary-foreground: #09090b;
+    
+    --muted: #18181b;
+    --muted-foreground: #a1a1aa;
+    
+    --accent: #18181b;
+    --accent-foreground: #fafafa;
+    
+    --border: #27272a;
+    --input: #27272a;
+    --ring: rgba(16, 185, 129, 0.6);
+    
+    --glass-bg: rgba(9, 9, 11, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom Gradients and Animations */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: radial-gradient(800px circle at var(--x, 0px) var(--y, 0px), rgba(16, 185, 129, 0.06), transparent 40%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.glow-effect:hover::before {
+  opacity: 1;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Linear-style Grid and Border animations */
+@keyframes borderPulse {
+  0%, 100% { border-color: var(--glass-border); }
+  50% { border-color: var(--primary); }
+}
+
+.border-pulse {
+  animation: borderPulse 4s infinite;
+}
+
+@keyframes slowPan {
+  0% { transform: scale(1.02) translate(0, 0); }
+  50% { transform: scale(1.08) translate(-1%, -1%); }
+  100% { transform: scale(1.02) translate(0, 0); }
+}
+
+.animate-slow-pan {
+  animation: slowPan 25s infinite ease-in-out;
+}
