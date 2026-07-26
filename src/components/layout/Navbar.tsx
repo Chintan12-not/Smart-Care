@@ -16,21 +16,36 @@ import {
   Sparkles,
   Search,
   BookOpen,
-  CreditCard
+  CreditCard,
+  Truck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  
+  // Safe SSR Theme initialization
+  const [darkMode, setDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+
+  // Sync theme status on load
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sc_theme");
+      if (saved) {
+        setDarkMode(saved === "dark");
+      } else {
+        setDarkMode(false); // Default to clean, bright light mode
+      }
+    }
+  }, []);
 
   // Handle scrolling border effect
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
+      if (window.scrollY > 15) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -40,15 +55,17 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sync dark mode state with document class list
+  // Sync dark mode state with document class list & cache
   useEffect(() => {
     const root = window.document.documentElement;
     if (darkMode) {
       root.classList.add("dark");
       root.classList.remove("light");
+      localStorage.setItem("sc_theme", "dark");
     } else {
       root.classList.remove("dark");
       root.classList.add("light");
+      localStorage.setItem("sc_theme", "light");
     }
   }, [darkMode]);
 
@@ -75,6 +92,7 @@ export default function Navbar() {
     { name: "AI Health", href: "/health-assistant", icon: HeartPulse, accent: "text-emerald-500" },
     { name: "AI Device", href: "/mobile-assistant", icon: Sparkles, accent: "text-cyan-500" },
     { name: "Repairs", href: "/repair", icon: Wrench },
+    { name: "Pickup & Drop", href: "/pickup", icon: Truck, accent: "text-amber-500" },
     { name: "Accessories", href: "/accessories", icon: Smartphone },
     { name: "Pricing", href: "/pricing", icon: CreditCard },
     { name: "Blog", href: "/blog", icon: BookOpen },
@@ -85,7 +103,7 @@ export default function Navbar() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300",
         scrolled 
-          ? "bg-background/80 backdrop-blur-md border-b border-border shadow-sm" 
+          ? "bg-background/70 backdrop-blur-xl border-b border-border/45 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_30px_-15px_rgba(0,0,0,0.6)]" 
           : "bg-transparent border-b border-transparent"
       )}
     >

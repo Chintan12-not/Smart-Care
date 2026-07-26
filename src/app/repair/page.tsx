@@ -53,6 +53,10 @@ export default function RepairPage() {
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Before/After split-slider percentage
+  const [sliderPos, setSliderPos] = useState(50);
+  const beforeAfterContainerRef = useRef<HTMLDivElement>(null);
+
   // Chat States
   const [messages, setMessages] = useState<Array<{ sender: "user" | "technician"; text: string; time: string }>>([
     { sender: "technician", text: "Hello! I am your assigned technician, Rahul. Let me know if you have any questions about your device diagnostic test.", time: "Just now" }
@@ -136,6 +140,16 @@ export default function RepairPage() {
     setActiveTicket(null);
     setBookingConfirmed(false);
     setDeviceModel("");
+  };
+
+  // Before-After slide mouse interaction
+  const handleSliderMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!beforeAfterContainerRef.current) return;
+    const rect = beforeAfterContainerRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const x = clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPos(percentage);
   };
 
   // Timeline steps
@@ -366,7 +380,7 @@ export default function RepairPage() {
                   )}
                 >
                   <strong className="text-xs font-bold text-foreground">Store Drop-off</strong>
-                  <span className="text-[10px] text-muted-foreground">Drop at our Sector 15 Kendra.</span>
+                  <span className="text-[10px] text-muted-foreground">Drop at our Sector 37C Gurugram Store.</span>
                 </button>
               </div>
             </div>
@@ -471,6 +485,63 @@ export default function RepairPage() {
 
         </div>
       )}
+
+      {/* BEFORE & AFTER SHOWCASE INTERACTIVE SLIDER */}
+      <section className="border-t border-border/40 pt-10 mt-10 space-y-6">
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <h2 className="text-lg font-bold text-foreground uppercase tracking-wider">Before & After Repair Quality</h2>
+          <p className="text-xs text-muted-foreground">Drag or slide to inspect screen repair results completed by our technicians.</p>
+        </div>
+
+        <div className="flex justify-center">
+          <div 
+            ref={beforeAfterContainerRef}
+            onMouseMove={handleSliderMove}
+            onTouchMove={handleSliderMove}
+            className="relative w-full max-w-xl h-80 rounded-3xl overflow-hidden border border-border/80 shadow-lg cursor-ew-resize select-none"
+          >
+            {/* Before (Cracked Screen) */}
+            <div className="absolute inset-0 bg-zinc-950 flex items-center justify-center">
+              <div className="absolute top-4 left-4 z-10 px-2.5 py-1 rounded-lg bg-red-500 text-white text-[9px] font-bold uppercase tracking-wider">
+                Before: Cracked screen
+              </div>
+              
+              {/* Fallback abstract cracked screen visual pattern using CSS lines */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-900 to-black flex items-center justify-center">
+                <div className="w-full h-full opacity-40 bg-[linear-gradient(45deg,_transparent_45%,_#444_45%,_#444_55%,_transparent_55%),_linear-gradient(-45deg,_transparent_45%,_#333_45%,_#333_55%,_transparent_55%)] bg-[size:30px_30px]" />
+                <Smartphone className="h-20 w-20 text-zinc-600 opacity-20 absolute" />
+              </div>
+            </div>
+
+            {/* After (Clean Repaired Glass) - Layer with dynamic slider position width */}
+            <div 
+              style={{ width: `${sliderPos}%` }}
+              className="absolute inset-y-0 left-0 bg-zinc-900 border-r-2 border-cyan-400 overflow-hidden"
+            >
+              {/* After content (Must have full container width set to absolute parent's width) */}
+              <div className="absolute inset-0 w-[576px] h-full bg-gradient-to-tr from-cyan-950/20 via-zinc-900 to-black flex items-center justify-center">
+                <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider">
+                  After: Clean clear display
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Smartphone className="h-20 w-20 text-cyan-400/30 animate-pulse" />
+                </div>
+              </div>
+            </div>
+
+            {/* Slider Handle */}
+            <div 
+              style={{ left: `${sliderPos}%` }}
+              className="absolute inset-y-0 -ml-[1px] w-0.5 bg-cyan-400 pointer-events-none"
+            >
+              <div className="absolute top-1/2 -translate-y-1/2 -ml-3.5 h-7 w-7 rounded-full bg-cyan-500 text-black shadow-md flex items-center justify-center font-bold text-xs select-none">
+                ↔
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
 
     </div>
   );
