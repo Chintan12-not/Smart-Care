@@ -70,8 +70,8 @@ export default function Footer() {
                 <CheckCircle2 className="h-6 w-6" />
               </span>
               <div>
-                <h4 className="text-sm font-bold text-foreground">Certified Repairs Warranty</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">Up to 6 Months parts warranty on display & battery swaps.</p>
+                <h4 className="text-sm font-bold text-foreground">Certified Repairs Support</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">Professional hardware support & detailed diagnostics checkups.</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3.5">

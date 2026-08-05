@@ -468,7 +468,7 @@ export default function RepairPage() {
               <ul className="space-y-2.5 text-[11px] text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                  <span>3-Months Warranty on replaced parts.</span>
+                  <span>100% Genuine OEM-grade replaced parts.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />

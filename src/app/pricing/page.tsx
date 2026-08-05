@@ -30,10 +30,10 @@ export default function PricingPage() {
         "Priority repair queue & booking dispatch",
         "Free doorstep pick & delivery service",
         "10% discount on all premium accessories",
-        "6-months warranty on replaced phone parts",
+        "Premium OEM-grade replacement parts",
         "Extended AI Health guidance answers"
       ],
-      description: "Ideal plan for active mobile users seeking reliable device warranty assurance and home pickups.",
+      description: "Ideal plan for active mobile users seeking reliable device diagnostics support and home pickups.",
       buttonText: "Subscribe Now",
       href: "/login",
       isPopular: true
@@ -46,7 +46,7 @@ export default function PricingPage() {
       features: [
         "Unlimited diagnostic checks for up to 3 devices",
         "20% discount on all premium accessories",
-        "12-months warranty on all repaired screen/motherboard components",
+        "Motherboard & screen diagnostic repair coverage",
         "Dedicated VIP technician chat hotline",
         "Emergency health guidance warnings VIP"
       ],

@@ -26,7 +26,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
       "Output Wattage": "30W Max",
       "Ports": "1 x USB-C, 1 x USB-A",
       "Technology": "PowerIQ 3.0, GaN tech",
-      "Warranty": "18 Months"
+      "Safety Certification": "CE, FCC, RoHS"
     },
     description: "Compact wall charger with GaN technology to charge smartphones and tablets at maximum speed safely."
   },

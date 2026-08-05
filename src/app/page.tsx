@@ -104,7 +104,7 @@ export default function Home() {
     { value: "15,000+", label: "Devices Repaired" },
     { value: "4.9★", label: "Google Rating (1.2k Reviews)" },
     { value: "100%", label: "Genuine Parts" },
-    { value: "90-Day", label: "Service Warranty" }
+    { value: "100%", label: "Satisfaction Guaranteed" }
   ];
 
   // Brand Logos
@@ -116,10 +116,10 @@ export default function Home() {
   // Why Choose Us feature cards
   const features = [
     { title: "Certified Technicians", desc: "ESD-safe environment and certified expert engineers for all micro-soldering tasks.", icon: Award, color: "text-cyan-500" },
-    { title: "Genuine Parts", desc: "We use only AAA-grade or OEM original spare components backed by warranty.", icon: ShieldCheck, color: "text-emerald-500" },
+    { title: "Genuine Parts", desc: "We use only AAA-grade or OEM original spare components ensuring maximum reliability.", icon: ShieldCheck, color: "text-emerald-500" },
     { title: "Pickup & Drop", desc: "Free door-step pick and delivery across Gurugram. Smart distance charges apply.", icon: Truck, color: "text-amber-500" },
     { title: "Same Day Repair", desc: "Screen replacements and battery swaps completed in under 45 minutes.", icon: Zap, color: "text-purple-500" },
-    { title: "90-Day Service Warranty", desc: "Relax with a solid 90-day parts swap coverage on screen and diagnostic fixes.", icon: Clock, color: "text-cyan-500" },
+    { title: "No Hidden Costs", desc: "Pay exactly what is quoted in the diagnostics estimate report. Absolutely transparent pricing.", icon: Clock, color: "text-cyan-500" },
     { title: "Affordable Pricing", desc: "Completely transparent price estimations. Pay only what is quoted, no hidden fees.", icon: Activity, color: "text-emerald-500" },
     { title: "Fast Delivery", desc: "Super fast return delivery of your device once final testing passes.", icon: Sliders, color: "text-amber-500" },
     { title: "Customer Satisfaction", desc: "Rated 4.9★ on Google Maps. Over 1,200 Gurugram device owners trust us.", icon: ThumbsUp, color: "text-purple-500" }
@@ -132,14 +132,14 @@ export default function Home() {
     { number: "03", title: "Diagnosis", desc: "Technician inspects core hardware circuits.", icon: Search },
     { number: "04", title: "Repair", desc: "Certified replacements done in ESD-safe lab.", icon: Wrench },
     { number: "05", title: "Quality Check", desc: "21-point rigorous testing checklist.", icon: ShieldCheck },
-    { number: "06", title: "Delivery", desc: "Device returned safely with service warranty.", icon: Check }
+    { number: "06", title: "Delivery", desc: "Device returned safely, fully verified and tested.", icon: Check }
   ];
 
   // Google Testimonials Carousel
   const reviews = [
     { name: "Sumit Rawat", rating: 5, text: "Excellent screen replacement service! Rahul took less than 45 minutes to fix my cracked OnePlus display. The pricing was exactly as quoted. Highly recommended!", location: "Sector 37C, Gurugram" },
     { name: "Neha Kapoor", rating: 5, text: "Very professional pickup and drop service. The agent picked up my Samsung S23 in Sector 45 and returned it repaired on the same day. Saved me so much time!", location: "Sector 45, Gurugram" },
-    { name: "Vikram Sen", rating: 5, text: "Rahul diagnosed a battery drain issue on my iPhone. Replaced it with an original OEM battery and gave a 90-day warranty. The battery life is like new again.", location: "Sohna Road, Gurugram" },
+    { name: "Vikram Sen", rating: 5, text: "Rahul diagnosed a battery drain issue on my iPhone. Replaced it with an original OEM battery and tested it thoroughly. The battery life is like new again.", location: "Sohna Road, Gurugram" },
     { name: "Arjun Mehta", rating: 5, text: "Superb experience! I bought a MagSafe case and got my charging port fixed. Transparency, fair pricing, and polite staff. Great store near Residency.", location: "Ninex Residency, Gurugram" }
   ];
 
@@ -156,7 +156,7 @@ export default function Home() {
     { q: "Where is your store located?", a: "Our store, Smart Care & Mobile Point, is located at Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001." },
     { q: "What are your business hours?", a: "We are open Monday to Sunday from 10:00 AM to 9:00 PM." },
     { q: "How much are pickup and drop charges?", a: "Logistics charges are FREE for addresses within 5 km of the shop, and ₹200 for addresses beyond 5 km. Repair costs are separate." },
-    { q: "Do you offer a warranty on repairs?", a: "Yes! We offer a 90-day service warranty on replaced parts (like displays, battery, charging ports) against any defects." },
+    { q: "Do you use original parts?", a: "Yes! We use premium OEM-grade and AAA-grade original components for all screen, battery, and charging port replacements." },
     { q: "How can I calculate distance from my home?", a: "Simply visit our 'Pickup & Drop' page, enter your pickup address, and our system will calculate the distance and show the fee automatically before booking." }
   ];
 
@@ -765,7 +765,7 @@ export default function Home() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40">
         <div className="text-center space-y-2 mb-10">
           <h2 className="text-2xl font-bold text-foreground tracking-tight">Frequently Asked Questions</h2>
-          <p className="text-xs text-muted-foreground">Get quick answers regarding warranty, locations, and device repairs.</p>
+          <p className="text-xs text-muted-foreground">Get quick answers regarding services, locations, and device repairs.</p>
         </div>
 
         <div className="space-y-4">

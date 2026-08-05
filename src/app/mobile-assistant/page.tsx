@@ -163,7 +163,7 @@ export default function MobileAssistantPage() {
           </div>
           <div className="space-y-3.5 text-xs text-muted-foreground leading-normal">
             <p>
-              Our technicians use **OEM-grade premium components** for screen, battery, and camera replacements, backed by a **12-month warranty**.
+              Our technicians use **OEM-grade premium components** for screen, battery, and camera replacements, ensuring maximum reliability.
             </p>
             <div className="border-t border-border/50 pt-3 flex justify-between items-center">
               <div>
