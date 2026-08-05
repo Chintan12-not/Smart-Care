@@ -158,30 +158,7 @@ function LoginContent() {
             </div>
           </div>
 
-          {/* Demo Testing Role Selector */}
-          <div className="space-y-2 border-t border-border/50 pt-4 mt-2">
-            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground mb-1">
-              <Shield className="h-3.5 w-3.5 text-cyan-500" />
-              <span>Select Role for Testing & Demo</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {(["customer", "admin", "technician"] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setSelectedRole(r)}
-                  className={cn(
-                    "py-1.5 px-2 text-[10px] font-bold rounded-lg uppercase tracking-wider border transition-all duration-200",
-                    selectedRole === r
-                      ? "bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border-emerald-500/50 text-foreground"
-                      : "bg-muted/40 border-border text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Default user role is set to customer behind the scenes */}
 
           {/* Submit Button */}
           <button
