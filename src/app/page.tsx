@@ -425,6 +425,73 @@ export default function Home() {
         </div>
       </section>
 
+      {/* STORE GALLERY SHOWCASE */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40">
+        <div className="text-center space-y-2 max-w-xl mx-auto mb-12">
+          <span className="text-[10px] uppercase font-bold text-cyan-500 tracking-wider">Step Inside Our Store</span>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Our Service Center & Accessories Hub</h2>
+          <p className="text-xs text-muted-foreground">Take a virtual tour of our actual workshop counter and premium stock shelves in Gurugram.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Item 1: Store Entrance */}
+          <div className="glass-card rounded-3xl overflow-hidden border border-border group relative aspect-[3/4] shadow-md hover:shadow-lg transition-all duration-300">
+            <img 
+              src="/shop_front.png" 
+              alt="Smart Care Store Entrance" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
+              <span className="text-[9px] uppercase font-bold text-cyan-400 tracking-wider">Main Workshop Entrance</span>
+              <h4 className="font-extrabold text-white text-sm mt-0.5">Smart Care & Mobile Point</h4>
+              <p className="text-[10px] text-zinc-300 mt-1 leading-normal">Our clean service storefront in Sector 37C, Residency.</p>
+            </div>
+          </div>
+
+          {/* Item 2: Accessories Shelf */}
+          <div className="glass-card rounded-3xl overflow-hidden border border-border group relative aspect-[3/4] shadow-md hover:shadow-lg transition-all duration-300">
+            <img 
+              src="/shop_shelf.png" 
+              alt="Smart Care Accessories Shelf" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
+              <span className="text-[9px] uppercase font-bold text-emerald-400 tracking-wider">Premium Accessories Hub</span>
+              <h4 className="font-extrabold text-white text-sm mt-0.5">Branded Stock Shelves</h4>
+              <p className="text-[10px] text-zinc-300 mt-1 leading-normal">Premium headphones, chargers, adapters, and audio accessories.</p>
+            </div>
+          </div>
+
+          {/* Item 3: Workshop Desk */}
+          <div className="glass-card rounded-3xl overflow-hidden border border-border group relative aspect-[3/4] shadow-md hover:shadow-lg transition-all duration-300">
+            <img 
+              src="/shop_counter.png" 
+              alt="Smart Care Service Desk" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
+              <span className="text-[9px] uppercase font-bold text-amber-400 tracking-wider">Support Desk</span>
+              <h4 className="font-extrabold text-white text-sm mt-0.5">Diagnostics & Billing Desk</h4>
+              <p className="text-[10px] text-zinc-300 mt-1 leading-normal">Our billing, print, and quick diagnostics service counter.</p>
+            </div>
+          </div>
+
+          {/* Item 4: Spare Parts Hook */}
+          <div className="glass-card rounded-3xl overflow-hidden border border-border group relative aspect-[3/4] shadow-md hover:shadow-lg transition-all duration-300">
+            <img 
+              src="/shop_accessories.png" 
+              alt="Smart Care Genuine Components" 
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
+              <span className="text-[9px] uppercase font-bold text-purple-400 tracking-wider">Inventory & Hooks</span>
+              <h4 className="font-extrabold text-white text-sm mt-0.5">Genuine Accessories Stock</h4>
+              <p className="text-[10px] text-zinc-300 mt-1 leading-normal">AAA-grade screen glass, back shells, protectors, and cables ready to swap.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 6. GOOGLE REVIEWS TESTIMONIALS CAROUSEL */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40">
         <div className="text-center space-y-3 mb-12">
