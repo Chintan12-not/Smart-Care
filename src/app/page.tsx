@@ -201,7 +201,7 @@ export default function Home() {
         </h1>
 
         <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Book certified doorstep mobile repairs, troubleshoot device issues in real-time with our AI assistant, and shop premium protective accessories with a 90-day service warranty.
+          Book certified doorstep mobile repairs, troubleshoot device issues in real-time with our AI assistant, shop premium accessories, and visit us for document printing & photocopy (Xerox) services.
         </p>
 
         {/* Global search */}
@@ -470,9 +470,9 @@ export default function Home() {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5">
-              <span className="text-[9px] uppercase font-bold text-amber-400 tracking-wider">Support Desk</span>
-              <h4 className="font-extrabold text-white text-sm mt-0.5">Diagnostics & Billing Desk</h4>
-              <p className="text-[10px] text-zinc-300 mt-1 leading-normal">Our billing, print, and quick diagnostics service counter.</p>
+              <span className="text-[9px] uppercase font-bold text-amber-400 tracking-wider">Print & Xerox services</span>
+              <h4 className="font-extrabold text-white text-sm mt-0.5">Printing & Photocopy Desk</h4>
+              <p className="text-[10px] text-zinc-300 mt-1 leading-normal">High-speed laser document printing, photocopy (Xerox), and mobile recharges at our Sector 37C store.</p>
             </div>
           </div>
 

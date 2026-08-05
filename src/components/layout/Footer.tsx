@@ -136,6 +136,11 @@ export default function Footer() {
                   Device Protection Plans
                 </Link>
               </li>
+              <li>
+                <span className="text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-default">
+                  Document Printing & Xerox
+                </span>
+              </li>
             </ul>
           </div>
 
