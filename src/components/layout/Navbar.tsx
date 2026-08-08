@@ -107,10 +107,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <span className="p-2 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
-                <Smartphone className="h-5 w-5" />
-              </span>
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <img 
+                src="/logo.png" 
+                alt="Smart Care & Mobile Point Logo" 
+                className="h-9 w-auto rounded-xl object-contain shadow-sm group-hover:scale-105 transition-transform duration-300 bg-white p-0.5 border border-border/30"
+              />
               <div className="flex flex-col">
                 <span className="font-semibold text-base leading-none tracking-tight text-foreground bg-clip-text">
                   Smart Care
