@@ -191,14 +191,18 @@ export default function Home() {
   return (
     <div className="flex-grow flex flex-col relative overflow-hidden bg-background">
       
-      {/* Background Animated Wallpaper Grid */}
+      {/* Background Video Backdrop */}
       <div className="absolute top-[-100px] left-0 w-full h-[800px] overflow-hidden pointer-events-none select-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background z-10" />
-        <img
-          src="/hero_background.png"
-          alt="Smart Care Premium backdrop"
-          className="w-full h-full object-cover opacity-[0.25] dark:opacity-[0.22] animate-slow-pan"
-        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10" />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-[0.28] dark:opacity-[0.18]"
+        >
+          <source src="/background_video.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Floating lights */}
