@@ -400,7 +400,7 @@ export default function Home() {
             ref={sliderContainerRef}
             onMouseMove={handleSliderMove}
             onTouchMove={handleSliderMove}
-            className="relative w-full max-w-xl h-80 rounded-3xl overflow-hidden border border-border/80 shadow-lg cursor-ew-resize select-none"
+            className="relative w-full max-w-xl aspect-[1.25] sm:h-80 rounded-3xl overflow-hidden border border-border/80 shadow-lg cursor-ew-resize select-none"
           >
             {/* Before (Cracked Screen) */}
             <div className="absolute inset-0 bg-zinc-950 flex items-center justify-center">
@@ -549,33 +549,51 @@ export default function Home() {
                 <span className="text-[10px] text-muted-foreground">{reviews[currentReviewIndex].location}</span>
               </div>
               
-              {/* Slider Dots */}
-              <div className="flex gap-1.5">
-                {reviews.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentReviewIndex(idx)}
-                    className={`h-2 w-2 rounded-full transition-all ${
-                      idx === currentReviewIndex ? "bg-cyan-500 w-4" : "bg-muted-foreground/30"
-                    }`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
+              <div className="flex items-center gap-3">
+                {/* Mobile Chevrons */}
+                <div className="flex sm:hidden gap-1 pb-[1px]">
+                  <button 
+                    onClick={handlePrevReview} 
+                    className="p-1 rounded-lg bg-muted text-foreground border border-border hover:bg-muted/80 transition-colors"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button 
+                    onClick={handleNextReview} 
+                    className="p-1 rounded-lg bg-muted text-foreground border border-border hover:bg-muted/80 transition-colors"
+                  >
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+
+                {/* Slider Dots */}
+                <div className="flex gap-1.5">
+                  {reviews.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentReviewIndex(idx)}
+                      className={`h-2 w-2 rounded-full transition-all ${
+                        idx === currentReviewIndex ? "bg-cyan-500 w-4" : "bg-muted-foreground/30"
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Left/Right controls */}
+          {/* Left/Right Desktop controls */}
           <button
             onClick={handlePrevReview}
-            className="absolute left-[-20px] sm:left-[-50px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-background border border-border shadow-md hover:bg-muted text-foreground transition-colors"
+            className="hidden sm:flex absolute left-[-50px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-background border border-border shadow-md hover:bg-muted text-foreground transition-colors"
             aria-label="Previous Review"
           >
             <ChevronLeft className="h-4.5 w-4.5" />
           </button>
           <button
             onClick={handleNextReview}
-            className="absolute right-[-20px] sm:right-[-50px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-background border border-border shadow-md hover:bg-muted text-foreground transition-colors"
+            className="hidden sm:flex absolute right-[-50px] top-1/2 -translate-y-1/2 p-2 rounded-full bg-background border border-border shadow-md hover:bg-muted text-foreground transition-colors"
             aria-label="Next Review"
           >
             <ChevronRight className="h-4.5 w-4.5" />
