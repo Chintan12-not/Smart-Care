@@ -193,14 +193,15 @@ export default function Home() {
       
       {/* Background Animated Wallpaper Grid / Hero Cinematic Video */}
       <div className="absolute top-[-100px] left-0 w-full h-[800px] overflow-hidden pointer-events-none select-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/75 to-background z-10" />
+        <div className="absolute inset-0 bg-background/50 dark:bg-background/15 z-5 pointer-events-none" />
         <video
           autoPlay
           loop
           muted
           playsInline
           poster="/hero_background.png"
-          className="w-full h-full object-cover opacity-[0.32] dark:opacity-[0.24] animate-slow-pan"
+          className="w-full h-full object-cover opacity-[0.75] dark:opacity-[0.55] animate-slow-pan filter brightness-[0.95] dark:brightness-[0.7] contrast-[1.05]"
         >
           <source src="/hero_bg.mp4" type="video/mp4" />
           {/* Fallback image in case video fails to load */}

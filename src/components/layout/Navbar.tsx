@@ -97,10 +97,10 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
+        "sticky top-0 z-50 w-full transition-all duration-300 bg-background/80 backdrop-blur-xl border-b border-border/40",
         scrolled 
-          ? "bg-background/70 backdrop-blur-xl border-b border-border/45 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_30px_-15px_rgba(0,0,0,0.6)]" 
-          : "bg-transparent border-b border-transparent"
+          ? "shadow-[0_2px_20px_-10px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_30px_-15px_rgba(0,0,0,0.6)]" 
+          : "border-transparent/30"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
