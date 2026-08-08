@@ -48,7 +48,9 @@ export default function AccessoriesPage() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   // Supabase items
-  const [products, setProducts] = useState<AccessoryProduct[]>(MOCK_ACCESSORIES);
+  const [products, setProducts] = useState<AccessoryProduct[]>(
+    isSupabaseConfigured() ? [] : MOCK_ACCESSORIES
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   // 1. Initial LocalStorage Hydration
@@ -99,6 +101,8 @@ export default function AccessoriesPage() {
             description: item.description || ""
           }));
           setProducts(mapped);
+        } else {
+          setProducts([]);
         }
       } catch (err) {
         console.error("Error loading products from Supabase:", err);
@@ -388,9 +392,13 @@ export default function AccessoriesPage() {
       {/* Empty State */}
       {!isLoading && sortedProducts.length === 0 && (
         <div className="text-center py-20 bg-muted/20 border border-border rounded-3xl space-y-3">
-          <Smartphone className="h-10 w-10 text-muted-foreground mx-auto" />
-          <h3 className="font-bold text-foreground">No accessories match search terms</h3>
-          <p className="text-xs text-muted-foreground">Try clearing filters or search box query.</p>
+          <Smartphone className="h-10 w-10 text-muted-foreground mx-auto animate-pulse" />
+          <h3 className="font-bold text-foreground">
+            {products.length === 0 ? "Products coming soon" : "No accessories match search terms"}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {products.length === 0 ? "We are currently updating our stock list. Please visit again soon!" : "Try clearing filters or search box query."}
+          </p>
         </div>
       )}
 
