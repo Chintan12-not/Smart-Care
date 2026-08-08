@@ -126,6 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email,
           options: {
             shouldCreateUser: false,
+            emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
           },
         });
         if (error) throw error;
@@ -162,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email,
           password: "temporary-secure-password-123!", // passwordless preferred later
           options: {
+            emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
             data: {
               full_name: fullName,
             },
