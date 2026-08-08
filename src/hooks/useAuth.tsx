@@ -21,6 +21,7 @@ interface AuthContextType {
   signIn: (email: string, password?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password?: string, fullName?: string, phone?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
   signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  signInWithApple: () => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>;
 }
@@ -254,6 +255,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithApple = async () => {
+    setLoading(true);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "apple",
+          options: {
+            redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+          },
+        });
+        if (error) throw error;
+        return { success: true };
+      } catch (e: any) {
+        setLoading(false);
+        return { success: false, error: e.message || "Apple sign in failed" };
+      }
+    } else {
+      // Mock login as Apple user
+      const appleUser: UserProfile = {
+        id: "mock-apple-user",
+        email: "apple.user@example.com",
+        full_name: "Apple Customer",
+        role: "customer",
+        phone: "+91 98888 77777",
+        preferred_language: "en",
+        addresses: [],
+      };
+      localStorage.setItem("sc_session", JSON.stringify(appleUser));
+      setUser(appleUser);
+      setLoading(false);
+      return { success: true };
+    }
+  };
+
   const signOut = async () => {
     setLoading(true);
     if (isSupabaseConfigured()) {
@@ -296,7 +331,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInWithApple, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

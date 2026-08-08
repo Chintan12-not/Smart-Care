@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, signIn, signUp, signInWithGoogle, loading: authLoading } = useAuth();
+  const { user, signIn, signUp, signInWithGoogle, signInWithApple, loading: authLoading } = useAuth();
   
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -81,6 +81,23 @@ function LoginContent() {
       }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred during Google Auth.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const res = await signInWithApple();
+      if (res.success) {
+        setSuccess(true);
+      } else {
+        setError(res.error || "Failed to connect to Apple.");
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred during Apple Auth.");
     } finally {
       setLoading(false);
     }
@@ -267,11 +284,11 @@ function LoginContent() {
             
             <button
               type="button"
-              disabled={true}
-              title="Apple Sign-In placeholder"
-              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-border bg-muted/10 opacity-50 cursor-not-allowed text-xs font-bold text-muted-foreground"
+              onClick={handleAppleSignIn}
+              disabled={loading || authLoading}
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-border bg-muted/30 hover:bg-muted/70 transition-all duration-200 active:scale-[0.98] text-xs font-bold text-foreground"
             >
-              <svg className="h-4 w-4 fill-current animate-pulse" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.51-.62.71-1.16 1.85-1.02 2.96 1.11.09 2.26-.55 2.97-1.41z"/>
               </svg>
               Apple
