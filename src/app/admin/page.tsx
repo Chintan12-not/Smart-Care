@@ -20,10 +20,11 @@ import {
   FileText,
   ToggleLeft,
   ToggleRight,
-  Loader2
+  Loader2,
+  Info
 } from "lucide-react";
 import Link from "next/link";
-import { formatINR } from "@/lib/utils";
+import { formatINR, cn } from "@/lib/utils";
 
 interface DbAccessory {
   id: string;
@@ -59,6 +60,33 @@ export default function AdminPage() {
   const [isActive, setIsActive] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Tab State
+  const [activeTab, setActiveTab] = useState<"accessories" | "estimator">("accessories");
+
+  // Estimator Configuration States
+  interface EstimatorConfig {
+    id?: string;
+    brand: string;
+    multiplier: number;
+    screen_base_price: number;
+    battery_base_price: number;
+    speaker_base_price: number;
+    diagnostics_base_price: number;
+    other_base_price: number;
+  }
+
+  const [configs, setConfigs] = useState<EstimatorConfig[]>([]);
+  const [estBrand, setEstBrand] = useState("");
+  const [estMultiplier, setEstMultiplier] = useState("1.0");
+  const [estScreen, setEstScreen] = useState("2499");
+  const [estBattery, setEstBattery] = useState("1299");
+  const [estSpeaker, setEstSpeaker] = useState("899");
+  const [estDiagnostics, setEstDiagnostics] = useState("699");
+  const [estOther, setEstOther] = useState("999");
+  const [editingConfigId, setEditingConfigId] = useState<string | null>(null);
+  const [estimatorSubmitting, setEstimatorSubmitting] = useState(false);
+  const [showSqlAlert, setShowSqlAlert] = useState(false);
+
   // Route protection
   useEffect(() => {
     if (!authLoading) {
@@ -93,9 +121,154 @@ export default function AdminPage() {
     }
   };
 
+  const loadEstimatorConfigs = async () => {
+    if (!isSupabaseConfigured()) return;
+    setDbLoading(true);
+    setDbError(null);
+    setShowSqlAlert(false);
+    try {
+      const { data, error } = await supabase
+        .from("repair_estimator_config")
+        .select("*")
+        .order("brand", { ascending: true });
+
+      if (error) {
+        if (error.message.includes("relation") || error.message.includes("public.repair_estimator_config")) {
+          setShowSqlAlert(true);
+          const local = localStorage.getItem("sc_estimator_config");
+          if (local) {
+            setConfigs(JSON.parse(local));
+          } else {
+            const defaults = [
+              { brand: "Apple", multiplier: 1.8, screen_base_price: 2499, battery_base_price: 1299, speaker_base_price: 899, diagnostics_base_price: 699, other_base_price: 999 },
+              { brand: "Samsung", multiplier: 1.4, screen_base_price: 2499, battery_base_price: 1299, speaker_base_price: 899, diagnostics_base_price: 699, other_base_price: 999 }
+            ];
+            setConfigs(defaults);
+          }
+        } else {
+          throw error;
+        }
+      } else {
+        setConfigs(data || []);
+        localStorage.setItem("sc_estimator_config", JSON.stringify(data || []));
+      }
+    } catch (err: any) {
+      setDbError(err.message || "Failed to load pricing estimator configurations.");
+    } finally {
+      setDbLoading(false);
+    }
+  };
+
+  const handleAddConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!estBrand || !estMultiplier) {
+      setDbError("Please enter a brand name and a pricing multiplier.");
+      return;
+    }
+
+    setEstimatorSubmitting(true);
+    setDbError(null);
+    setActionSuccess(null);
+
+    const payload = {
+      brand: estBrand.trim(),
+      multiplier: parseFloat(estMultiplier) || 1.0,
+      screen_base_price: parseFloat(estScreen) || 2499.00,
+      battery_base_price: parseFloat(estBattery) || 1299.00,
+      speaker_base_price: parseFloat(estSpeaker) || 899.00,
+      diagnostics_base_price: parseFloat(estDiagnostics) || 699.00,
+      other_base_price: parseFloat(estOther) || 999.00,
+    };
+
+    if (isSupabaseConfigured() && !showSqlAlert) {
+      try {
+        const { error } = await supabase
+          .from("repair_estimator_config")
+          .upsert(payload, { onConflict: "brand" });
+
+        if (error) throw error;
+        setActionSuccess(`Pricing configuration for brand '${estBrand}' successfully saved to Supabase!`);
+        
+        // Reset form
+        setEstBrand("");
+        setEstMultiplier("1.0");
+        setEstScreen("2499");
+        setEstBattery("1299");
+        setEstSpeaker("899");
+        setEstDiagnostics("699");
+        setEstOther("999");
+        setEditingConfigId(null);
+        
+        loadEstimatorConfigs();
+      } catch (err: any) {
+        setDbError(err.message || "Failed to save configuration to Supabase.");
+      } finally {
+        setEstimatorSubmitting(false);
+      }
+    } else {
+      // Offline/Local fallback
+      try {
+        const local = localStorage.getItem("sc_estimator_config");
+        let list = local ? JSON.parse(local) : [];
+        const index = list.findIndex((c: any) => c.brand.toLowerCase() === estBrand.toLowerCase());
+        if (index > -1) {
+          list[index] = payload;
+        } else {
+          list.push(payload);
+        }
+        localStorage.setItem("sc_estimator_config", JSON.stringify(list));
+        setConfigs(list);
+        setActionSuccess(`Pricing configuration for brand '${estBrand}' saved locally!`);
+        
+        setEstBrand("");
+        setEstMultiplier("1.0");
+        setEstScreen("2499");
+        setEstBattery("1299");
+        setEstSpeaker("899");
+        setEstDiagnostics("699");
+        setEstOther("999");
+        setEditingConfigId(null);
+      } catch (err: any) {
+        setDbError(err.message || "Failed to save locally.");
+      } finally {
+        setEstimatorSubmitting(false);
+      }
+    }
+  };
+
+  const handleDeleteConfig = async (brandName: string) => {
+    setDbError(null);
+    setActionSuccess(null);
+
+    if (isSupabaseConfigured() && !showSqlAlert) {
+      try {
+        const { error } = await supabase
+          .from("repair_estimator_config")
+          .delete()
+          .eq("brand", brandName);
+
+        if (error) throw error;
+        setActionSuccess(`Pricing config for '${brandName}' successfully deleted.`);
+        loadEstimatorConfigs();
+      } catch (err: any) {
+        setDbError(err.message || "Failed to delete config from database.");
+      }
+    } else {
+      const local = localStorage.getItem("sc_estimator_config");
+      if (local) {
+        let list = JSON.parse(local);
+        const filtered = list.filter((c: any) => c.brand !== brandName);
+        localStorage.setItem("sc_estimator_config", JSON.stringify(filtered));
+        setConfigs(filtered);
+        setActionSuccess(`Pricing config for '${brandName}' removed from local storage.`);
+      }
+    }
+  };
+
   useEffect(() => {
     if (user && user.role === "admin") {
       loadProducts();
+      loadEstimatorConfigs();
     }
   }, [user]);
 
@@ -256,8 +429,34 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Grid split */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Tab Selection */}
+        <div className="flex border-b border-border gap-4 my-2">
+          <button
+            onClick={() => setActiveTab("accessories")}
+            className={cn(
+              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2",
+              activeTab === "accessories"
+                ? "border-cyan-500 text-cyan-500"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Shop Accessories
+          </button>
+          <button
+            onClick={() => setActiveTab("estimator")}
+            className={cn(
+              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2",
+              activeTab === "estimator"
+                ? "border-cyan-500 text-cyan-500"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            AI Checker Pricing
+          </button>
+        </div>
+
+        {activeTab === "accessories" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Form Side (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
@@ -515,6 +714,219 @@ export default function AdminPage() {
           </div>
 
         </div>
+        )}
+
+        {activeTab === "estimator" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Form Column (5 cols) */}
+            <div className="lg:col-span-5 space-y-6 animate-in fade-in duration-300">
+              <div className="glass-card rounded-3xl p-6 border border-border shadow-md space-y-6 bg-card">
+                <div className="flex items-center gap-2 text-cyan-500 border-b border-border/60 pb-3">
+                  <Plus className="h-5 w-5" />
+                  <h2 className="font-bold text-sm uppercase tracking-wider">Configure Brand Pricing</h2>
+                </div>
+
+                <form onSubmit={handleAddConfig} className="space-y-4">
+                  {/* Brand Name */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground">
+                      Brand Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Apple, Samsung, OnePlus"
+                      value={estBrand}
+                      onChange={(e) => setEstBrand(e.target.value)}
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    />
+                  </div>
+
+                  {/* Multiplier */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground">
+                      Pricing Multiplier <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0.5"
+                      max="5.0"
+                      required
+                      value={estMultiplier}
+                      onChange={(e) => setEstMultiplier(e.target.value)}
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    />
+                  </div>
+
+                  {/* Base Prices Header */}
+                  <h3 className="text-[10px] uppercase font-bold text-cyan-500 border-t border-border/40 pt-3">
+                    Repair Issue Base Costs (₹)
+                  </h3>
+
+                  {/* Screen & Battery */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-bold text-muted-foreground">Screen Repair</label>
+                      <input
+                        type="number"
+                        required
+                        value={estScreen}
+                        onChange={(e) => setEstScreen(e.target.value)}
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-bold text-muted-foreground">Battery Swap</label>
+                      <input
+                        type="number"
+                        required
+                        value={estBattery}
+                        onChange={(e) => setEstBattery(e.target.value)}
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Speaker & Diagnostics */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-bold text-muted-foreground">Speaker / Mic</label>
+                      <input
+                        type="number"
+                        required
+                        value={estSpeaker}
+                        onChange={(e) => setEstSpeaker(e.target.value)}
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] uppercase font-bold text-muted-foreground">Diagnostics</label>
+                      <input
+                        type="number"
+                        required
+                        value={estDiagnostics}
+                        onChange={(e) => setEstDiagnostics(e.target.value)}
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Other General Issues */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground">Other Issues Base Price</label>
+                    <input
+                      type="number"
+                      required
+                      value={estOther}
+                      onChange={(e) => setEstOther(e.target.value)}
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={estimatorSubmitting}
+                    className="w-full mt-4 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 rounded-xl transition-all duration-200 text-xs shadow-md flex items-center justify-center gap-2"
+                  >
+                    {estimatorSubmitting ? (
+                      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "Save Brand Config"
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* List Column (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              {showSqlAlert && (
+                <div className="glass-card rounded-3xl p-6 border border-amber-500/25 bg-amber-500/5 space-y-3">
+                  <div className="flex items-center gap-2 text-amber-500">
+                    <Info className="h-5 w-5" />
+                    <h3 className="font-bold text-xs uppercase tracking-wider">Supabase Table Config</h3>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    The <code>repair_estimator_config</code> table does not exist in your Supabase database yet. Local configurations will be used instead.
+                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed border-t border-amber-500/10 pt-2 font-mono text-[9px] whitespace-pre-wrap select-all">
+{`CREATE TABLE IF NOT EXISTS public.repair_estimator_config (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    brand TEXT NOT NULL UNIQUE,
+    multiplier NUMERIC(4,2) NOT NULL DEFAULT 1.0,
+    screen_base_price NUMERIC(10,2) NOT NULL DEFAULT 2499.00,
+    battery_base_price NUMERIC(10,2) NOT NULL DEFAULT 1299.00,
+    speaker_base_price NUMERIC(10,2) NOT NULL DEFAULT 899.00,
+    diagnostics_base_price NUMERIC(10,2) NOT NULL DEFAULT 699.00,
+    other_base_price NUMERIC(10,2) NOT NULL DEFAULT 999.00,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+ALTER TABLE public.repair_estimator_config ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public select" ON public.repair_estimator_config FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated insert" ON public.repair_estimator_config FOR ALL USING (true);`}
+                  </p>
+                </div>
+              )}
+
+              <div className="glass-card rounded-3xl p-6 border border-border bg-card shadow-md space-y-4">
+                <div className="flex justify-between items-center border-b border-border/60 pb-3">
+                  <h3 className="font-bold text-sm uppercase tracking-wider text-cyan-500">Configured Brands ({configs.length})</h3>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-border text-muted-foreground font-bold">
+                        <th className="py-2.5 px-2">Brand</th>
+                        <th className="py-2.5 px-2">Multiplier</th>
+                        <th className="py-2.5 px-2">Screen</th>
+                        <th className="py-2.5 px-2">Battery</th>
+                        <th className="py-2.5 px-2">Diagnostics</th>
+                        <th className="py-2.5 px-2 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/40">
+                      {configs.map((c) => (
+                        <tr key={c.brand} className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 px-2 font-bold text-foreground">{c.brand}</td>
+                          <td className="py-3 px-2 text-cyan-500 font-bold">{c.multiplier}x</td>
+                          <td className="py-3 px-2 text-muted-foreground">₹{c.screen_base_price}</td>
+                          <td className="py-3 px-2 text-muted-foreground">₹{c.battery_base_price}</td>
+                          <td className="py-3 px-2 text-muted-foreground">₹{c.diagnostics_base_price}</td>
+                          <td className="py-3 px-2 text-right">
+                            <button
+                              onClick={() => {
+                                setEstBrand(c.brand);
+                                setEstMultiplier(c.multiplier.toString());
+                                setEstScreen(c.screen_base_price.toString());
+                                setEstBattery(c.battery_base_price.toString());
+                                setEstSpeaker(c.speaker_base_price.toString());
+                                setEstDiagnostics(c.diagnostics_base_price.toString());
+                                setEstOther(c.other_base_price.toString());
+                              }}
+                              className="text-cyan-500 hover:underline mr-3 font-semibold"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteConfig(c.brand)}
+                              className="text-red-500 hover:text-red-600 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4 inline" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

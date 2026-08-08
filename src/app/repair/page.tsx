@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatINR, calculateRepairEstimate } from "@/lib/utils";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 
@@ -66,6 +67,24 @@ export default function RepairPage() {
 
   // Load existing mock repair ticket from localStorage on mount
   useEffect(() => {
+    // Cache the repair estimator configurations from database
+    const loadEstimatorConfig = async () => {
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error } = await supabase
+            .from("repair_estimator_config")
+            .select("*")
+            .eq("is_active", true);
+          if (!error && data) {
+            localStorage.setItem("sc_estimator_config", JSON.stringify(data));
+          }
+        } catch (e) {
+          console.error("Error loading estimator config:", e);
+        }
+      }
+    };
+    loadEstimatorConfig();
+
     const stored = localStorage.getItem("sc_active_repair");
     if (stored) {
       try {

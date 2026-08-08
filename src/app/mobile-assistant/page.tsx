@@ -16,6 +16,7 @@ import {
   Check
 } from "lucide-react";
 import { cn, calculateRepairEstimate, formatINR } from "@/lib/utils";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 interface Message {
@@ -45,6 +46,26 @@ export default function MobileAssistantPage() {
   const [selectedBrand, setSelectedBrand] = useState("Apple");
   const [deviceModel, setDeviceModel] = useState("iPhone 13");
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Cache the repair estimator configurations from database
+  useEffect(() => {
+    const loadEstimatorConfig = async () => {
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error } = await supabase
+            .from("repair_estimator_config")
+            .select("*")
+            .eq("is_active", true);
+          if (!error && data) {
+            localStorage.setItem("sc_estimator_config", JSON.stringify(data));
+          }
+        } catch (e) {
+          console.error("Error loading estimator config:", e);
+        }
+      }
+    };
+    loadEstimatorConfig();
+  }, []);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
