@@ -82,7 +82,8 @@ export default function RepairPage() {
   }, [messages]);
 
   const currentEstimate = calculateRepairEstimate(
-    ISSUES.find((i) => i.value === selectedIssue)?.label || ""
+    ISSUES.find((i) => i.value === selectedIssue)?.label || "",
+    deviceModel
   );
 
   const handleBookRepair = (e: React.FormEvent) => {

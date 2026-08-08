@@ -42,6 +42,8 @@ export default function MobileAssistantPage() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState("Apple");
+  const [deviceModel, setDeviceModel] = useState("iPhone 13");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll chat to bottom
@@ -69,7 +71,7 @@ export default function MobileAssistantPage() {
       
       if (data.success && data.data?.message) {
         // Calculate dynamically matching estimate
-        const estimate = calculateRepairEstimate(textToSend);
+        const estimate = calculateRepairEstimate(textToSend, selectedBrand);
         
         // Flag to display repair booking buttons
         const suggestRepair = true;
@@ -154,6 +156,48 @@ export default function MobileAssistantPage() {
       
       {/* Sidebar: Diagnostic Guidelines */}
       <div className="w-full md:w-80 space-y-6 flex-shrink-0">
+
+        {/* Device Selector Card */}
+        <div className="glass-card rounded-2xl p-6 border border-border space-y-4 shadow-sm">
+          <div className="flex items-center gap-2 text-cyan-500">
+            <Smartphone className="h-5 w-5" />
+            <h3 className="font-bold text-sm">Select Your Device</h3>
+          </div>
+          <div className="space-y-3 text-xs leading-normal">
+            <div className="space-y-1">
+              <label htmlFor="device-brand-select" className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider block">Phone Brand</label>
+              <select
+                id="device-brand-select"
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+                className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all font-semibold"
+              >
+                <option value="Apple">Apple (iPhone)</option>
+                <option value="Samsung">Samsung</option>
+                <option value="OnePlus">OnePlus</option>
+                <option value="Vivo">Vivo</option>
+                <option value="Oppo">Oppo</option>
+                <option value="Xiaomi">Xiaomi / Redmi</option>
+                <option value="Realme">Realme</option>
+                <option value="Motorola">Motorola</option>
+                <option value="Google Pixel">Google Pixel</option>
+                <option value="Nothing">Nothing Phone</option>
+                <option value="Other">Other Brand</option>
+              </select>
+            </div>
+            <div className="space-y-1 pt-1">
+              <label htmlFor="device-model-input" className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider block">Model Name</label>
+              <input
+                id="device-model-input"
+                type="text"
+                value={deviceModel}
+                onChange={(e) => setDeviceModel(e.target.value)}
+                placeholder="e.g. iPhone 14 Pro, S23 Ultra"
+                className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all placeholder:text-muted-foreground/60 font-semibold"
+              />
+            </div>
+          </div>
+        </div>
         
         {/* Cost & Speed Info Card */}
         <div className="glass-card rounded-2xl p-6 border border-border space-y-4">
@@ -250,6 +294,9 @@ export default function MobileAssistantPage() {
                     <div className="flex items-center gap-2 text-[10px] font-bold text-cyan-500 uppercase tracking-wider">
                       <Wrench className="h-4 w-4" />
                       <span>Instant Repair Quote Estimate</span>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground -mt-1.5">
+                      For <strong className="text-foreground">{selectedBrand} {deviceModel}</strong>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-xs font-semibold border-y border-border/50 py-2.5 my-1">
                       <div>

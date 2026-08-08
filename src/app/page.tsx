@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
@@ -59,6 +59,25 @@ export default function Home() {
 
   // Before/After Slider state
   const [sliderPos, setSliderPos] = useState(50);
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
+  const [sliderWidth, setSliderWidth] = useState(576);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        if (sliderContainerRef.current) {
+          setSliderWidth(sliderContainerRef.current.offsetWidth);
+        }
+      };
+      // Wait for mount layout layout cycles
+      const timer = setTimeout(handleResize, 100);
+      window.addEventListener("resize", handleResize);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener("resize", handleResize);
+      };
+    }
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -378,6 +397,7 @@ export default function Home() {
 
         <div className="flex justify-center">
           <div 
+            ref={sliderContainerRef}
             onMouseMove={handleSliderMove}
             onTouchMove={handleSliderMove}
             className="relative w-full max-w-xl h-80 rounded-3xl overflow-hidden border border-border/80 shadow-lg cursor-ew-resize select-none"
@@ -389,7 +409,8 @@ export default function Home() {
               </div>
               <img 
                 src="/cracked_phone.png" 
-                className="w-full h-full object-cover select-none pointer-events-none" 
+                className="h-full object-cover select-none pointer-events-none" 
+                style={{ width: sliderWidth, maxWidth: "none" }}
                 alt="Before cracked screen repair"
               />
             </div>
@@ -397,16 +418,17 @@ export default function Home() {
             {/* After (Clean Repaired Glass) - Layer with dynamic slider position width */}
             <div 
               style={{ width: `${sliderPos}%` }}
-              className="absolute inset-y-0 left-0 bg-zinc-900 border-r-2 border-cyan-400 overflow-hidden"
+              className="absolute inset-y-0 left-0 border-r-2 border-cyan-400 overflow-hidden z-20"
             >
-              {/* After content (width matches the max-w-xl container width of 576px) */}
-              <div className="absolute inset-0 w-[576px] h-full">
+              {/* After content (width dynamically matches container offsetWidth in px) */}
+              <div className="absolute inset-y-0 left-0 h-full" style={{ width: sliderWidth }}>
                 <div className="absolute top-4 right-4 z-10 px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider">
                   After: Clean clear display
                 </div>
                 <img 
                   src="/repaired_phone.png" 
-                  className="w-full h-full object-cover select-none pointer-events-none" 
+                  className="h-full object-cover select-none pointer-events-none" 
+                  style={{ width: sliderWidth, maxWidth: "none" }}
                   alt="After repaired clean display"
                 />
               </div>
@@ -415,7 +437,7 @@ export default function Home() {
             {/* Slider Handle */}
             <div 
               style={{ left: `${sliderPos}%` }}
-              className="absolute inset-y-0 -ml-[1px] w-0.5 bg-cyan-400 pointer-events-none"
+              className="absolute inset-y-0 -ml-[1px] w-0.5 bg-cyan-400 pointer-events-none z-30"
             >
               <div className="absolute top-1/2 -translate-y-1/2 -ml-3.5 h-7 w-7 rounded-full bg-cyan-500 text-black shadow-md flex items-center justify-center font-bold text-xs select-none">
                 ↔

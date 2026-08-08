@@ -22,17 +22,37 @@ export function formatINR(amount: number): string {
 /**
  * Generates dynamic repair cost and time estimates.
  */
-export function calculateRepairEstimate(issueType: string): { cost: number; time: string } {
+export function calculateRepairEstimate(issueType: string, brand?: string): { cost: number; time: string } {
   const issueLower = issueType.toLowerCase();
+  let baseCost = 999;
+  let time = "Same Day Delivery";
+
   if (issueLower.includes("screen") || issueLower.includes("display") || issueLower.includes("broken")) {
-    return { cost: 2499, time: "2-3 Hours" };
+    baseCost = 2499;
+    time = "2-3 Hours";
   } else if (issueLower.includes("battery") || issueLower.includes("charge") || issueLower.includes("drain")) {
-    return { cost: 1299, time: "1 Hour" };
+    baseCost = 1299;
+    time = "1 Hour";
   } else if (issueLower.includes("speaker") || issueLower.includes("sound") || issueLower.includes("mic")) {
-    return { cost: 899, time: "1-2 Hours" };
+    baseCost = 899;
+    time = "1-2 Hours";
   } else if (issueLower.includes("heating") || issueLower.includes("lag") || issueLower.includes("slow")) {
-    return { cost: 699, time: "24 Hours (Diagnostics)" };
-  } else {
-    return { cost: 999, time: "Same Day Delivery" };
+    baseCost = 699;
+    time = "24 Hours (Diagnostics)";
   }
+
+  // Brand pricing multiplier
+  let multiplier = 1.0;
+  if (brand) {
+    const brandLower = brand.toLowerCase();
+    if (brandLower === "apple" || brandLower.includes("iphone") || brandLower.includes("pixel") || brandLower.includes("nothing")) {
+      multiplier = 1.8; // Premium devices
+    } else if (brandLower.includes("samsung") || brandLower.includes("oneplus")) {
+      multiplier = 1.4; // Mid-high tier devices
+    } else if (brandLower.includes("vivo") || brandLower.includes("oppo") || brandLower.includes("xiaomi") || brandLower.includes("realme")) {
+      multiplier = 1.1;
+    }
+  }
+
+  return { cost: Math.round(baseCost * multiplier), time };
 }
