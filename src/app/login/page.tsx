@@ -13,6 +13,7 @@ function LoginContent() {
   
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [error, setError] = useState("");
@@ -41,10 +42,9 @@ function LoginContent() {
 
     try {
       if (isLogin) {
-        const res = await signIn(email, selectedRole);
+        const res = await signIn(email, password || undefined, selectedRole);
         if (res.success) {
           setSuccess(true);
-          router.push(selectedRole === "admin" ? "/admin" : redirectUrl);
         } else {
           setError(res.error || "Failed to log in.");
         }
@@ -54,10 +54,9 @@ function LoginContent() {
           setLoading(false);
           return;
         }
-        const res = await signUp(email, fullName, selectedRole);
+        const res = await signUp(email, password || undefined, fullName, selectedRole);
         if (res.success) {
           setSuccess(true);
-          router.push(selectedRole === "admin" ? "/admin" : redirectUrl);
         } else {
           setError(res.error || "Failed to sign up.");
         }
@@ -158,7 +157,24 @@ function LoginContent() {
             </div>
           </div>
 
-          {/* Default user role is set to customer behind the scenes */}
+          {/* Password (Optional for OTP, required for credentials) */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center">
+              <label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</label>
+              {isLogin && <span className="text-[10px] text-muted-foreground/80">(Leave blank for magic OTP)</span>}
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4.5 w-4.5 text-muted-foreground" />
+              <input
+                id="password"
+                type="password"
+                placeholder={isLogin ? "•••••••• (or verify via email)" : "Create a password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
+              />
+            </div>
+          </div>
 
           {/* Submit Button */}
           <button

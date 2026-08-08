@@ -18,8 +18,8 @@ export interface UserProfile {
 interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
-  signIn: (email: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
-  signUp: (email: string, fullName: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
+  signIn: (email: string, password?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password?: string, fullName?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>;
 }
@@ -118,22 +118,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const signIn = async (email: string, role: UserRole = "customer") => {
+  const signIn = async (email: string, password?: string, role: UserRole = "customer") => {
     setLoading(true);
     if (isSupabaseConfigured()) {
       try {
-        const { error } = await supabase.auth.signInWithOtp({
-          email,
-          options: {
-            shouldCreateUser: false,
-            emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-          },
-        });
-        if (error) throw error;
+        if (password) {
+          const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.auth.signInWithOtp({
+            email,
+            options: {
+              shouldCreateUser: false,
+              emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+            },
+          });
+          if (error) throw error;
+        }
         return { success: true };
       } catch (e: any) {
         setLoading(false);
-        return { success: false, error: e.message || "OTP request failed" };
+        return { success: false, error: e.message || "Login failed" };
       }
     } else {
       // Mock log in instantly
@@ -155,17 +163,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, fullName: string, role: UserRole = "customer") => {
+  const signUp = async (email: string, password?: string, fullName?: string, role: UserRole = "customer") => {
     setLoading(true);
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
-          password: "temporary-secure-password-123!", // passwordless preferred later
+          password: password || "temporary-secure-password-123!",
           options: {
             emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
             data: {
-              full_name: fullName,
+              full_name: fullName || email.split("@")[0],
             },
           },
         });
@@ -180,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const mockUser: UserProfile = {
         id: "mock-user-uuid-" + role,
         email,
-        full_name: fullName,
+        full_name: fullName || email.split("@")[0],
         role: role,
         phone: "+91 99999 88888",
         preferred_language: "en",
