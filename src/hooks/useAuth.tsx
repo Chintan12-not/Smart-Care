@@ -19,7 +19,8 @@ interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
   signIn: (email: string, password?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
-  signUp: (email: string, password?: string, fullName?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password?: string, fullName?: string, phone?: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<{ success: boolean; error?: string }>;
 }
@@ -163,7 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password?: string, fullName?: string, role: UserRole = "customer") => {
+  const signUp = async (email: string, password?: string, fullName?: string, phone?: string, role: UserRole = "customer") => {
     setLoading(true);
     if (isSupabaseConfigured()) {
       try {
@@ -178,6 +179,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         });
         if (error) throw error;
+
+        // Auto-create database profile row with phone details
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert([{
+              id: data.user.id,
+              full_name: fullName || email.split("@")[0],
+              phone: phone || null,
+              role: role,
+              preferred_language: "en",
+              addresses: []
+            }]);
+          if (profileError) {
+            console.error("Profile creation error during signup:", profileError);
+          }
+        }
+
         return { success: true };
       } catch (e: any) {
         setLoading(false);
@@ -190,12 +209,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         full_name: fullName || email.split("@")[0],
         role: role,
-        phone: "+91 99999 88888",
+        phone: phone || "+91 99999 88888",
         preferred_language: "en",
         addresses: [],
       };
       localStorage.setItem("sc_session", JSON.stringify(mockUser));
       setUser(mockUser);
+      setLoading(false);
+      return { success: true };
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+          },
+        });
+        if (error) throw error;
+        return { success: true };
+      } catch (e: any) {
+        setLoading(false);
+        return { success: false, error: e.message || "Google sign in failed" };
+      }
+    } else {
+      // Mock login as Google user
+      const googleUser: UserProfile = {
+        id: "mock-google-user",
+        email: "google.user@example.com",
+        full_name: "Google Customer",
+        role: "customer",
+        phone: "+91 99887 76655",
+        preferred_language: "en",
+        addresses: [],
+      };
+      localStorage.setItem("sc_session", JSON.stringify(googleUser));
+      setUser(googleUser);
       setLoading(false);
       return { success: true };
     }
@@ -243,7 +296,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
