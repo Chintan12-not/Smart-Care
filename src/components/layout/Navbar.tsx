@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  HeartPulse, 
   Smartphone, 
   ShoppingBag, 
   Wrench, 
@@ -16,7 +15,6 @@ import {
   Sparkles,
   Search,
   BookOpen,
-  CreditCard,
   Truck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -89,12 +87,10 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "AI Health", href: "/health-assistant", icon: HeartPulse, accent: "text-emerald-500" },
     { name: "AI Device", href: "/mobile-assistant", icon: Sparkles, accent: "text-cyan-500" },
     { name: "Repairs", href: "/repair", icon: Wrench },
     { name: "Pickup & Drop", href: "/pickup", icon: Truck, accent: "text-amber-500" },
     { name: "Accessories", href: "/accessories", icon: Smartphone },
-    { name: "Pricing", href: "/pricing", icon: CreditCard },
     { name: "Blog", href: "/blog", icon: BookOpen },
   ];
 
@@ -113,7 +109,7 @@ export default function Navbar() {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <span className="p-2 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-300">
-                <HeartPulse className="h-5 w-5" />
+                <Smartphone className="h-5 w-5" />
               </span>
               <div className="flex flex-col">
                 <span className="font-semibold text-base leading-none tracking-tight text-foreground bg-clip-text">

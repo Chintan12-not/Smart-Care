@@ -112,11 +112,6 @@ export default function Footer() {
             <h3 className="text-xs font-bold text-foreground tracking-wider uppercase mb-4">Our Services</h3>
             <ul className="space-y-2.5 text-xs">
               <li>
-                <Link href="/health-assistant" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  AI Health Assistant
-                </Link>
-              </li>
-              <li>
                 <Link href="/mobile-assistant" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
                   AI Device Diagnostics
                 </Link>
@@ -129,11 +124,6 @@ export default function Footer() {
               <li>
                 <Link href="/accessories" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
                   Premium Accessories Store
-                </Link>
-              </li>
-              <li>
-                <Link href="/pricing" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  Device Protection Plans
                 </Link>
               </li>
               <li>
