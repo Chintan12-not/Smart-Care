@@ -191,17 +191,24 @@ export default function Home() {
   return (
     <div className="flex-grow flex flex-col relative overflow-hidden bg-background">
       
-      {/* Background Video Backdrop */}
+      {/* Background Animated Wallpaper Grid / Hero Cinematic Video */}
       <div className="absolute top-[-100px] left-0 w-full h-[800px] overflow-hidden pointer-events-none select-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background z-10" />
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover opacity-[0.28] dark:opacity-[0.18]"
+          poster="/hero_background.png"
+          className="w-full h-full object-cover opacity-[0.32] dark:opacity-[0.24] animate-slow-pan"
         >
-          <source src="/background_video.mp4" type="video/mp4" />
+          <source src="/hero_bg.mp4" type="video/mp4" />
+          {/* Fallback image in case video fails to load */}
+          <img
+            src="/hero_background.png"
+            alt="Smart Care Premium backdrop"
+            className="w-full h-full object-cover"
+          />
         </video>
       </div>
 
