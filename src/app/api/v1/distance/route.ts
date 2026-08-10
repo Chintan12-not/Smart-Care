@@ -186,7 +186,10 @@ export async function POST(request: Request) {
           provider: "openstreetmap",
           distanceKm,
           charge,
-          text: `${distanceKm} km`
+          text: `${distanceKm} km`,
+          lat,
+          lng: lon,
+          address: data[0].display_name
         });
       }
     } catch (err) {
