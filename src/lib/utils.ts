@@ -96,3 +96,13 @@ export function calculateRepairEstimate(issueType: string, brand?: string): { co
 
   return { cost: Math.round(baseCost * multiplier), time };
 }
+
+/**
+ * Calculates pickup & drop charges based on distance.
+ */
+export function calculatePickupCharge(distanceKm: number): number {
+  if (distanceKm <= 5.0) return 0;
+  if (distanceKm <= 10.0) return 120;
+  if (distanceKm <= 15.0) return 200;
+  return 300; // Beyond 15 km
+}

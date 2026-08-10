@@ -174,7 +174,7 @@ export default function Home() {
   const faqs = [
     { q: "Where is your store located?", a: "Our store, Smart Care & Mobile Point, is located at Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001." },
     { q: "What are your business hours?", a: "We are open Monday to Sunday from 10:00 AM to 9:00 PM." },
-    { q: "How much are pickup and drop charges?", a: "Logistics charges are FREE for addresses within 5 km of the shop, and ₹200 for addresses beyond 5 km. Repair costs are separate." },
+    { q: "How much are pickup and drop charges?", a: "Logistics charges are FREE for addresses within 5 km of the shop, ₹120 for addresses between 5 and 10 km, ₹200 for addresses between 10 and 15 km, and ₹300 beyond 15 km. Repair costs are separate." },
     { q: "Do you use original parts?", a: "Yes! We use premium OEM-grade and AAA-grade original components for all screen, battery, and charging port replacements." },
     { q: "How can I calculate distance from my home?", a: "Simply visit our 'Pickup & Drop' page, enter your pickup address, and our system will calculate the distance and show the fee automatically before booking." }
   ];
@@ -334,7 +334,9 @@ export default function Home() {
             <div className="bg-background/80 border border-border rounded-2xl p-4 text-left shadow-sm inline-block w-full max-w-[240px]">
               <span className="text-[9px] uppercase font-bold text-muted-foreground block">Pickup Charges</span>
               <p className="text-xs font-bold text-foreground mt-1">• Till 5 km: <span className="text-emerald-500">FREE</span></p>
-              <p className="text-xs font-bold text-foreground mt-0.5">• Beyond 5 km: <span className="text-amber-500">₹200</span></p>
+              <p className="text-xs font-bold text-foreground mt-0.5">• 5 - 10 km: <span className="text-amber-500">₹120</span></p>
+              <p className="text-xs font-bold text-foreground mt-0.5">• 10 - 15 km: <span className="text-amber-500">₹200</span></p>
+              <p className="text-xs font-bold text-foreground mt-0.5">• Beyond 15 km: <span className="text-amber-500">₹300</span></p>
               <span className="text-[9px] text-muted-foreground block mt-2 leading-tight">*Repair charges separate.*</span>
             </div>
             <Link

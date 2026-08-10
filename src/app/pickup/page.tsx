@@ -16,7 +16,7 @@ import {
   Check
 } from "lucide-react";
 import confetti from "canvas-confetti";
-import { formatINR } from "@/lib/utils";
+import { formatINR, calculatePickupCharge } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function PickupPage() {
@@ -65,14 +65,14 @@ export default function PickupPage() {
         setCalcError("Could not calculate precise distance. We will estimate it manually.");
         // Fallback to default
         setDistanceKm(6.0);
-        setPickupCharge(200);
+        setPickupCharge(calculatePickupCharge(6.0));
       }
     } catch (e) {
       console.error(e);
       setCalcError("Network error. Standard charge applied.");
       // Fallback
       setDistanceKm(6.0);
-      setPickupCharge(200);
+      setPickupCharge(calculatePickupCharge(6.0));
     } finally {
       setIsCalculating(false);
     }
@@ -146,7 +146,7 @@ export default function PickupPage() {
         preferredTime,
         landmark,
         distanceKm: distanceKm || "TBD",
-        pickupCharge: pickupCharge !== null ? pickupCharge : 200,
+        pickupCharge: pickupCharge !== null ? pickupCharge : calculatePickupCharge(distanceKm || 6.0),
         submittedAt: new Date().toISOString()
       };
 
@@ -213,12 +213,20 @@ export default function PickupPage() {
             
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-border/40">
-                <span className="text-sm text-foreground font-medium">Till 5 km radius</span>
+                <span className="text-sm text-foreground font-medium">Within 5 km radius</span>
                 <span className="text-base font-extrabold text-emerald-500 uppercase">Free</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-border/40">
-                <span className="text-sm text-foreground font-medium">Beyond 5 km radius</span>
+                <span className="text-sm text-foreground font-medium">5 km to 10 km</span>
+                <span className="text-base font-extrabold text-amber-500">₹120</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-border/40">
+                <span className="text-sm text-foreground font-medium">10 km to 15 km</span>
                 <span className="text-base font-extrabold text-amber-500">₹200</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-border/40">
+                <span className="text-sm text-foreground font-medium">Beyond 15 km</span>
+                <span className="text-base font-extrabold text-amber-500">₹300</span>
               </div>
               
               <div className="text-[11px] text-muted-foreground/80 leading-relaxed bg-muted/30 rounded-xl p-3 border border-border/40 space-y-1.5">

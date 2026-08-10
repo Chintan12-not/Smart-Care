@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { calculatePickupCharge } from "@/lib/utils";
 
 // Shop Address Coordinates (Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001)
 const SHOP_LAT = 28.4526094;
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
       const longitude = parseFloat(lng);
       
       const distanceKm = Number(calculateHaversineDistance(SHOP_LAT, SHOP_LNG, latitude, longitude).toFixed(1));
-      const charge = distanceKm <= 5.0 ? 0 : 200;
+      const charge = calculatePickupCharge(distanceKm);
       
       let resolvedAddress = `GPS Coordinates (${latitude.toFixed(6)}, ${longitude.toFixed(6)})`;
       try {
@@ -145,7 +146,7 @@ export async function POST(request: Request) {
           const distanceValueMeters = element.distance.value;
           const distanceKm = Number((distanceValueMeters / 1000).toFixed(1));
           
-          const charge = distanceKm <= 5.0 ? 0 : 200;
+          const charge = calculatePickupCharge(distanceKm);
           
           return NextResponse.json({
             success: true,
@@ -178,7 +179,7 @@ export async function POST(request: Request) {
         const lon = parseFloat(data[0].lon);
         
         const distanceKm = Number(calculateHaversineDistance(SHOP_LAT, SHOP_LNG, lat, lon).toFixed(1));
-        const charge = distanceKm <= 5.0 ? 0 : 200;
+        const charge = calculatePickupCharge(distanceKm);
         
         return NextResponse.json({
           success: true,
@@ -194,7 +195,7 @@ export async function POST(request: Request) {
     
     // 3. Regex/smart text fallback estimation if both APIs fail
     const estimatedDistance = Number(estimateFallbackDistance(queryAddress).toFixed(1));
-    const charge = estimatedDistance <= 5.0 ? 0 : 200;
+    const charge = calculatePickupCharge(estimatedDistance);
     
     return NextResponse.json({
       success: true,
