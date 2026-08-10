@@ -13,13 +13,19 @@ import {
   Wrench, 
   AlertCircle,
   HelpCircle,
-  Check
+  Check,
+  Lock
 } from "lucide-react";
 import confetti from "canvas-confetti";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { formatINR, calculatePickupCharge } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function PickupPage() {
+  const { user, loading: authLoading } = useAuth();
+
   // Form fields
   const [customerName, setCustomerName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
@@ -305,8 +311,63 @@ export default function PickupPage() {
       return;
     }
 
+    if (!user) {
+      alert("You must be logged in to book a pickup.");
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
+    const cost = pickupCharge !== null ? pickupCharge : calculatePickupCharge(distanceKm || 6.0);
+    const detailNotes = `${problemDescription || "Diagnostics requested"}. Landmark: ${landmark || "None"}. Address: ${pickupAddress}. Distance: ${distanceKm || 0}km. Slot: ${preferredDate} ${preferredTime}`;
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { error } = await supabase
+          .from("repairs")
+          .insert({
+            user_id: user.id,
+            device_model: `${deviceBrand} ${deviceModel}`,
+            issue_description: detailNotes,
+            status: "booked",
+            estimate_cost: cost,
+            estimate_time: "1-2 Business Days",
+            warranty_months: 6
+          });
+        if (error) throw error;
+      } catch (err) {
+        console.error("Error saving booking to database:", err);
+      }
+    }
+
+    // Save to mock repairs list in local storage for local dashboards fallback
+    try {
+      const saved = localStorage.getItem("sc_mock_repairs");
+      let list = saved ? JSON.parse(saved) : [];
+      const newRepair = {
+        id: `rep_${Math.floor(100000 + Math.random() * 900000)}`,
+        created_at: new Date().toISOString(),
+        device_model: `${deviceBrand} ${deviceModel}`,
+        issue_description: detailNotes,
+        status: "booked",
+        estimate_cost: cost,
+        estimate_time: "1-2 Business Days",
+        warranty_months: 6,
+        warranty_expiry: null,
+        tracking_history: [
+          {
+            status: "booked",
+            notes: "Doorstep pickup scheduled.",
+            timestamp: new Date().toISOString()
+          }
+        ]
+      };
+      list.unshift(newRepair);
+      localStorage.setItem("sc_mock_repairs", JSON.stringify(list));
+    } catch (e) {
+      console.error("Error saving mock repair locally:", e);
+    }
+
     // Simulate API request to backend/email portal
     setTimeout(() => {
       const payload = {
@@ -321,7 +382,7 @@ export default function PickupPage() {
         preferredTime,
         landmark,
         distanceKm: distanceKm || "TBD",
-        pickupCharge: pickupCharge !== null ? pickupCharge : calculatePickupCharge(distanceKm || 6.0),
+        pickupCharge: cost,
         submittedAt: new Date().toISOString()
       };
 
@@ -357,7 +418,7 @@ export default function PickupPage() {
 • Pickup Address: ${pickupAddress}
 ${landmark ? `• Landmark: ${landmark}` : ""}
 • Distance: ${distanceKm || "TBD"} km
-• Pickup & Drop Fee: ${pickupCharge === 0 ? "FREE" : formatINR(pickupCharge || 0)}
+• Pickup & Drop Fee: ${cost === 0 ? "FREE" : formatINR(cost)}
 
 Please confirm my doorstep pickup schedule. Thank you!`;
 
@@ -518,55 +579,90 @@ Please confirm my doorstep pickup schedule. Thank you!`;
 
         {/* Right Column: Booking Form (7 cols) */}
         <div className="lg:col-span-7">
-          <AnimatePresence mode="wait">
-            {!isSuccess ? (
-              <motion.div
-                key="booking-form"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.3 }}
-                className="glass-card rounded-3xl p-8 border border-border shadow-xl space-y-6"
-              >
-                <div className="border-b border-border/60 pb-4">
-                  <h2 className="text-xl font-bold text-foreground">Book Your Doorstep Pickup</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Enter details below. Charges calculate automatically based on your address location.</p>
-                </div>
+          {authLoading ? (
+            <div className="glass-card rounded-3xl p-12 border border-border bg-card/40 flex items-center justify-center min-h-[350px]">
+              <div className="flex flex-col items-center gap-3">
+                <span className="h-6 w-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Verifying Account...</span>
+              </div>
+            </div>
+          ) : !user ? (
+            <motion.div
+              key="login-prompt"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-card rounded-3xl p-8 border border-border bg-card/60 text-center space-y-6 shadow-xl"
+            >
+              <div className="h-16 w-16 bg-cyan-500/10 text-cyan-500 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                <Lock className="h-8 w-8" />
+              </div>
+              
+              <div className="space-y-2">
+                <h2 className="text-xl font-bold text-foreground">Sign In to Book Doorstep Pickup</h2>
+                <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+                  Please log in or create a Smart Care account to schedule a doorstep pickup. This ensures we can securely link and track your repair status live in your customer dashboard.
+                </p>
+              </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {/* Customer Name */}
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                        <User className="h-3.5 w-3.5 text-cyan-500" />
-                        Customer Name <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="John Doe"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                      />
-                    </div>
-
-                    {/* Mobile Number */}
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                        <Phone className="h-3.5 w-3.5 text-cyan-500" />
-                        Mobile Number <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+91 XXXXX XXXXX"
-                        value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                      />
-                    </div>
+              <div className="pt-2">
+                <Link
+                  href="/login?redirect=/pickup"
+                  className="inline-flex w-full justify-center py-3.5 rounded-2xl bg-cyan-500 text-black font-extrabold text-xs uppercase tracking-wider hover:bg-cyan-400 active:scale-[0.99] transition-all shadow-md shadow-cyan-500/10"
+                >
+                  Login / Create Account
+                </Link>
+              </div>
+            </motion.div>
+          ) : (
+            <AnimatePresence mode="wait">
+              {!isSuccess ? (
+                <motion.div
+                  key="booking-form"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="glass-card rounded-3xl p-8 border border-border shadow-xl space-y-6"
+                >
+                  <div className="border-b border-border/60 pb-4">
+                    <h2 className="text-xl font-bold text-foreground">Book Your Doorstep Pickup</h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">Enter details below. Charges calculate automatically based on your address location.</p>
                   </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* Customer Name */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                          <User className="h-3.5 w-3.5 text-cyan-500" />
+                          Customer Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="John Doe"
+                          value={customerName}
+                          onChange={(e) => setCustomerName(e.target.value)}
+                          className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        />
+                      </div>
+
+                      {/* Mobile Number */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                          <Phone className="h-3.5 w-3.5 text-cyan-500" />
+                          Mobile Number <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="e.g. +91 98765 43210"
+                          value={mobileNumber}
+                          onChange={(e) => setMobileNumber(e.target.value)}
+                          className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        />
+                      </div>
+                    </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Alternate Number */}
@@ -654,7 +750,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                     <div className="space-y-2.5 mt-3">
                       <div className="flex justify-between items-center text-[10px] uppercase font-bold text-muted-foreground">
                         <span>Select Location on Map</span>
-                        <span className="text-cyan-500 font-semibold lowercase">type location or click map / drag pin</span>
+                        <span className="text-cyan-500 font-semibold lowercase">please Mention sector on map for calculation</span>
                       </div>
                       
                       {/* Map Search Input Bar */}
@@ -897,6 +993,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
               </motion.div>
             )}
           </AnimatePresence>
+          )}
         </div>
 
       </div>
