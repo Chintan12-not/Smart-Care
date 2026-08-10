@@ -45,6 +45,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isAdmin = (email: string) => {
+    const clean = email.toLowerCase().trim();
+    return clean === "admin@example.com" || 
+           clean === "chintanmaheshwari12@gmail.com" || 
+           clean === "enigcon2020@gmail.com" ||
+           clean === "smart.care313@gmail.com" ||
+           clean.startsWith("admin@");
+  };
+
   // Sync session from Firebase Auth if configured, otherwise load from mock localStorage session
   useEffect(() => {
     if (isFirebaseConfigured()) {
@@ -73,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email: firebaseUser.email || "",
             full_name: profileData.full_name || firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "Smart User",
             phone: profileData.phone || firebaseUser.phoneNumber || undefined,
-            role: (profileData.role as UserRole) || "customer",
+            role: isAdmin(firebaseUser.email || "") ? "admin" : ((profileData.role as UserRole) || "customer"),
             preferred_language: profileData.preferred_language || "en",
             addresses: profileData.addresses || [],
           });
@@ -113,11 +122,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } else {
       // Mock log in instantly
+      const resolvedRole = isAdmin(email) ? "admin" : role;
       const mockUser: UserProfile = {
-        id: "mock-user-uuid-" + role,
+        id: "mock-user-uuid-" + resolvedRole,
         email,
         full_name: email.split("@")[0].toUpperCase() || "Jane Doe",
-        role: role,
+        role: resolvedRole as UserRole,
         phone: "+91 98765 43210",
         preferred_language: "en",
         addresses: [
@@ -133,6 +143,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password?: string, fullName?: string, phone?: string, role: UserRole = "customer") => {
     setLoading(true);
+    const resolvedRole = isAdmin(email) ? "admin" : role;
+
     if (isFirebaseConfigured()) {
       try {
         if (!password) {
@@ -149,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 id: credential.user.uid,
                 full_name: fullName || email.split("@")[0],
                 phone: phone || null,
-                role: role,
+                role: resolvedRole,
                 preferred_language: "en",
                 addresses: []
               }]);
@@ -178,10 +190,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       // Mock Sign Up
       const mockUser: UserProfile = {
-        id: "mock-user-uuid-" + role,
+        id: "mock-user-uuid-" + resolvedRole,
         email,
         full_name: fullName || email.split("@")[0],
-        role: role,
+        role: resolvedRole as UserRole,
         phone: phone || "+91 99999 88888",
         preferred_language: "en",
         addresses: [],
@@ -220,6 +232,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .eq("id", credential.user.uid)
               .single();
 
+            const resolvedRole = isAdmin(credential.user.email || "") ? "admin" : "customer";
+
             if (!existing) {
               await supabase
                 .from("profiles")
@@ -227,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   id: credential.user.uid,
                   full_name: credential.user.displayName || credential.user.email?.split("@")[0] || "Smart User",
                   phone: credential.user.phoneNumber || null,
-                  role: "customer",
+                  role: resolvedRole,
                   preferred_language: "en",
                   addresses: []
                 }]);
