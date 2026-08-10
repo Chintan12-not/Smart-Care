@@ -181,7 +181,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             to: email,
             payload: { name: fullName || email.split("@")[0] }
           })
-        }).catch(err => console.error("Welcome email trigger failed:", err));
+        }).then(async (res) => {
+          const data = await res.json();
+          if (data.success) {
+            console.log("[Auth] Welcome email sent to:", email);
+          } else {
+            console.warn("[Auth] Welcome email failed:", data.error, data.hint || "");
+          }
+        }).catch(err => console.error("[Auth] Welcome email trigger failed:", err));
 
         return { success: true };
       } catch (e: any) {
@@ -212,7 +219,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           to: email,
           payload: { name: fullName || email.split("@")[0] }
         })
-      }).catch(err => console.error("Welcome email trigger failed:", err));
+      }).then(async (res) => {
+        const data = await res.json();
+        if (data.success) {
+          console.log("[Auth] Mock welcome email sent to:", email);
+        } else {
+          console.warn("[Auth] Mock welcome email failed:", data.error, data.hint || "");
+        }
+      }).catch(err => console.error("[Auth] Welcome email trigger failed:", err));
 
       return { success: true };
     }
@@ -257,7 +271,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     to: credential.user.email,
                     payload: { name: credential.user.displayName || credential.user.email.split("@")[0] }
                   })
-                }).catch(err => console.error("Welcome email trigger failed:", err));
+                }).then(async (res) => {
+                  const data = await res.json();
+                  if (data.success) {
+                    console.log("[Auth] Google welcome email sent to:", credential.user.email);
+                  } else {
+                    console.warn("[Auth] Google welcome email failed:", data.error, data.hint || "");
+                  }
+                }).catch(err => console.error("[Auth] Welcome email trigger failed:", err));
               }
             }
           } catch (dbErr) {

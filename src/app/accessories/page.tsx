@@ -102,10 +102,14 @@ export default function AccessoriesPage() {
           }));
           setProducts(mapped);
         } else {
-          setProducts([]);
+          // Supabase table is empty - use mock accessories as fallback
+          console.log("Accessories table is empty, using mock products.");
+          setProducts(MOCK_ACCESSORIES);
         }
       } catch (err) {
         console.error("Error loading products from Supabase:", err);
+        // Fallback to mock accessories on any error
+        setProducts(MOCK_ACCESSORIES);
       } finally {
         setIsLoading(false);
       }

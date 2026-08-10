@@ -10,7 +10,9 @@ export async function POST(req: NextRequest) {
     }
 
     const apiKey = process.env.RESEND_API_KEY || "";
-    const isMock = !apiKey || apiKey.startsWith("PASTE_") || apiKey.includes("mock") || apiKey === "re_123456789";
+    const isMock = !apiKey || apiKey.startsWith("PASTE_") || apiKey.startsWith("re_mock");
+
+    console.log(`[Email API] type=${type}, to=${to}, isMock=${isMock}, hasKey=${!!apiKey}`);
 
     // Format email content based on type
     let subject = "";
@@ -125,6 +127,9 @@ export async function POST(req: NextRequest) {
     }
 
     const resend = new Resend(apiKey);
+    
+    console.log(`[Email API] Sending ${type} email via Resend to: ${to}`);
+    
     const result = await resend.emails.send({
       from: "Smart Care <onboarding@resend.dev>",
       to,
@@ -133,14 +138,21 @@ export async function POST(req: NextRequest) {
     });
 
     if (result.error) {
-      console.error("Resend API error:", result.error);
-      return NextResponse.json({ success: false, error: result.error.message }, { status: 500 });
+      const errMsg = typeof result.error === "object" ? JSON.stringify(result.error) : String(result.error);
+      console.error("[Email API] Resend API error:", errMsg);
+      // Return success:false with full error detail
+      return NextResponse.json({ 
+        success: false, 
+        error: errMsg,
+        hint: "With Resend free plan using onboarding@resend.dev, you can only send to your Resend account's verified email. Add a custom domain in Resend dashboard to send to any email."
+      }, { status: 500 });
     }
 
+    console.log(`[Email API] Email sent successfully! ID: ${result.data?.id}`);
     return NextResponse.json({ success: true, id: result.data?.id });
 
   } catch (error: any) {
-    console.error("Email send route failed:", error);
+    console.error("[Email API] Route failed:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
