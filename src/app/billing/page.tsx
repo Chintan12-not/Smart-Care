@@ -259,9 +259,9 @@ export default function BillingPage() {
             exit={{ opacity: 0, y: -15 }}
             className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
           >
-            {/* Left side: Billing Details Form (7 cols) */}
-            <form onSubmit={handlePlaceOrder} className="lg:col-span-7 space-y-6">
-              <div className="glass-card rounded-3xl p-8 border border-border shadow-xl space-y-6 bg-card/40">
+            {/* Left side: Billing Details Form (7 cols on desktop, full width on mobile) */}
+            <form onSubmit={handlePlaceOrder} className="lg:col-span-7 space-y-6 order-2 lg:order-1">
+              <div className="glass-card rounded-3xl p-5 sm:p-8 border border-border shadow-xl space-y-6 bg-card/40">
                 <div className="border-b border-border/60 pb-4">
                   <h2 className="text-xl font-bold text-foreground">Delivery & Billing Details</h2>
                   <p className="text-xs text-muted-foreground mt-0.5">Please provide shipping information for accessory dispatch.</p>
@@ -371,7 +371,7 @@ export default function BillingPage() {
                   Select Payment Method
                 </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-3 sm:gap-4">
                   {/* COD */}
                   <label className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center ${paymentMethod === "cod" ? "border-cyan-500 bg-cyan-500/[0.02]" : "border-border bg-muted/20"}`}>
                     <input
@@ -417,8 +417,8 @@ export default function BillingPage() {
               </div>
             </form>
 
-            {/* Right side: Order Summary (5 cols) */}
-            <div className="lg:col-span-5 space-y-6">
+            {/* Right side: Order Summary (5 cols on desktop, full width on mobile - shown FIRST on mobile) */}
+            <div className="lg:col-span-5 space-y-6 order-1 lg:order-2">
               <div className="glass-card rounded-3xl p-6 border border-border shadow-md space-y-6 bg-card/40">
                 <h3 className="font-extrabold text-sm text-foreground border-b border-border/60 pb-3 flex items-center gap-1.5">
                   <ShoppingBag className="h-4.5 w-4.5 text-cyan-500" />

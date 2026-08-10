@@ -171,3 +171,53 @@ html {
   animation-play-state: paused;
 }
 
+/* ========================================
+   MOBILE RESPONSIVENESS UTILITIES
+   ======================================== */
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better touch scrolling */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area insets for notched phones */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Prevent text overflow on mobile */
+.break-words {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Prevent iOS zoom on input focus (font-size >= 16px) */
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Mobile touch target minimum sizing */
+@media (max-width: 767px) {
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Horizontal overflow fix for mobile */
+@media (max-width: 639px) {
+  .overflow-x-clip-mobile {
+    overflow-x: clip;
+  }
+}

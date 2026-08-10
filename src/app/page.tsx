@@ -295,7 +295,7 @@ export default function Home() {
 
       {/* 2. STATS SECTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10 w-full">
-        <div className="glass-card rounded-3xl p-6 border border-border max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-border/40">
+        <div className="glass-card rounded-3xl p-6 border border-border max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((s, idx) => (
             <div key={idx} className={idx > 0 ? "pl-2 border-l border-border/40" : ""}>
               <p className="text-xl sm:text-2xl font-black text-foreground">{s.value}</p>
@@ -348,7 +348,7 @@ export default function Home() {
             </div>
           </div>
           <div className="md:col-span-4 text-center md:text-right space-y-4">
-            <div className="bg-background/80 border border-border rounded-2xl p-4 text-left shadow-sm inline-block w-full max-w-[240px]">
+            <div className="bg-background/80 border border-border rounded-2xl p-4 text-left shadow-sm inline-block mx-auto md:ml-auto w-full sm:max-w-[240px]">
               <span className="text-[9px] uppercase font-bold text-muted-foreground block">Pickup Charges</span>
               <p className="text-xs font-bold text-foreground mt-1">• Till 5 km: <span className="text-emerald-500">FREE</span></p>
               <p className="text-xs font-bold text-foreground mt-0.5">• 5 - 10 km: <span className="text-amber-500">₹120</span></p>
@@ -358,7 +358,7 @@ export default function Home() {
             </div>
             <Link
               href="/pickup"
-              className="w-full md:w-auto px-6 py-3.5 rounded-xl bg-foreground text-background font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
+              className="w-full px-6 py-3.5 rounded-xl bg-foreground text-background font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
             >
               <Truck className="h-4.5 w-4.5" />
               Book Pickup Now
@@ -431,7 +431,7 @@ export default function Home() {
             ref={sliderContainerRef}
             onMouseMove={handleSliderMove}
             onTouchMove={handleSliderMove}
-            className="relative w-full max-w-xl aspect-[1.25] sm:h-80 rounded-3xl overflow-hidden border border-border/80 shadow-lg cursor-ew-resize select-none"
+            className="relative w-full max-w-xl aspect-[1.25] h-64 sm:h-80 rounded-3xl overflow-hidden border border-border/80 shadow-lg cursor-ew-resize select-none"
           >
             {/* Before (Cracked Screen) */}
             <div className="absolute inset-0 bg-zinc-950 flex items-center justify-center">
@@ -633,7 +633,7 @@ export default function Home() {
       </section>
 
       {/* 7. CONTACT FORM & GOOGLE MAPS INTEGRATION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40 flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
         
         {/* Contact details & Map Embed (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
@@ -708,7 +708,7 @@ export default function Home() {
 
         {/* Contact Form (7 cols) */}
         <div className="lg:col-span-7">
-          <div className="glass-card rounded-3xl p-8 border border-border shadow-lg">
+          <div className="glass-card rounded-3xl p-5 sm:p-8 border border-border shadow-lg">
             <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-6">Drop Us a Message</h3>
             
             <AnimatePresence mode="wait">
@@ -873,7 +873,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.4, type: "spring" }}
-              className="glass-card max-w-md w-full rounded-3xl p-8 border border-cyan-500/20 bg-card/90 shadow-2xl relative space-y-6 text-center"
+              className="glass-card max-w-md w-full rounded-3xl p-6 sm:p-8 border border-cyan-500/20 bg-card/90 shadow-2xl relative space-y-6 text-center"
             >
               {/* Close Button */}
               <button

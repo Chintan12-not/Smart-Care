@@ -465,7 +465,7 @@ export default function AccessoriesPage() {
       {/* MODAL: Compare Specifications */}
       {isCompareModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-card border border-border rounded-3xl p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+          <div className="w-full max-w-3xl bg-card border border-border rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-border pb-3">
               <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Accessory Comparison Grid</h3>
               <button onClick={() => setIsCompareModalOpen(false)} className="p-1 text-muted-foreground hover:text-foreground">
@@ -473,36 +473,37 @@ export default function AccessoriesPage() {
               </button>
             </div>
             
-            <div className="grid grid-cols-4 gap-4 text-xs">
-              <div className="font-bold text-muted-foreground border-r border-border/40 p-2 flex items-center">Feature</div>
-              {compareProductsList.map(p => (
-                <div key={p.id} className="p-2 border border-border/40 rounded-xl bg-muted/20 text-center space-y-2">
-                  <img src={p.image} alt="" className="h-12 w-12 rounded-lg object-cover mx-auto" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
-                  <p className="font-bold text-foreground truncate">{p.name}</p>
-                </div>
-              ))}
-              {/* Fill remaining empty cells */}
-              {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
+            <div className="overflow-x-auto">
+              <div className="grid grid-cols-4 gap-4 text-xs min-w-[400px]">
+                <div className="font-bold text-muted-foreground border-r border-border/40 p-2 flex items-center">Feature</div>
+                {compareProductsList.map(p => (
+                  <div key={p.id} className="p-2 border border-border/40 rounded-xl bg-muted/20 text-center space-y-2">
+                    <img src={p.image} alt="" className="h-12 w-12 rounded-lg object-cover mx-auto" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                    <p className="font-bold text-foreground truncate">{p.name}</p>
+                  </div>
+                ))}
+                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
 
-              {/* Price */}
-              <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Price</div>
-              {compareProductsList.map(p => <div key={p.id} className="p-2 font-extrabold text-foreground text-center">{formatINR(p.price)}</div>)}
-              {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
+                {/* Price */}
+                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Price</div>
+                {compareProductsList.map(p => <div key={p.id} className="p-2 font-extrabold text-foreground text-center">{formatINR(p.price)}</div>)}
+                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
 
-              {/* Brand */}
-              <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Brand</div>
-              {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-muted-foreground font-medium">{p.brand}</div>)}
-              {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
+                {/* Brand */}
+                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Brand</div>
+                {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-muted-foreground font-medium">{p.brand}</div>)}
+                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
 
-              {/* Rating */}
-              <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Rating</div>
-              {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-foreground font-bold flex items-center justify-center gap-1"><Star className="h-3 w-3 fill-amber-500 text-amber-500" /> {p.rating}</div>)}
-              {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
+                {/* Rating */}
+                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Rating</div>
+                {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-foreground font-bold flex items-center justify-center gap-1"><Star className="h-3 w-3 fill-amber-500 text-amber-500" /> {p.rating}</div>)}
+                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
 
-              {/* Category */}
-              <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Category</div>
-              {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-muted-foreground">{p.category}</div>)}
-              {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
+                {/* Category */}
+                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Category</div>
+                {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-muted-foreground">{p.category}</div>)}
+                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
+              </div>
             </div>
           </div>
         </div>

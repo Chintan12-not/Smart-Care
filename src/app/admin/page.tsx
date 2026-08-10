@@ -392,12 +392,12 @@ export default function AdminPage() {
               <Link href="/dashboard" className="p-2 rounded-xl bg-muted border border-border hover:bg-muted/80 transition-colors text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-4 w-4" />
               </Link>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">Accessories Admin Control Center</h1>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Admin Control Center</h1>
             </div>
             <p className="text-xs text-muted-foreground pl-10">Manage database entries for Smart Care & Mobile Point shop catalog.</p>
           </div>
 
-          <div className="flex items-center gap-3 pl-10 sm:pl-0">
+          <div className="flex flex-wrap items-center gap-2 pl-10 sm:pl-0">
             {isSupabaseConfigured() ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/25">
                 <CheckCircle className="h-3.5 w-3.5" />

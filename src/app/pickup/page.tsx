@@ -500,7 +500,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
   };
 
   return (
-    <div className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <div className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 sm:space-y-12">
       
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -508,7 +508,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
           <Truck className="h-4 w-4" />
           <span>Professional Logistics Portal</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+        <h1 className="text-2xl sm:text-5xl font-extrabold tracking-tight text-foreground">
           Free Pickup & Drop Service
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -518,8 +518,8 @@ Please confirm my doorstep pickup schedule. Thank you!`;
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Column: Pricing & Process (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        {/* Left Column: Pricing & Process (5 cols) - shown below form on mobile */}
+        <div className="lg:col-span-5 space-y-6 order-2 lg:order-1">
           
           {/* Pickup & Drop Pricing Card */}
           <div className="glass-card rounded-3xl p-6 border border-emerald-500/20 bg-emerald-500/[0.01] relative overflow-hidden shadow-lg">
@@ -599,8 +599,8 @@ Please confirm my doorstep pickup schedule. Thank you!`;
 
         </div>
 
-        {/* Right Column: Booking Form (7 cols) */}
-        <div className="lg:col-span-7">
+        {/* Right Column: Booking Form (7 cols) - shown first on mobile */}
+        <div className="lg:col-span-7 order-1 lg:order-2">
           {authLoading ? (
             <div className="glass-card rounded-3xl p-12 border border-border bg-card/40 flex items-center justify-center min-h-[350px]">
               <div className="flex flex-col items-center gap-3">

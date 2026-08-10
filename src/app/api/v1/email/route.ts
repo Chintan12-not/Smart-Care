@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
       to,
       subject,
       html: htmlContent,
-    });
+    }) as any;
 
     if (result.error) {
       const errMsg = typeof result.error === "object" ? JSON.stringify(result.error) : String(result.error);
