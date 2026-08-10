@@ -198,6 +198,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
+        // Send thanking welcome email
+        fetch("/api/v1/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "welcome",
+            to: email,
+            payload: { name: fullName || email.split("@")[0] }
+          })
+        }).catch(err => console.error("Welcome email trigger failed:", err));
+
         return { success: true };
       } catch (e: any) {
         setLoading(false);
@@ -217,6 +228,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("sc_session", JSON.stringify(mockUser));
       setUser(mockUser);
       setLoading(false);
+
+      // Send thanking welcome email
+      fetch("/api/v1/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "welcome",
+          to: email,
+          payload: { name: fullName || email.split("@")[0] }
+        })
+      }).catch(err => console.error("Welcome email trigger failed:", err));
+
       return { success: true };
     }
   };

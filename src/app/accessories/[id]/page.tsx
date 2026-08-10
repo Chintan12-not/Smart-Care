@@ -189,9 +189,14 @@ export default function ProductDetailPage({ params }: PageProps) {
     setAddedMessage(true);
     confetti({ particleCount: 80, spread: 60 });
     setTimeout(() => setAddedMessage(false), 3000);
+    
+    // Slide open Cart Drawer
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("open-cart-drawer"));
+    }
   };
 
-  // Buy Now (Add to cart and go to cart)
+  // Buy Now (Add to cart and go to checkout/billing)
   const handleBuyNow = () => {
     addToCart({
       id: product.id,
@@ -206,8 +211,8 @@ export default function ProductDetailPage({ params }: PageProps) {
       window.dispatchEvent(new Event("storage"));
     }
     
-    // Redirect directly to checkout / dashboard orders page
-    router.push("/dashboard/orders");
+    // Redirect directly to the billing / checkout page
+    router.push("/billing");
   };
 
   // Image Zoom handler

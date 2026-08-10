@@ -18,6 +18,7 @@ import {
   Truck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CartDrawer from "@/components/cart/CartDrawer";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -27,6 +28,16 @@ export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
+
+  // Global event listener to open cart drawer
+  useEffect(() => {
+    const handleOpenDrawer = () => {
+      setIsCartDrawerOpen(true);
+    };
+    window.addEventListener("open-cart-drawer", handleOpenDrawer);
+    return () => window.removeEventListener("open-cart-drawer", handleOpenDrawer);
+  }, []);
 
   // Sync theme status on load
   useEffect(() => {
@@ -155,8 +166,8 @@ export default function Navbar() {
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
-            <Link
-              href="/accessories#cart"
+            <button
+              onClick={() => setIsCartDrawerOpen(true)}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted relative transition-colors duration-200"
               aria-label="Shopping Cart"
             >
@@ -166,7 +177,7 @@ export default function Navbar() {
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             <Link
               href="/dashboard"
@@ -186,9 +197,10 @@ export default function Navbar() {
               {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
-            <Link
-              href="/accessories#cart"
+            <button
+              onClick={() => setIsCartDrawerOpen(true)}
               className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted relative"
+              aria-label="Shopping Cart Mobile"
             >
               <ShoppingBag className="h-5 w-5" />
               {cartCount > 0 && (
@@ -196,7 +208,7 @@ export default function Navbar() {
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -242,6 +254,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
+      <CartDrawer isOpen={isCartDrawerOpen} onClose={() => setIsCartDrawerOpen(false)} />
     </header>
   );
 }

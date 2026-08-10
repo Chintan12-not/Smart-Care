@@ -391,6 +391,28 @@ export default function PickupPage() {
       setIsSubmitting(false);
       setIsSuccess(true);
       
+      // Trigger thanking email dispatch via Resend
+      if (user?.email) {
+        fetch("/api/v1/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "pickup",
+            to: user.email,
+            payload: {
+              customerName,
+              deviceBrand,
+              deviceModel,
+              preferredDate,
+              preferredTime,
+              pickupAddress,
+              distanceKm: distanceKm || "TBD",
+              pickupCharge: cost
+            }
+          })
+        }).catch(err => console.error("Pickup email trigger failed:", err));
+      }
+      
       // Celebrate
       confetti({
         particleCount: 120,
