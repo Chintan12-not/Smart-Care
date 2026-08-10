@@ -239,10 +239,10 @@ export default function ProductDetailPage({ params }: PageProps) {
     setIsCompatible(isMatched);
   };
 
-  // Get Related items
-  const relatedProducts = productsList
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 3);
+  // Get other products from the store (excluding the current one)
+  const otherProducts = productsList
+    .filter(p => p.id !== product.id)
+    .slice(0, 6);
 
   // WhatsApp Order payload
   const whatsappNumber = "919289942313";
@@ -641,10 +641,16 @@ export default function ProductDetailPage({ params }: PageProps) {
       {/* Instagram Banner Section */}
       <section className="border-t border-border/40 pt-10 mt-10 text-center space-y-6">
         <div className="space-y-2">
-          <InstagramIcon className="h-7 w-7 text-cyan-500 mx-auto animate-pulse" />
-          <h3 className="text-base font-extrabold text-foreground">Follow Us on Instagram</h3>
+          <a href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
+            <InstagramIcon className="h-7 w-7 text-cyan-500 mx-auto animate-pulse" />
+          </a>
+          <h3 className="text-base font-extrabold text-foreground">
+            <a href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-500 transition-colors">
+              Follow Us on Instagram
+            </a>
+          </h3>
           <p className="text-xs text-muted-foreground">
-            Tag us in your phone cases photos at <span className="font-extrabold text-cyan-500">@smartcare.gurugram</span> to be featured!
+            Tag us in your phone cases photos at <span className="font-extrabold text-cyan-500">@smart.care313</span> to get featured!
           </p>
         </div>
 
@@ -668,22 +674,44 @@ export default function ProductDetailPage({ params }: PageProps) {
       </section>
 
       {/* RELATED PRODUCTS */}
-      {relatedProducts.length > 0 && (
+      {otherProducts.length > 0 && (
         <section className="border-t border-border/40 pt-10 mt-10">
-          <h2 className="text-xs font-bold text-foreground uppercase tracking-wider mb-6">You May Also Like</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {relatedProducts.map(p => (
-              <div key={p.id} className="glass-card rounded-2xl p-4 border border-border flex flex-col justify-between hover:border-cyan-500/20 group transition-all bg-card shadow-sm">
-                <div className="h-32 w-full rounded-xl bg-muted overflow-hidden flex items-center justify-center relative mb-3">
-                  <img src={p.image} alt="" className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-300" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
-                </div>
+          <h2 className="text-xs font-bold text-foreground uppercase tracking-wider mb-6">More Accessories You May Like</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {otherProducts.map(p => (
+              <div key={p.id} className="glass-card rounded-2xl p-3 border border-border flex flex-col justify-between hover:border-cyan-500/20 group transition-all bg-card shadow-sm text-xs">
                 <div>
-                  <h4 className="font-bold text-xs text-foreground truncate">{p.name}</h4>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{formatINR(p.price)}</p>
+                  <div className="h-28 w-full rounded-xl bg-muted overflow-hidden flex items-center justify-center relative mb-2.5">
+                    <img src={p.image} alt="" className="w-full h-full object-contain p-1 group-hover:scale-102 transition-transform duration-300" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                    <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-red-500 text-white text-[8px] font-bold uppercase tracking-wider">Sale</span>
+                  </div>
+                  <h4 className="font-bold text-[11px] text-foreground line-clamp-2 min-h-[32px] leading-tight mb-1">{p.name}</h4>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="font-extrabold text-foreground text-xs">{formatINR(p.price)}</span>
+                    <span className="text-[10px] text-muted-foreground line-through">{formatINR(Math.round(p.price * 2.2))}</span>
+                  </div>
                 </div>
-                <Link href={`/accessories/${p.id}`} className="mt-4 text-center block w-full py-2.5 bg-muted hover:bg-zinc-800/10 border border-border/50 text-[10px] font-bold rounded-xl transition-colors">
-                  View Details
-                </Link>
+                <div className="space-y-1.5 pt-1">
+                  <button
+                    onClick={() => {
+                      addToCart({
+                        id: p.id,
+                        type: "accessory",
+                        name: p.name,
+                        price: p.price,
+                        image: p.image
+                      }, 1);
+                      alert(`Added "${p.name}" to cart!`);
+                    }}
+                    className="w-full py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold text-[9px] uppercase tracking-wider rounded-lg transition-colors flex items-center justify-center gap-1"
+                  >
+                    <ShoppingBag className="h-3 w-3" />
+                    Add to Cart
+                  </button>
+                  <Link href={`/accessories/${p.id}`} className="text-center block w-full py-1.5 bg-muted hover:bg-border/60 text-[9px] font-bold rounded-lg border border-border/40 transition-colors">
+                    View Specs
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
