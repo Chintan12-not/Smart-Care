@@ -134,6 +134,9 @@ export default function PickupPage() {
             if (distData.address) {
               setPickupAddress(distData.address);
             }
+            if (distData.landmark) {
+              setLandmark(distData.landmark);
+            }
           } else {
             setCalcError("Could not retrieve geocoded location address.");
           }
@@ -226,6 +229,9 @@ export default function PickupPage() {
             if (data.address) {
               setPickupAddress(data.address);
             }
+            if (data.landmark) {
+              setLandmark(data.landmark);
+            }
           } else {
             setCalcError("Could not calculate precise coordinates distance.");
           }
@@ -271,6 +277,9 @@ export default function PickupPage() {
           setPickupAddress(data.address);
         } else {
           setPickupAddress(mapSearchQuery.trim());
+        }
+        if (data.landmark) {
+          setLandmark(data.landmark);
         }
         setDistanceKm(data.distanceKm);
         setPickupCharge(data.charge);
