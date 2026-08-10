@@ -31,15 +31,32 @@ import {
   Mail,
   Navigation,
   ChevronLeft,
-  Phone
+  Phone,
+  Lock
 } from "lucide-react";
 import { formatINR } from "@/lib/utils";
 import confetti from "canvas-confetti";
+import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const router = useRouter();
-  
+  const { user, loading: authLoading } = useAuth();
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+
+  // Trigger login/signup popup on land if guest
+  useEffect(() => {
+    if (!authLoading && !user) {
+      const dismissed = sessionStorage.getItem("sc_auth_popup_dismissed");
+      if (!dismissed) {
+        const timer = setTimeout(() => {
+          setShowAuthPopup(true);
+        }, 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [user, authLoading]);
+
   // Search query
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -847,6 +864,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Dynamic Welcome Login/Signup Popup Modal */}
+      <AnimatePresence>
+        {showAuthPopup && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.4, type: "spring" }}
+              className="glass-card max-w-md w-full rounded-3xl p-8 border border-cyan-500/20 bg-card/90 shadow-2xl relative space-y-6 text-center"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setShowAuthPopup(false);
+                  sessionStorage.setItem("sc_auth_popup_dismissed", "true");
+                }}
+                className="absolute top-4 right-4 text-xs font-bold text-muted-foreground hover:text-foreground p-2 rounded-xl transition-colors"
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+
+              <div className="h-16 w-16 bg-cyan-500/10 text-cyan-500 rounded-full flex items-center justify-center mx-auto shadow-md">
+                <Sparkles className="h-8 w-8 text-cyan-500 animate-pulse" />
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Welcome to Smart Care</h2>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
+                  Log in or sign up to schedule doorstep phone pickups, use AI diagnostics helper, and browse premium products inside Gurugram.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <Link
+                  href="/login"
+                  className="flex w-full justify-center py-3.5 rounded-2xl bg-cyan-500 text-black font-extrabold text-xs uppercase tracking-wider hover:bg-cyan-400 active:scale-[0.99] transition-all shadow-md shadow-cyan-500/10"
+                >
+                  Log In / Create Account
+                </Link>
+                <button
+                  onClick={() => {
+                    setShowAuthPopup(false);
+                    sessionStorage.setItem("sc_auth_popup_dismissed", "true");
+                  }}
+                  className="flex w-full justify-center py-3.5 rounded-2xl border border-border bg-card hover:bg-muted text-foreground font-bold text-xs uppercase tracking-wider transition-colors"
+                >
+                  Continue as Guest
+                </button>
+              </div>
+
+              <div className="text-[10px] text-muted-foreground/80 flex items-center justify-center gap-1.5 pt-1 border-t border-border/40">
+                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                <span>Secure account details encrypted by Supabase</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
