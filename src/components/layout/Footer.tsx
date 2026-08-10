@@ -117,8 +117,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/repair" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  Certified Mobile Repairs
+                <Link href="/pickup" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
+                  Book Pickup & Drop
                 </Link>
               </li>
               <li>

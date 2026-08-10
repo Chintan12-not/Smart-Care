@@ -169,7 +169,7 @@ export default function RepairsPage() {
             </p>
           </div>
           <Link
-            href="/repair"
+            href="/pickup"
             className="px-6 py-2.5 bg-foreground text-background text-xs font-bold rounded-xl hover:opacity-90 transition-opacity"
           >
             Book a Phone Repair

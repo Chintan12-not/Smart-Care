@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
   Truck, 
   MapPin, 
@@ -42,6 +42,115 @@ export default function PickupPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submissionData, setSubmissionData] = useState<any>(null);
+
+  // Dynamically load leaflet on mount
+  const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const mapRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Create link for leaflet CSS
+      const cssLink = document.createElement("link");
+      cssLink.rel = "stylesheet";
+      cssLink.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      document.head.appendChild(cssLink);
+
+      // Create script for leaflet JS
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.async = true;
+      script.onload = () => {
+        setLeafletLoaded(true);
+      };
+      document.body.appendChild(script);
+
+      return () => {
+        try {
+          document.head.removeChild(cssLink);
+          document.body.removeChild(script);
+        } catch (e) {}
+      };
+    }
+  }, []);
+
+  // Initialize leaflet map
+  useEffect(() => {
+    if (leafletLoaded && typeof window !== "undefined" && (window as any).L) {
+      const L = (window as any).L;
+
+      // Center at Gurugram
+      const defaultLat = 28.4594965;
+      const defaultLng = 77.0266383;
+
+      // Fix leaflet default icon markers path error
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      });
+
+      const map = L.map("pickup-map").setView([defaultLat, defaultLng], 13);
+      mapRef.current = map;
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+      markerRef.current = marker;
+
+      marker.bindPopup("Drag this marker to your pickup address").openPopup();
+
+      const reverseGeocode = async (lat: number, lng: number) => {
+        setIsCalculating(true);
+        setCalcError("");
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+            {
+              headers: {
+                "User-Agent": "SmartCarePortal/1.0"
+              }
+            }
+          );
+          const data = await response.json();
+          if (data && data.display_name) {
+            setPickupAddress(data.display_name);
+            
+            // Calculate distance & charge
+            const res = await fetch("/api/v1/distance", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ lat, lng })
+            });
+            const distData = await res.json();
+            if (distData.success) {
+              setDistanceKm(distData.distanceKm);
+              setPickupCharge(distData.charge);
+            }
+          }
+        } catch (error) {
+          console.error(error);
+          setCalcError("Error reverse geocoding location coordinates.");
+        } finally {
+          setIsCalculating(false);
+        }
+      };
+
+      marker.on("dragend", () => {
+        const position = marker.getLatLng();
+        reverseGeocode(position.lat, position.lng);
+      });
+
+      map.on("click", (e: any) => {
+        const { lat, lng } = e.latlng;
+        marker.setLatLng([lat, lng]);
+        reverseGeocode(lat, lng);
+      });
+    }
+  }, [leafletLoaded]);
 
   // Auto-calculate distance on address blur (or after typing delays)
   const handleAddressBlur = async () => {
@@ -91,6 +200,13 @@ export default function PickupPage() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
+        
+        // Pan map if loaded
+        if (mapRef.current && markerRef.current) {
+          mapRef.current.setView([latitude, longitude], 15);
+          markerRef.current.setLatLng([latitude, longitude]);
+        }
+
         try {
           const res = await fetch("/api/v1/distance", {
             method: "POST",
@@ -408,12 +524,31 @@ export default function PickupPage() {
                     <textarea
                       required
                       rows={2}
-                      placeholder="Enter full address details (flat, residency, sector, city) or auto-detect"
+                      placeholder="Enter full address details (flat, residency, sector, city) or click the map / auto-detect"
                       value={pickupAddress}
                       onChange={(e) => setPickupAddress(e.target.value)}
                       onBlur={handleAddressBlur}
                       className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 min-h-[60px]"
                     />
+
+                    {/* Leaflet map container */}
+                    <div className="space-y-2 mt-3">
+                      <div className="flex justify-between items-center text-[10px] uppercase font-bold text-muted-foreground">
+                        <span>Select Location on Map</span>
+                        <span className="text-cyan-500 font-semibold lowercase">click map or drag pin to choose address</span>
+                      </div>
+                      <div className="relative overflow-hidden rounded-2xl border border-border bg-muted h-60 w-full shadow-inner z-10">
+                        <div id="pickup-map" className="h-full w-full" />
+                        {!leafletLoaded && (
+                          <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20">
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="h-6 w-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+                              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Loading Interactive Map...</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     
                     {/* Live distance status display */}
                     <div className="mt-1">

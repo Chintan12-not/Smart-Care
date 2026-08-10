@@ -88,7 +88,6 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "AI Device", href: "/mobile-assistant", icon: Sparkles, accent: "text-cyan-500" },
-    { name: "Repairs", href: "/repair", icon: Wrench },
     { name: "Pickup & Drop", href: "/pickup", icon: Truck, accent: "text-amber-500" },
     { name: "Accessories", href: "/accessories", icon: Smartphone },
     { name: "Blog", href: "/blog", icon: BookOpen },
