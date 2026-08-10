@@ -73,7 +73,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
 
             {/* Scrollable Items List */}
-            <div className="flex-grow overflow-y-auto p-5 space-y-4">
+            <div 
+              className="p-5 space-y-4"
+              style={{ flex: "1 1 0%", overflowY: "auto", minHeight: "0px" }}
+            >
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                   <div className="h-16 w-16 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
@@ -102,11 +105,15 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     className="flex gap-4 p-3 bg-muted/40 border border-border/50 rounded-2xl transition-all"
                   >
                     {/* Item Image */}
-                    <div className="h-16 w-16 rounded-xl overflow-hidden bg-muted flex-shrink-0 border border-border">
+                    <div 
+                      className="rounded-xl overflow-hidden bg-muted border border-border"
+                      style={{ width: "64px", height: "64px", flexShrink: 0 }}
+                    >
                       <img
                         src={item.image || "/placeholder.jpg"}
                         alt={item.name}
                         className="h-full w-full object-cover"
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     </div>
 

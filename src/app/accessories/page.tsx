@@ -164,6 +164,11 @@ export default function AccessoriesPage() {
     });
     setAddedItemName(product.name);
     setTimeout(() => setAddedItemName(""), 2000);
+    
+    // Slide open Cart Drawer
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("open-cart-drawer"));
+    }
   };
 
   // 8. Filters & Search matching

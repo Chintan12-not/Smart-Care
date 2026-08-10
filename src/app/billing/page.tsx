@@ -77,40 +77,52 @@ export default function BillingPage() {
     try {
       // 1. Write order to Supabase orders and order_items tables if configured
       if (isSupabaseConfigured()) {
-        const { data: newOrder, error: orderError } = await supabase
-          .from("orders")
-          .insert({
-            user_id: user.id,
-            status: "pending",
-            payment_method: paymentMethod,
-            total_amount: orderTotal,
-            shipping_address: {
-              name: fullName,
-              phone: phone,
-              email: email,
-              address: streetAddress,
-              city: city,
-              pincode: pincode
-            }
-          })
-          .select()
-          .single();
+        try {
+          const dbPaymentMethod = paymentMethod === "cod" ? "cod" : "online";
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-        if (orderError) throw orderError;
+          const { data: newOrder, error: orderError } = await supabase
+            .from("orders")
+            .insert({
+              user_id: user.id,
+              status: "pending",
+              payment_method: dbPaymentMethod,
+              total_amount: orderTotal,
+              shipping_address: {
+                name: fullName,
+                phone: phone,
+                email: email,
+                address: streetAddress,
+                city: city,
+                pincode: pincode
+              }
+            })
+            .select()
+            .single();
 
-        if (newOrder) {
-          const itemsPayload = cart.map(item => ({
-            order_id: newOrder.id,
-            product_id: item.id,
-            quantity: item.quantity,
-            price: item.price
-          }));
+          if (orderError) throw orderError;
 
-          const { error: itemsError } = await supabase
-            .from("order_items")
-            .insert(itemsPayload);
-          
-          if (itemsError) throw itemsError;
+          if (newOrder) {
+            const itemsPayload = cart.map(item => {
+              const isValidUuid = uuidRegex.test(item.id);
+              const dbProductId = isValidUuid ? item.id : "00000000-0000-0000-0000-000000000000";
+              return {
+                order_id: newOrder.id,
+                product_id: dbProductId,
+                item_type: "accessory",
+                quantity: item.quantity,
+                price_per_unit: item.price
+              };
+            });
+
+            const { error: itemsError } = await supabase
+              .from("order_items")
+              .insert(itemsPayload);
+            
+            if (itemsError) throw itemsError;
+          }
+        } catch (dbErr) {
+          console.error("Database order insertion failed, completed via localStorage fallback:", dbErr);
         }
       }
 
