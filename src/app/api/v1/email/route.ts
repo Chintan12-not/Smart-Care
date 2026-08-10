@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(apiKey);
     const result = await resend.emails.send({
-      from: "Smart Care <hello@smartcare.com>",
+      from: "Smart Care <onboarding@resend.dev>",
       to,
       subject,
       html: htmlContent,
