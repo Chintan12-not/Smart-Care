@@ -2,6 +2,19 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { 
+  auth as firebaseAuth, 
+  isFirebaseConfigured, 
+  googleProvider, 
+  appleProvider 
+} from "@/lib/firebase";
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signInWithPopup, 
+  signOut as firebaseSignOut,
+  onAuthStateChanged
+} from "firebase/auth";
 
 export type UserRole = "customer" | "admin" | "staff" | "technician" | "delivery";
 
@@ -32,114 +45,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Sync session from Supabase if configured, otherwise load from mock localStorage session
+  // Sync session from Firebase Auth if configured, otherwise load from mock localStorage session
   useEffect(() => {
-    const initializeAuth = async () => {
-      if (isSupabaseConfigured()) {
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.user) {
-            // Fetch profile
-            const { data: profile, error } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", session.user.id)
-              .single();
+    if (isFirebaseConfigured()) {
+      const unsubscribe = onAuthStateChanged(firebaseAuth, async (firebaseUser) => {
+        if (firebaseUser) {
+          let profileData: Partial<UserProfile> = {};
+          
+          if (isSupabaseConfigured()) {
+            try {
+              const { data: profile, error } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", firebaseUser.uid)
+                .single();
 
-            if (profile) {
-              setUser({
-                id: session.user.id,
-                email: session.user.email || "",
-                full_name: profile.full_name,
-                phone: profile.phone,
-                role: profile.role,
-                preferred_language: profile.preferred_language || "en",
-                addresses: profile.addresses || [],
-              });
-            } else {
-              // Create default profile if not exists
-              const defaultProfile: UserProfile = {
-                id: session.user.id,
-                email: session.user.email || "",
-                full_name: session.user.user_metadata.full_name || "Smart User",
-                role: "customer",
-                preferred_language: "en",
-                addresses: [],
-              };
-              setUser(defaultProfile);
+              if (profile) {
+                profileData = profile;
+              }
+            } catch (e) {
+              console.error("Supabase profile sync error during Firebase login:", e);
             }
           }
-        } catch (e) {
-          console.error("Auth initialization error", e);
+
+          setUser({
+            id: firebaseUser.uid,
+            email: firebaseUser.email || "",
+            full_name: profileData.full_name || firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "Smart User",
+            phone: profileData.phone || firebaseUser.phoneNumber || undefined,
+            role: (profileData.role as UserRole) || "customer",
+            preferred_language: profileData.preferred_language || "en",
+            addresses: profileData.addresses || [],
+          });
+        } else {
+          setUser(null);
         }
-      } else {
-        // Fallback: Read mock session from localStorage
-        const mockSession = localStorage.getItem("sc_session");
-        if (mockSession) {
-          try {
-            setUser(JSON.parse(mockSession));
-          } catch (e) {
-            setUser(null);
-          }
+        setLoading(false);
+      });
+      
+      return () => unsubscribe();
+    } else {
+      // Fallback: Read mock session from localStorage
+      const mockSession = localStorage.getItem("sc_session");
+      if (mockSession) {
+        try {
+          setUser(JSON.parse(mockSession));
+        } catch (e) {
+          setUser(null);
         }
       }
       setLoading(false);
-    };
-
-    initializeAuth();
-
-    // Listen to Supabase auth state updates if configured
-    if (isSupabaseConfigured()) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          if (session?.user) {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", session.user.id)
-              .single();
-
-            if (profile) {
-              setUser({
-                id: session.user.id,
-                email: session.user.email || "",
-                full_name: profile.full_name,
-                phone: profile.phone,
-                role: profile.role,
-                preferred_language: profile.preferred_language || "en",
-                addresses: profile.addresses || [],
-              });
-            }
-          } else {
-            setUser(null);
-          }
-          setLoading(false);
-        }
-      );
-      return () => subscription.unsubscribe();
     }
   }, []);
 
   const signIn = async (email: string, password?: string, role: UserRole = "customer") => {
     setLoading(true);
-    if (isSupabaseConfigured()) {
+    if (isFirebaseConfigured()) {
       try {
-        if (password) {
-          const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          if (error) throw error;
-        } else {
-          const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-              shouldCreateUser: false,
-              emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-            },
-          });
-          if (error) throw error;
+        if (!password) {
+          throw new Error("Password is required for email login with Firebase.");
         }
+        await signInWithEmailAndPassword(firebaseAuth, email, password);
         return { success: true };
       } catch (e: any) {
         setLoading(false);
@@ -167,34 +133,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password?: string, fullName?: string, phone?: string, role: UserRole = "customer") => {
     setLoading(true);
-    if (isSupabaseConfigured()) {
+    if (isFirebaseConfigured()) {
       try {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password: password || "temporary-secure-password-123!",
-          options: {
-            emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-            data: {
-              full_name: fullName || email.split("@")[0],
-            },
-          },
-        });
-        if (error) throw error;
+        if (!password) {
+          throw new Error("Password is required for registration with Firebase.");
+        }
+        const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
 
-        // Auto-create database profile row with phone details
-        if (data.user) {
-          const { error: profileError } = await supabase
-            .from("profiles")
-            .insert([{
-              id: data.user.id,
-              full_name: fullName || email.split("@")[0],
-              phone: phone || null,
-              role: role,
-              preferred_language: "en",
-              addresses: []
-            }]);
-          if (profileError) {
-            console.error("Profile creation error during signup:", profileError);
+        // Auto-create profiles database row in Supabase
+        if (isSupabaseConfigured() && credential.user) {
+          try {
+            const { error: profileError } = await supabase
+              .from("profiles")
+              .insert([{
+                id: credential.user.uid,
+                full_name: fullName || email.split("@")[0],
+                phone: phone || null,
+                role: role,
+                preferred_language: "en",
+                addresses: []
+              }]);
+            if (profileError) throw profileError;
+          } catch (dbErr) {
+            console.error("Profile creation error during signup:", dbErr);
           }
         }
 
@@ -246,15 +207,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     setLoading(true);
-    if (isSupabaseConfigured()) {
+    if (isFirebaseConfigured()) {
       try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: {
-            redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-          },
-        });
-        if (error) throw error;
+        const credential = await signInWithPopup(firebaseAuth, googleProvider);
+
+        // Auto-create database profile for OAuth user
+        if (isSupabaseConfigured() && credential.user) {
+          try {
+            const { data: existing } = await supabase
+              .from("profiles")
+              .select("id")
+              .eq("id", credential.user.uid)
+              .single();
+
+            if (!existing) {
+              await supabase
+                .from("profiles")
+                .insert([{
+                  id: credential.user.uid,
+                  full_name: credential.user.displayName || credential.user.email?.split("@")[0] || "Smart User",
+                  phone: credential.user.phoneNumber || null,
+                  role: "customer",
+                  preferred_language: "en",
+                  addresses: []
+                }]);
+            }
+          } catch (dbErr) {
+            console.error("OAuth profile validation failed:", dbErr);
+          }
+        }
         return { success: true };
       } catch (e: any) {
         setLoading(false);
@@ -280,15 +261,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithApple = async () => {
     setLoading(true);
-    if (isSupabaseConfigured()) {
+    if (isFirebaseConfigured()) {
       try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: "apple",
-          options: {
-            redirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
-          },
-        });
-        if (error) throw error;
+        await signInWithPopup(firebaseAuth, appleProvider);
         return { success: true };
       } catch (e: any) {
         setLoading(false);
@@ -314,8 +289,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     setLoading(true);
-    if (isSupabaseConfigured()) {
-      await supabase.auth.signOut();
+    if (isFirebaseConfigured()) {
+      await firebaseSignOut(firebaseAuth);
     } else {
       localStorage.removeItem("sc_session");
     }
