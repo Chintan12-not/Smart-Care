@@ -37,6 +37,8 @@ export default function PickupPage() {
   const [pickupCharge, setPickupCharge] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [calcError, setCalcError] = useState("");
+  const [mapSearchQuery, setMapSearchQuery] = useState("");
+  const [isSearchingMap, setIsSearchingMap] = useState(false);
 
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -237,6 +239,56 @@ export default function PickupPage() {
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
+  };
+
+  const handleMapSearch = async () => {
+    if (!mapSearchQuery.trim() || !mapRef.current || !markerRef.current) return;
+
+    setIsSearchingMap(true);
+    setCalcError("");
+    try {
+      const q = encodeURIComponent(mapSearchQuery.trim() + ", Gurugram, Haryana");
+      const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${q}&limit=1`;
+      const response = await fetch(searchUrl, {
+        headers: {
+          "User-Agent": "SmartCarePortal/1.0"
+        }
+      });
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const { lat, lon, display_name } = data[0];
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lon);
+
+        // Center map & marker
+        mapRef.current.setView([latitude, longitude], 15);
+        markerRef.current.setLatLng([latitude, longitude]);
+
+        // Set address box
+        setPickupAddress(display_name);
+
+        // Calculate distance and charge
+        setIsCalculating(true);
+        const res = await fetch("/api/v1/distance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat: latitude, lng: longitude })
+        });
+        const distData = await res.json();
+        if (distData.success) {
+          setDistanceKm(distData.distanceKm);
+          setPickupCharge(distData.charge);
+        }
+        setIsCalculating(false);
+      } else {
+        setCalcError("Location not found. Try searching for a nearby landmark or sector in Gurugram.");
+      }
+    } catch (error) {
+      console.error(error);
+      setCalcError("Error searching address location coordinates.");
+    } finally {
+      setIsSearchingMap(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -532,11 +584,37 @@ export default function PickupPage() {
                     />
 
                     {/* Leaflet map container */}
-                    <div className="space-y-2 mt-3">
+                    <div className="space-y-2.5 mt-3">
                       <div className="flex justify-between items-center text-[10px] uppercase font-bold text-muted-foreground">
                         <span>Select Location on Map</span>
-                        <span className="text-cyan-500 font-semibold lowercase">click map or drag pin to choose address</span>
+                        <span className="text-cyan-500 font-semibold lowercase">type location or click map / drag pin</span>
                       </div>
+                      
+                      {/* Map Search Input Bar */}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Search sector, landmark or complex in Gurugram (e.g. Sector 49, Galleria)..."
+                          value={mapSearchQuery}
+                          onChange={(e) => setMapSearchQuery(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleMapSearch();
+                            }
+                          }}
+                          className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleMapSearch}
+                          disabled={isSearchingMap || !mapSearchQuery.trim()}
+                          className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:bg-muted-foreground/20 disabled:text-muted-foreground text-black text-xs font-bold rounded-xl transition-colors shrink-0"
+                        >
+                          {isSearchingMap ? "Searching..." : "Search"}
+                        </button>
+                      </div>
+
                       <div className="relative overflow-hidden rounded-2xl border border-border bg-muted h-60 w-full shadow-inner z-10">
                         <div id="pickup-map" className="h-full w-full" />
                         {!leafletLoaded && (
