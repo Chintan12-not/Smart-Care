@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
            clean === "chintanmaheshwari12@gmail.com" || 
            clean === "enigcon2020@gmail.com" ||
            clean === "smart.care313@gmail.com" ||
+           clean === "maheshwari.shailesh74@gmail.com" ||
            clean.startsWith("admin@");
   };
 
