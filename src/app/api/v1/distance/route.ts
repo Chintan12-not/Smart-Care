@@ -162,7 +162,48 @@ export async function POST(request: Request) {
       }
     }
     
-    // 2. Try OpenStreetMap Nominatim Geocoding + Haversine fallback
+    // 2. Try Photon Komoot Geocoding (high rate limits, reliable free geocoder)
+    try {
+      const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(queryAddress)}&limit=1`;
+      const response = await fetch(photonUrl);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.features && data.features.length > 0) {
+          const feat = data.features[0];
+          const lon = feat.geometry.coordinates[0];
+          const lat = feat.geometry.coordinates[1];
+          const prop = feat.properties;
+          
+          const addressParts = [
+            prop.name,
+            prop.street,
+            prop.district,
+            prop.city,
+            prop.state,
+            prop.postcode
+          ].filter(Boolean);
+          const displayName = addressParts.join(", ") || queryAddress;
+          
+          const distanceKm = Number(calculateHaversineDistance(SHOP_LAT, SHOP_LNG, lat, lon).toFixed(1));
+          const charge = calculatePickupCharge(distanceKm);
+          
+          return NextResponse.json({
+            success: true,
+            provider: "photon",
+            distanceKm,
+            charge,
+            text: `${distanceKm} km`,
+            lat,
+            lng: lon,
+            address: displayName
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Photon Komoot geocoding failed, falling back to Nominatim:", err);
+    }
+
+    // 2b. Try OpenStreetMap Nominatim Geocoding + Haversine fallback
     try {
       const osmUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(queryAddress)}&format=json&limit=1`;
       
@@ -196,7 +237,7 @@ export async function POST(request: Request) {
       console.error("OpenStreetMap Nominatim geocoding failed:", err);
     }
     
-    // 3. Regex/smart text fallback estimation if both APIs fail
+    // 3. Heuristic fallback (always return default coordinates so map pointer is still placed)
     const estimatedDistance = Number(estimateFallbackDistance(queryAddress).toFixed(1));
     const charge = calculatePickupCharge(estimatedDistance);
     
@@ -205,7 +246,10 @@ export async function POST(request: Request) {
       provider: "heuristic",
       distanceKm: estimatedDistance,
       charge,
-      text: `${estimatedDistance} km (estimate)`
+      text: `${estimatedDistance} km (estimate)`,
+      lat: SHOP_LAT,
+      lng: SHOP_LNG,
+      address: queryAddress
     });
     
   } catch (err: any) {
