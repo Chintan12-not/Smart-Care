@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       const charge = calculatePickupCharge(distanceKm);
       
       let resolvedAddress = `GPS Coordinates (${latitude.toFixed(6)}, ${longitude.toFixed(6)})`;
-      let resolvedLandmark = "";
+      let approximateLocation = "";
       try {
         const osmUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
         const response = await fetch(osmUrl, {
@@ -106,17 +106,14 @@ export async function POST(request: Request) {
           }
         });
         const data = await response.json();
+        if (data && data.display_name) {
+          resolvedAddress = data.display_name;
+        }
         if (data && data.address) {
           const addr = data.address;
-          const road = addr.road || addr.pedestrian || "";
-          const area = addr.neighbourhood || addr.suburb || addr.residential || addr.industrial || "";
-          const city = addr.city || addr.town || addr.county || "Gurugram";
-          const state = addr.state || "Haryana";
-          
-          resolvedAddress = [road, area, city, state].filter(Boolean).join(", ");
-          resolvedLandmark = addr.amenity || addr.building || addr.office || addr.shop || addr.tourism || "";
-        } else if (data && data.display_name) {
-          resolvedAddress = data.display_name;
+          const mainPart = addr.neighbourhood || addr.suburb || addr.subdivision || addr.residential || addr.road || addr.retail;
+          const cityPart = addr.city || addr.town || addr.village || "Gurugram";
+          approximateLocation = mainPart ? `${mainPart}, ${cityPart}` : cityPart;
         }
       } catch (err) {
         console.error("Reverse geocoding failed:", err);
@@ -128,8 +125,8 @@ export async function POST(request: Request) {
         distanceKm,
         charge,
         address: resolvedAddress,
-        landmark: resolvedLandmark,
-        text: `${distanceKm} km`
+        text: `${distanceKm} km`,
+        approximateLocation
       });
     }
     
@@ -185,13 +182,19 @@ export async function POST(request: Request) {
           const lat = feat.geometry.coordinates[1];
           const prop = feat.properties;
           
-          const streetPart = prop.street || prop.district || "";
-          const cityPart = prop.city || "Gurugram";
-          const statePart = prop.state || "Haryana";
-          const resolvedAddress = [streetPart, cityPart, statePart].filter(Boolean).join(", ");
+          const addressParts = [
+            prop.name,
+            prop.street,
+            prop.district,
+            prop.city,
+            prop.state,
+            prop.postcode
+          ].filter(Boolean);
+          const displayName = addressParts.join(", ") || queryAddress;
           
-          // Use name if it differs from street/district
-          const resolvedLandmark = prop.name && prop.name !== prop.street && prop.name !== prop.district ? prop.name : "";
+          const mainPart = prop.name || prop.street || prop.district;
+          const cityPart = prop.city || "Gurugram";
+          const approximateLocation = mainPart ? `${mainPart}, ${cityPart}` : cityPart;
           
           const distanceKm = Number(calculateHaversineDistance(SHOP_LAT, SHOP_LNG, lat, lon).toFixed(1));
           const charge = calculatePickupCharge(distanceKm);
@@ -204,8 +207,8 @@ export async function POST(request: Request) {
             text: `${distanceKm} km`,
             lat,
             lng: lon,
-            address: resolvedAddress,
-            landmark: resolvedLandmark
+            address: displayName,
+            approximateLocation
           });
         }
       }
@@ -229,6 +232,9 @@ export async function POST(request: Request) {
         const lat = parseFloat(data[0].lat);
         const lon = parseFloat(data[0].lon);
         
+        const displayParts = data[0].display_name.split(",");
+        const approximateLocation = displayParts.slice(0, 2).map((x: string) => x.trim()).join(", ");
+        
         const distanceKm = Number(calculateHaversineDistance(SHOP_LAT, SHOP_LNG, lat, lon).toFixed(1));
         const charge = calculatePickupCharge(distanceKm);
         
@@ -240,7 +246,8 @@ export async function POST(request: Request) {
           text: `${distanceKm} km`,
           lat,
           lng: lon,
-          address: data[0].display_name
+          address: data[0].display_name,
+          approximateLocation
         });
       }
     } catch (err) {
@@ -251,6 +258,9 @@ export async function POST(request: Request) {
     const estimatedDistance = Number(estimateFallbackDistance(queryAddress).toFixed(1));
     const charge = calculatePickupCharge(estimatedDistance);
     
+    const addressParts = queryAddress.split(",");
+    const approximateLocation = addressParts.slice(0, 2).map((x: string) => x.trim()).join(", ");
+    
     return NextResponse.json({
       success: true,
       provider: "heuristic",
@@ -259,7 +269,8 @@ export async function POST(request: Request) {
       text: `${estimatedDistance} km (estimate)`,
       lat: SHOP_LAT,
       lng: SHOP_LNG,
-      address: queryAddress
+      address: queryAddress,
+      approximateLocation
     });
     
   } catch (err: any) {

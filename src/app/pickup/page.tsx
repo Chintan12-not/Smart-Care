@@ -39,6 +39,7 @@ export default function PickupPage() {
   const [calcError, setCalcError] = useState("");
   const [mapSearchQuery, setMapSearchQuery] = useState("");
   const [isSearchingMap, setIsSearchingMap] = useState(false);
+  const [approximateLocation, setApproximateLocation] = useState("");
 
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -134,8 +135,8 @@ export default function PickupPage() {
             if (distData.address) {
               setPickupAddress(distData.address);
             }
-            if (distData.landmark) {
-              setLandmark(distData.landmark);
+            if (distData.approximateLocation) {
+              setApproximateLocation(distData.approximateLocation);
             }
           } else {
             setCalcError("Could not retrieve geocoded location address.");
@@ -179,6 +180,9 @@ export default function PickupPage() {
       if (data.success) {
         setDistanceKm(data.distanceKm);
         setPickupCharge(data.charge);
+        if (data.approximateLocation) {
+          setApproximateLocation(data.approximateLocation);
+        }
       } else {
         setCalcError("Could not calculate precise distance. We will estimate it manually.");
         // Fallback to default
@@ -229,8 +233,8 @@ export default function PickupPage() {
             if (data.address) {
               setPickupAddress(data.address);
             }
-            if (data.landmark) {
-              setLandmark(data.landmark);
+            if (data.approximateLocation) {
+              setApproximateLocation(data.approximateLocation);
             }
           } else {
             setCalcError("Could not calculate precise coordinates distance.");
@@ -278,11 +282,11 @@ export default function PickupPage() {
         } else {
           setPickupAddress(mapSearchQuery.trim());
         }
-        if (data.landmark) {
-          setLandmark(data.landmark);
-        }
         setDistanceKm(data.distanceKm);
         setPickupCharge(data.charge);
+        if (data.approximateLocation) {
+          setApproximateLocation(data.approximateLocation);
+        }
       } else {
         setCalcError("Location not found. Try searching for a nearby landmark or sector name in Gurugram.");
       }
@@ -644,18 +648,49 @@ export default function PickupPage() {
                         <motion.div 
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="p-3.5 rounded-2xl bg-muted/80 border border-border flex items-center justify-between text-xs"
+                          className="p-3.5 rounded-2xl bg-muted/80 border border-border flex flex-col gap-2 text-xs"
                         >
-                          <div>
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground block">Distance calculated</span>
-                            <span className="text-foreground font-semibold">{distanceKm} km from our Sector 37C store</span>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Distance calculated</span>
+                              <span className="text-foreground font-semibold">{distanceKm} km from our Sector 37C store</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-[10px] uppercase font-bold text-muted-foreground block">Pickup & Drop Fee</span>
+                              <strong className="text-sm font-black text-emerald-500">{pickupCharge === 0 ? "FREE" : formatINR(pickupCharge)}</strong>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <span className="text-[10px] uppercase font-bold text-muted-foreground block">Pickup & Drop Fee</span>
-                            <strong className="text-sm font-black text-emerald-500">{pickupCharge === 0 ? "FREE" : formatINR(pickupCharge)}</strong>
-                          </div>
+
+                          {approximateLocation && (
+                            <div className="border-t border-border/40 pt-2 flex items-center justify-between text-[11px] leading-none">
+                              <span className="text-muted-foreground">Approx. Location:</span>
+                              <strong className="text-cyan-500 font-extrabold">{approximateLocation}</strong>
+                            </div>
+                          )}
                         </motion.div>
                       )}
+
+                      {/* Tiered rate card description */}
+                      <div className="p-4 bg-muted/30 border border-border/50 rounded-2xl space-y-2 text-[11px] leading-relaxed text-muted-foreground mt-3">
+                        <p className="font-extrabold text-[10px] uppercase tracking-wider text-amber-500">Logistics Rate Policy</p>
+                        <ul className="space-y-1">
+                          <li className="flex justify-between border-b border-border/20 pb-1">
+                            <span>🏠 Local Gurugram (Within 5 km)</span>
+                            <span className="text-emerald-500 font-bold">FREE Delivery</span>
+                          </li>
+                          <li className="flex justify-between border-b border-border/20 pb-1">
+                            <span>🚗 Beyond 5 to 10 km</span>
+                            <span className="text-foreground font-bold">₹120 Charge</span>
+                          </li>
+                          <li className="flex justify-between">
+                            <span>🛵 Beyond 10 to 15 km</span>
+                            <span className="text-foreground font-bold">₹200 Charge</span>
+                          </li>
+                        </ul>
+                        <p className="text-[9px] text-muted-foreground pt-1 italic">
+                          *Rates are calculated automatically based on the geodesic path from our Sector 37C Hub.
+                        </p>
+                      </div>
 
                       {calcError && (
                         <p className="text-[10px] text-amber-500 flex items-center gap-1">
