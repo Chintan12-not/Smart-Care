@@ -45,114 +45,131 @@ export default function PickupPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [submissionData, setSubmissionData] = useState<any>(null);
 
-  // Dynamically load leaflet on mount
-  const [leafletLoaded, setLeafletLoaded] = useState(false);
+  // Dynamically load Google Maps on mount
+  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
   const mapRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const autocompleteRef = useRef<any>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Create link for leaflet CSS
-      const cssLink = document.createElement("link");
-      cssLink.rel = "stylesheet";
-      cssLink.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(cssLink);
+      if ((window as any).google && (window as any).google.maps) {
+        setGoogleMapsLoaded(true);
+        return;
+      }
 
-      // Create script for leaflet JS
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
       const script = document.createElement("script");
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
+      script.defer = true;
       script.onload = () => {
-        setLeafletLoaded(true);
+        setGoogleMapsLoaded(true);
       };
       document.body.appendChild(script);
-
-      return () => {
-        try {
-          document.head.removeChild(cssLink);
-          document.body.removeChild(script);
-        } catch (e) {}
-      };
     }
   }, []);
 
-  // Initialize leaflet map
+  // Initialize Google Maps
   useEffect(() => {
-    if (leafletLoaded && typeof window !== "undefined" && (window as any).L) {
-      const L = (window as any).L;
+    if (googleMapsLoaded && typeof window !== "undefined" && (window as any).google) {
+      const google = (window as any).google;
+      
+      const defaultPos = { lat: 28.4594965, lng: 77.0266383 }; // Gurugram
 
-      // Center at Gurugram
-      const defaultLat = 28.4594965;
-      const defaultLng = 77.0266383;
-
-      // Fix leaflet default icon markers path error
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      const map = new google.maps.Map(document.getElementById("google-pickup-map"), {
+        center: defaultPos,
+        zoom: 13,
+        disableDefaultUI: false,
+        fullscreenControl: false,
+        mapTypeControl: false,
       });
-
-      const map = L.map("pickup-map").setView([defaultLat, defaultLng], 13);
       mapRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
-      const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+      const marker = new google.maps.Marker({
+        position: defaultPos,
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        title: "Drag to your pickup address"
+      });
       markerRef.current = marker;
 
-      marker.bindPopup("Drag this marker to your pickup address").openPopup();
+      const geocoder = new google.maps.Geocoder();
 
-      const reverseGeocode = async (lat: number, lng: number) => {
+      const updateAddressFromLatLng = async (latLng: any) => {
         setIsCalculating(true);
         setCalcError("");
-        try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-            {
-              headers: {
-                "User-Agent": "SmartCarePortal/1.0"
-              }
-            }
-          );
-          const data = await response.json();
-          if (data && data.display_name) {
-            setPickupAddress(data.display_name);
+        const lat = latLng.lat();
+        const lng = latLng.lng();
+
+        geocoder.geocode({ location: { lat, lng } }, async (results: any, status: any) => {
+          if (status === "OK" && results[0]) {
+            setPickupAddress(results[0].formatted_address);
             
             // Calculate distance & charge
-            const res = await fetch("/api/v1/distance", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ lat, lng })
-            });
-            const distData = await res.json();
-            if (distData.success) {
-              setDistanceKm(distData.distanceKm);
-              setPickupCharge(distData.charge);
+            try {
+              const res = await fetch("/api/v1/distance", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ lat, lng })
+              });
+              const distData = await res.json();
+              if (distData.success) {
+                setDistanceKm(distData.distanceKm);
+                setPickupCharge(distData.charge);
+              }
+            } catch (e) {
+              console.error(e);
             }
+          } else {
+            setCalcError("Could not retrieve clean address details for this location pin.");
           }
-        } catch (error) {
-          console.error(error);
-          setCalcError("Error reverse geocoding location coordinates.");
-        } finally {
           setIsCalculating(false);
-        }
+        });
       };
 
-      marker.on("dragend", () => {
-        const position = marker.getLatLng();
-        reverseGeocode(position.lat, position.lng);
+      marker.addListener("dragend", () => {
+        updateAddressFromLatLng(marker.getPosition());
       });
 
-      map.on("click", (e: any) => {
-        const { lat, lng } = e.latlng;
-        marker.setLatLng([lat, lng]);
-        reverseGeocode(lat, lng);
+      map.addListener("click", (e: any) => {
+        marker.setPosition(e.latLng);
+        updateAddressFromLatLng(e.latLng);
       });
+
+      // Bind Autocomplete suggestions dropdown
+      const searchInput = document.getElementById("map-search-input");
+      if (searchInput) {
+        const autocomplete = new google.maps.places.Autocomplete(searchInput, {
+          bounds: new google.maps.LatLngBounds(
+            new google.maps.LatLng(28.3, 76.8),
+            new google.maps.LatLng(28.6, 77.2)
+          ),
+          componentRestrictions: { country: "in" },
+          fields: ["address_components", "geometry", "formatted_address"],
+          types: ["geocode", "establishment"]
+        });
+        autocompleteRef.current = autocomplete;
+
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (!place.geometry || !place.geometry.location) {
+            setCalcError("Location details not found.");
+            return;
+          }
+
+          const location = place.geometry.location;
+          map.setCenter(location);
+          map.setZoom(16);
+          marker.setPosition(location);
+
+          setPickupAddress(place.formatted_address || "");
+          updateAddressFromLatLng(location);
+        });
+      }
     }
-  }, [leafletLoaded]);
+  }, [googleMapsLoaded]);
 
   // Auto-calculate distance on address blur (or after typing delays)
   const handleAddressBlur = async () => {
@@ -204,9 +221,12 @@ export default function PickupPage() {
         const { latitude, longitude } = position.coords;
         
         // Pan map if loaded
-        if (mapRef.current && markerRef.current) {
-          mapRef.current.setView([latitude, longitude], 15);
-          markerRef.current.setLatLng([latitude, longitude]);
+        if (mapRef.current && markerRef.current && typeof window !== "undefined" && (window as any).google) {
+          const google = (window as any).google;
+          const pos = new google.maps.LatLng(latitude, longitude);
+          mapRef.current.setCenter(pos);
+          mapRef.current.setZoom(16);
+          markerRef.current.setPosition(pos);
         }
 
         try {
@@ -241,54 +261,45 @@ export default function PickupPage() {
     );
   };
 
-  const handleMapSearch = async () => {
-    if (!mapSearchQuery.trim() || !mapRef.current || !markerRef.current) return;
-
+  const handleMapSearch = () => {
+    if (!mapSearchQuery.trim() || !mapRef.current || !markerRef.current || !(window as any).google) return;
+    const google = (window as any).google;
+    const geocoder = new google.maps.Geocoder();
+    
     setIsSearchingMap(true);
     setCalcError("");
-    try {
-      const q = encodeURIComponent(mapSearchQuery.trim() + ", Gurugram, Haryana");
-      const searchUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${q}&limit=1`;
-      const response = await fetch(searchUrl, {
-        headers: {
-          "User-Agent": "SmartCarePortal/1.0"
-        }
-      });
-      const data = await response.json();
-      if (data && data.length > 0) {
-        const { lat, lon, display_name } = data[0];
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(lon);
 
-        // Center map & marker
-        mapRef.current.setView([latitude, longitude], 15);
-        markerRef.current.setLatLng([latitude, longitude]);
+    geocoder.geocode({ address: mapSearchQuery.trim() + ", Gurugram, Haryana" }, (results: any, status: any) => {
+      if (status === "OK" && results[0]) {
+        const loc = results[0].geometry.location;
+        mapRef.current.setCenter(loc);
+        mapRef.current.setZoom(15);
+        markerRef.current.setPosition(loc);
+        setPickupAddress(results[0].formatted_address);
 
-        // Set address box
-        setPickupAddress(display_name);
-
-        // Calculate distance and charge
         setIsCalculating(true);
-        const res = await fetch("/api/v1/distance", {
+        fetch("/api/v1/distance", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ lat: latitude, lng: longitude })
-        });
-        const distData = await res.json();
-        if (distData.success) {
-          setDistanceKm(distData.distanceKm);
-          setPickupCharge(distData.charge);
-        }
-        setIsCalculating(false);
+          body: JSON.stringify({ lat: loc.lat(), lng: loc.lng() })
+        })
+          .then(r => r.json())
+          .then(distData => {
+            if (distData.success) {
+              setDistanceKm(distData.distanceKm);
+              setPickupCharge(distData.charge);
+            }
+          })
+          .catch(err => console.error(err))
+          .finally(() => {
+            setIsCalculating(false);
+            setIsSearchingMap(false);
+          });
       } else {
-        setCalcError("Location not found. Try searching for a nearby landmark or sector in Gurugram.");
+        setCalcError("Location not found. Try typing a nearby landmark or sector in Gurugram.");
+        setIsSearchingMap(false);
       }
-    } catch (error) {
-      console.error(error);
-      setCalcError("Error searching address location coordinates.");
-    } finally {
-      setIsSearchingMap(false);
-    }
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -583,18 +594,19 @@ export default function PickupPage() {
                       className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 min-h-[60px]"
                     />
 
-                    {/* Leaflet map container */}
+                    {/* Google map container */}
                     <div className="space-y-2.5 mt-3">
                       <div className="flex justify-between items-center text-[10px] uppercase font-bold text-muted-foreground">
-                        <span>Select Location on Map</span>
-                        <span className="text-cyan-500 font-semibold lowercase">type location or click map / drag pin</span>
+                        <span>Select Location on Google Map</span>
+                        <span className="text-cyan-500 font-semibold lowercase">type suggestions or drag pin to position</span>
                       </div>
                       
-                      {/* Map Search Input Bar */}
+                      {/* Map Search Input Bar with Autocomplete ID */}
                       <div className="flex gap-2">
                         <input
+                          id="map-search-input"
                           type="text"
-                          placeholder="Search sector, landmark or complex in Gurugram (e.g. Sector 49, Galleria)..."
+                          placeholder="Search landmark, sector or society (e.g. Sector 47, Unitech)..."
                           value={mapSearchQuery}
                           onChange={(e) => setMapSearchQuery(e.target.value)}
                           onKeyDown={(e) => {
@@ -609,19 +621,19 @@ export default function PickupPage() {
                           type="button"
                           onClick={handleMapSearch}
                           disabled={isSearchingMap || !mapSearchQuery.trim()}
-                          className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:bg-muted-foreground/20 disabled:text-muted-foreground text-black text-xs font-bold rounded-xl transition-colors shrink-0"
+                          className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:bg-muted-foreground/20 disabled:text-muted-foreground text-black text-xs font-bold rounded-xl transition-colors shrink-0 animate-in fade-in"
                         >
                           {isSearchingMap ? "Searching..." : "Search"}
                         </button>
                       </div>
 
                       <div className="relative overflow-hidden rounded-2xl border border-border bg-muted h-60 w-full shadow-inner z-10">
-                        <div id="pickup-map" className="h-full w-full" />
-                        {!leafletLoaded && (
-                          <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20">
+                        <div id="google-pickup-map" className="h-full w-full" />
+                        {!googleMapsLoaded && (
+                          <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20 animate-in fade-in">
                             <div className="flex flex-col items-center gap-2">
                               <span className="h-6 w-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-                              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Loading Interactive Map...</span>
+                              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Loading Google Map...</span>
                             </div>
                           </div>
                         )}
