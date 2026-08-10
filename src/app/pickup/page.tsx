@@ -88,6 +88,15 @@ export default function PickupPage() {
     if (leafletLoaded && typeof window !== "undefined" && (window as any).L) {
       const L = (window as any).L;
 
+      // Guard: ensure the map container exists in the DOM before initializing
+      const mapContainer = document.getElementById("pickup-map");
+      if (!mapContainer) return;
+      
+      // Guard: prevent "Map container is already initialized" error on re-renders
+      if ((mapContainer as any)._leaflet_id) {
+        return;
+      }
+
       // Center at Smart Care Shop (Ninex Residency, Sector 37C)
       const shopLat = 28.4526094;
       const shopLng = 76.990898;
@@ -165,6 +174,13 @@ export default function PickupPage() {
         marker.setLatLng([lat, lng]);
         reverseGeocode(lat, lng);
       });
+
+      // Cleanup: destroy map on unmount
+      return () => {
+        try {
+          map.remove();
+        } catch (e) {}
+      };
     }
   }, [leafletLoaded]);
 
