@@ -20,6 +20,9 @@ export async function POST(req: NextRequest) {
       subject = "Welcome to Smart Care & Mobile Point!";
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://smart-care-u57t.vercel.app/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+          </div>
           <h2 style="color: #06b6d4; border-bottom: 2px solid #06b6d4; padding-bottom: 8px;">Welcome to Smart Care, ${payload.name || "friend"}!</h2>
           <p>Thank you for signing up for an account on Smart Care & Mobile Point. We are excited to have you join our platform!</p>
           <p>With your account, you can now:</p>
@@ -38,6 +41,9 @@ export async function POST(req: NextRequest) {
       subject = "Doorstep Pickup Request Registered - Smart Care";
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://smart-care-u57t.vercel.app/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+          </div>
           <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 8px;">Pickup Booking Confirmed!</h2>
           <p>Dear ${payload.customerName},</p>
           <p>Thank you for choosing Smart Care. We have successfully registered your doorstep pickup request.</p>
@@ -70,6 +76,9 @@ export async function POST(req: NextRequest) {
 
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://smart-care-u57t.vercel.app/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+          </div>
           <h2 style="color: #06b6d4; border-bottom: 2px solid #06b6d4; padding-bottom: 8px;">Accessory Purchase Confirmation</h2>
           <p>Thank you for your order, ${payload.shippingAddress.name}!</p>
           <p>We are preparing your items for delivery. Below is your order summary:</p>
@@ -117,7 +126,7 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(apiKey);
     const result = await resend.emails.send({
-      from: "Smart Care <onboarding@resend.dev>", // Replace with verified domain in production
+      from: "Smart Care <hello@smartcare.com>",
       to,
       subject,
       html: htmlContent,

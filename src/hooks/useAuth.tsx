@@ -246,6 +246,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   preferred_language: "en",
                   addresses: []
                 }]);
+
+              // Dispatch welcome email upon first Google login registration
+              if (credential.user.email) {
+                fetch("/api/v1/email", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    type: "welcome",
+                    to: credential.user.email,
+                    payload: { name: credential.user.displayName || credential.user.email.split("@")[0] }
+                  })
+                }).catch(err => console.error("Welcome email trigger failed:", err));
+              }
             }
           } catch (dbErr) {
             console.error("OAuth profile validation failed:", dbErr);
