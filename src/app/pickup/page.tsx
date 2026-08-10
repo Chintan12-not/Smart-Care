@@ -336,7 +336,67 @@ export default function PickupPage() {
         spread: 80,
         colors: ["#10b981", "#06b6d4", "#f59e0b"]
       });
+
+      // Construct WhatsApp redirect
+      const whatsappNum = "919289942313";
+      const formattedMessage = `Hello Smart Care! I would like to book a Doorstep Pickup & Drop repair service:
+
+👤 *Customer Details*:
+• Name: ${customerName}
+• Phone: ${mobileNumber} ${alternateNumber ? `(Alt: ${alternateNumber})` : ""}
+
+📱 *Device Details*:
+• Device: ${deviceBrand} ${deviceModel}
+• Problem: ${problemDescription || "Not specified"}
+
+📅 *Schedule*:
+• Date: ${preferredDate}
+• Time Slot: ${preferredTime}
+
+📍 *Logistics Address*:
+• Pickup Address: ${pickupAddress}
+${landmark ? `• Landmark: ${landmark}` : ""}
+• Distance: ${distanceKm || "TBD"} km
+• Pickup & Drop Fee: ${pickupCharge === 0 ? "FREE" : formatINR(pickupCharge || 0)}
+
+Please confirm my doorstep pickup schedule. Thank you!`;
+
+      const waUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(formattedMessage)}`;
+      
+      // Auto redirect client to WhatsApp in new window
+      if (typeof window !== "undefined") {
+        window.open(waUrl, "_blank");
+      }
     }, 1500);
+  };
+
+  const getWhatsappUrl = () => {
+    if (!submissionData) return "#";
+    
+    const whatsappNum = "919289942313";
+    const formattedMessage = `Hello Smart Care! I would like to book a Doorstep Pickup & Drop repair service:
+
+👤 *Customer Details*:
+• Name: ${submissionData.customerName}
+• Phone: ${submissionData.mobileNumber} ${submissionData.alternateNumber ? `(Alt: ${submissionData.alternateNumber})` : ""}
+
+📱 *Device Details*:
+• Device: ${submissionData.deviceBrand} ${submissionData.deviceModel}
+• Problem: ${submissionData.problemDescription || "Not specified"}
+
+📅 *Schedule*:
+• Date: ${submissionData.preferredDate}
+• Time Slot: ${submissionData.preferredTime}
+
+📍 *Logistics Address*:
+• Pickup Address: ${submissionData.pickupAddress}
+${submissionData.landmark ? `• Landmark: ${submissionData.landmark}` : ""}
+• Distance: ${submissionData.distanceKm} km
+• Pickup & Drop Fee: ${submissionData.pickupCharge === 0 ? "FREE" : formatINR(submissionData.pickupCharge)}
+
+Please confirm my doorstep pickup schedule. Thank you!`;
+
+    return `https://wa.me/${whatsappNum}?text=${encodeURIComponent(formattedMessage)}`;
   };
 
   const handleReset = () => {
@@ -826,12 +886,12 @@ export default function PickupPage() {
                     Book Another Pickup
                   </button>
                   <a
-                    href="https://wa.me/919289942313?text=Hi%20Smart%20Care%20%26%20Mobile%20Point,%20I%20just%20booked%20a%20doorstep%20pickup%20service."
+                    href={getWhatsappUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-6 py-3 rounded-2xl bg-emerald-500 text-white font-semibold text-xs transition-colors hover:bg-emerald-400"
+                    className="px-6 py-3 rounded-2xl bg-emerald-500 text-white font-semibold text-xs transition-colors hover:bg-emerald-400 flex items-center gap-1.5"
                   >
-                    Chat on WhatsApp
+                    <span>Send on WhatsApp</span>
                   </a>
                 </div>
               </motion.div>
