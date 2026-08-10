@@ -81,9 +81,9 @@ export default function PickupPage() {
     if (leafletLoaded && typeof window !== "undefined" && (window as any).L) {
       const L = (window as any).L;
 
-      // Center at Gurugram
-      const defaultLat = 28.4594965;
-      const defaultLng = 77.0266383;
+      // Center at Smart Care Shop (Ninex Residency, Sector 37C)
+      const shopLat = 28.4526094;
+      const shopLng = 76.990898;
 
       // Fix leaflet default icon markers path error
       delete L.Icon.Default.prototype._getIconUrl;
@@ -93,17 +93,30 @@ export default function PickupPage() {
         shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
       });
 
-      const map = L.map("pickup-map").setView([defaultLat, defaultLng], 13);
+      const map = L.map("pickup-map").setView([shopLat, shopLng], 14);
       mapRef.current = map;
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
-      const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+      // Create a custom shop pin
+      const shopIcon = L.divIcon({
+        className: 'custom-shop-pin',
+        html: `<div class="flex items-center justify-center h-8 w-8 rounded-full bg-cyan-500 text-black border-2 border-white shadow-lg"><span class="text-xs">🛠️</span></div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]
+      });
+
+      // Add static Shop Marker
+      const shopMarker = L.marker([shopLat, shopLng], { icon: shopIcon }).addTo(map);
+      shopMarker.bindPopup("<b>Smart Care Hub Store</b><br>Shop No. 28, Ninex Residency, Sector 37C").openPopup();
+
+      // Add Draggable Customer Marker (offset slightly so it is clearly visible next to the shop marker)
+      const marker = L.marker([shopLat + 0.001, shopLng + 0.001], { draggable: true }).addTo(map);
       markerRef.current = marker;
 
-      marker.bindPopup("Drag this marker to your pickup address").openPopup();
+      marker.bindPopup("Drag this pin to your address").openPopup();
 
       const reverseGeocode = async (lat: number, lng: number) => {
         setIsCalculating(true);
