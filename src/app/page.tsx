@@ -239,52 +239,60 @@ export default function Home() {
       <div className="absolute top-[-50px] right-1/4 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none z-0" />
 
       {/* 1. HERO SECTION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 text-center space-y-8 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-muted border border-border/80 text-[10px] font-bold uppercase tracking-wider text-muted-foreground shadow-sm">
-          <Sparkles className="h-3.5 w-3.5 text-cyan-500 animate-pulse" />
-          <span>Gurugram&apos;s Premium Smart Diagnostics & Repair Hub</span>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center space-y-8 relative z-10">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-500 shadow-sm">
+          <ShieldCheck className="h-4 w-4" />
+          <span>Gurugram&apos;s Rated #1 Doorstep Device Repair & Accessories Store</span>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.1] font-sans">
-          Premium Care for Your Device.{" "}
-          <span className="bg-gradient-to-r from-cyan-400 to-emerald-500 bg-clip-text text-transparent">
-            Instant AI Support.
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.12]">
+          Expert Mobile Repair &{" "}
+          <span className="text-emerald-500">
+            Genuine Accessories
           </span>
         </h1>
 
         <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Book certified doorstep mobile repairs, troubleshoot device issues in real-time with our AI assistant, shop premium accessories, and visit us for document printing & photocopy (Xerox) services.
+          Doorstep mobile repair pickup, 45-minute express screen replacement, genuine accessories for 600+ phone models, and corporate bulk ordering.
         </p>
 
         {/* Global search */}
-        <form onSubmit={handleSearchSubmit} className="max-w-xl mx-auto relative flex items-center bg-card border border-border shadow-lg rounded-2xl p-1.5 group focus-within:border-cyan-500/50 transition-all duration-300">
-          <Search className="h-5 w-5 text-muted-foreground ml-3" />
+        <form onSubmit={handleSearchSubmit} className="max-w-xl mx-auto relative flex items-center bg-card border border-border/80 shadow-md rounded-2xl p-1.5 group focus-within:border-emerald-500 transition-all">
+          <Search className="h-5 w-5 text-muted-foreground ml-3 shrink-0" />
           <input
             type="text"
-            placeholder="Search accessories (e.g. Galaxy S25 case, Fast charger)..."
+            placeholder="Search accessories or phone models (e.g. iPhone 15 Pro, Charger)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent border-0 px-3 py-2 text-xs text-foreground placeholder-muted-foreground focus:outline-none"
+            className="w-full bg-transparent border-0 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none font-medium"
           />
-          <button type="submit" className="px-4 py-2.5 rounded-xl bg-foreground text-background font-bold text-[11px] hover:opacity-90 transition-opacity">
+          <button type="submit" className="px-5 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-[11px] hover:bg-emerald-400 transition-all shrink-0">
             Search
           </button>
         </form>
 
         {/* Primary CTAs */}
-        <div className="flex flex-wrap justify-center gap-3 pt-4">
+        <div className="flex flex-wrap justify-center gap-3 pt-2">
           <Link
             href="/pickup"
-            className="px-6 py-3.5 rounded-2xl bg-amber-500 text-black font-bold text-xs flex items-center gap-1.5 hover:bg-amber-400 shadow-md shadow-amber-500/10 transition-all hover:scale-[1.01]"
+            className="px-6 py-3.5 rounded-2xl bg-emerald-500 text-black font-extrabold text-xs flex items-center gap-2 hover:bg-emerald-400 shadow-md transition-all active:scale-[0.99]"
           >
             <Truck className="h-4 w-4" />
-            Book Pickup & Drop
+            Book Doorstep Pickup & Repair
           </Link>
           <Link
             href="/accessories"
-            className="px-6 py-3.5 rounded-2xl bg-cyan-500 text-black font-bold text-xs flex items-center gap-1.5 hover:bg-cyan-400 shadow-md shadow-cyan-500/10 transition-all hover:scale-[1.01]"
+            className="px-6 py-3.5 rounded-2xl bg-card border border-border text-foreground font-extrabold text-xs flex items-center gap-2 hover:bg-muted transition-all"
           >
-            <ShoppingBag className="h-4 w-4" />
+            <ShoppingBag className="h-4 w-4 text-emerald-500" />
+            <span>Browse Accessories</span>
+          </Link>
+          <Link
+            href="/corporate-orders"
+            className="px-6 py-3.5 rounded-2xl bg-muted/80 border border-border/80 text-foreground font-extrabold text-xs flex items-center gap-2 hover:bg-muted transition-all"
+          >
+            <Building2 className="h-4 w-4 text-purple-400" />
+            <span>Corporate & Bulk Orders</span>
           </Link>
         </div>
       </section>

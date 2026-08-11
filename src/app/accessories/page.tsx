@@ -236,12 +236,12 @@ function AccessoriesContent() {
       {/* Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            <Smartphone className="h-7 w-7 text-cyan-500" />
-            Premium Accessories Store
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
+            <Smartphone className="h-7 w-7 text-emerald-500" />
+            <span>Mobile Accessories Store</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-1 max-w-xl">
-            Stripe-inspired e-commerce portal carrying genuine protective covers, high-speed wall chargers, and drop-proof cases.
+            Genuine protective covers, fast chargers, tempered glass, and cables compatible with 600+ phone models.
           </p>
         </div>
         
