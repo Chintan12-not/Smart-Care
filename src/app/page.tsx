@@ -880,8 +880,12 @@ export default function Home() {
                 ✕
               </button>
 
-              <div className="h-16 w-16 bg-cyan-500/10 text-cyan-500 rounded-full flex items-center justify-center mx-auto shadow-md">
-                <Sparkles className="h-8 w-8 text-cyan-500 animate-pulse" />
+              <div className="h-16 w-16 bg-white border border-border/60 rounded-2xl p-2 flex items-center justify-center mx-auto shadow-md">
+                <img
+                  src="/logo.png"
+                  alt="Smart Care Logo"
+                  className="h-full w-full object-contain"
+                />
               </div>
 
               <div className="space-y-2">
@@ -909,9 +913,9 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="text-[10px] text-muted-foreground/80 flex items-center justify-center gap-1.5 pt-1 border-t border-border/40">
+              <div className="text-[10px] text-muted-foreground/80 flex items-center justify-center gap-1.5 pt-1 border-t border-border/40 font-medium">
                 <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                <span>Secure account details encrypted by Supabase</span>
+                <span>Your info is safe, welcome!</span>
               </div>
             </motion.div>
           </div>
