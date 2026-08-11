@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { formatINR } from "@/lib/utils";
@@ -16,68 +17,80 @@ interface CartDrawerProps {
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { cart, updateQuantity, removeFromCart, getCartTotal } = useCart();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
-  // Listen for global open events from page triggers
   useEffect(() => {
-    const handleOpen = () => {
-      if (typeof window !== "undefined") {
-        // Custom listener
-      }
-    };
-    window.addEventListener("open-cart-drawer", handleOpen);
-    return () => window.removeEventListener("open-cart-drawer", handleOpen);
+    setMounted(true);
   }, []);
 
-  return (
+  // Prevent background body scrolling when cart is open
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (isOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "unset";
+      }
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        document.body.style.overflow = "unset";
+      }
+    };
+  }, [isOpen]);
+
+  if (!mounted) return null;
+
+  const content = (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop Blur */}
+        <div className="fixed inset-0 z-[99999] flex justify-end">
+          {/* Full Screen Dark Backdrop Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[990] bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 bg-black/85 backdrop-blur-md"
           />
 
-          {/* Drawer Sidebar */}
+          {/* Full Height Drawer Panel */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 220 }}
-            className="fixed inset-y-0 right-0 z-[1000] h-full w-full sm:w-[420px] max-w-full bg-background dark:bg-[#0a0d14] border-l border-border shadow-2xl flex flex-col"
+            transition={{ type: "spring", damping: 26, stiffness: 240 }}
+            className="relative z-10 h-full h-[100dvh] w-full sm:w-[440px] max-w-full bg-background dark:bg-[#0a0d14] text-foreground border-l border-border/80 shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="p-5 border-b border-border/80 flex items-center justify-between bg-card/80 backdrop-blur-md">
-              <div className="flex items-center gap-2.5">
-                <div className="h-10 w-10 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center border border-cyan-500/20 shadow-sm">
+            <div className="p-5 border-b border-border/80 flex items-center justify-between bg-card/90 backdrop-blur-md shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center border border-cyan-500/20 shadow-sm shrink-0">
                   <ShoppingBag className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-foreground text-base">Your Shopping Cart</h3>
-                  <p className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">
+                  <h3 className="font-extrabold text-foreground text-base leading-tight">Your Shopping Cart</h3>
+                  <p className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider mt-0.5">
                     {cart.length} {cart.length === 1 ? "Item" : "Items"} Selected
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2.5 text-muted-foreground hover:text-foreground rounded-xl hover:bg-muted/80 transition-colors border border-border/40"
+                className="p-2.5 text-muted-foreground hover:text-foreground rounded-xl hover:bg-muted/80 transition-colors border border-border/40 shrink-0"
                 aria-label="Close cart"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Scrollable Items List */}
+            {/* Scrollable Cart Items Section */}
             <div 
-              className="p-5 space-y-4 overflow-y-auto flex-grow"
+              className="p-5 space-y-4 overflow-y-auto flex-1"
               style={{ minHeight: "0px" }}
             >
               {cart.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12">
+                <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center space-y-4 py-12">
                   <div className="h-20 w-20 bg-muted/60 border border-border rounded-full flex items-center justify-center text-muted-foreground shadow-inner">
                     <ShoppingBag className="h-10 w-10 stroke-[1.5]" />
                   </div>
@@ -162,7 +175,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Footer Summary */}
             {cart.length > 0 && (
-              <div className="p-5 border-t border-border/80 bg-card dark:bg-[#0c0f17] space-y-3.5 shadow-2xl">
+              <div className="p-5 border-t border-border/80 bg-card dark:bg-[#0c0f17] space-y-3.5 shadow-2xl shrink-0">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">Subtotal Amount:</span>
                   <strong className="text-foreground text-base font-black text-cyan-500">
@@ -190,8 +203,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </div>
             )}
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
+
+  return createPortal(content, document.body);
 }
