@@ -17,15 +17,22 @@ import {
   Layers, 
   Box, 
   Star,
-  FileText,
-  ToggleLeft,
   ToggleRight,
   Loader2,
-  Info
+  Info,
+  Building2,
+  Phone,
+  Mail,
+  MessageSquare,
+  Search,
+  Filter,
+  Eye,
+  FileText
 } from "lucide-react";
 import Link from "next/link";
 import { formatINR, cn } from "@/lib/utils";
 import phoneData from "@/data/phoneModels.json";
+import { getB2BInquiries, updateB2BInquiryStatus, B2BInquiryData } from "@/lib/appwrite";
 
 interface DbAccessory {
   id: string;
@@ -64,7 +71,26 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"accessories" | "estimator">("accessories");
+  const [activeTab, setActiveTab] = useState<"accessories" | "estimator" | "b2b">("accessories");
+
+  // B2B Inquiries States (Appwrite Backend)
+  const [b2bInquiries, setB2bInquiries] = useState<B2BInquiryData[]>([]);
+  const [b2bLoading, setB2bLoading] = useState(false);
+  const [b2bSearch, setB2bSearch] = useState("");
+  const [b2bStatusFilter, setB2bStatusFilter] = useState("All");
+  const [selectedB2bInquiry, setSelectedB2bInquiry] = useState<B2BInquiryData | null>(null);
+
+  const loadB2bInquiries = async () => {
+    setB2bLoading(true);
+    try {
+      const data = await getB2BInquiries();
+      setB2bInquiries(data);
+    } catch (e) {
+      console.error("Failed to load B2B inquiries:", e);
+    } finally {
+      setB2bLoading(false);
+    }
+  };
 
   // Estimator Configuration States
   interface EstimatorConfig {
@@ -272,6 +298,7 @@ export default function AdminPage() {
     if (user && user.role === "admin") {
       loadProducts();
       loadEstimatorConfigs();
+      loadB2bInquiries();
     }
   }, [user]);
 
@@ -472,6 +499,21 @@ export default function AdminPage() {
             )}
           >
             AI Checker Pricing
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("b2b");
+              loadB2bInquiries();
+            }}
+            className={cn(
+              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2 flex items-center gap-1.5",
+              activeTab === "b2b"
+                ? "border-purple-500 text-purple-400 font-extrabold"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Building2 className="h-4 w-4 text-purple-400" />
+            <span>B2B Bulk Inquiries ({b2bInquiries.length})</span>
           </button>
         </div>
 
@@ -987,6 +1029,299 @@ CREATE POLICY "Allow authenticated insert" ON public.repair_estimator_config FOR
                   </table>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* 10. B2B CORPORATE INQUIRIES TAB */}
+        {activeTab === "b2b" && (
+          <div className="space-y-6">
+            <div className="glass-card rounded-3xl p-6 border border-purple-500/30 bg-card shadow-md space-y-6">
+              
+              {/* Header Controls */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/60 pb-4">
+                <div>
+                  <h2 className="font-extrabold text-lg text-foreground flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-purple-400" />
+                    <span>Corporate & Bulk Order Inquiries</span>
+                    <span className="text-xs font-bold text-purple-400 uppercase bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
+                      Appwrite B2B Database
+                    </span>
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Manage real-time customer bulk quotes, update pipeline statuses, and initiate direct customer contact.
+                  </p>
+                </div>
+
+                <button
+                  onClick={loadB2bInquiries}
+                  className="px-4 py-2 rounded-xl bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/20 text-xs font-bold transition-all flex items-center gap-1.5 self-start md:self-auto"
+                >
+                  <Loader2 className={`h-3.5 w-3.5 ${b2bLoading ? "animate-spin" : ""}`} />
+                  <span>Refresh Inquiries</span>
+                </button>
+              </div>
+
+              {/* Search & Status Filter Controls */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                <div className="sm:col-span-8 relative">
+                  <Search className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={b2bSearch}
+                    onChange={(e) => setB2bSearch(e.target.value)}
+                    placeholder="Search by customer name, company, email, phone, or product..."
+                    className="w-full bg-muted/60 border border-border rounded-xl pl-9 pr-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500 font-medium"
+                  />
+                </div>
+
+                <div className="sm:col-span-4 flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <select
+                    value={b2bStatusFilter}
+                    onChange={(e) => setB2bStatusFilter(e.target.value)}
+                    className="w-full bg-muted/60 border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-purple-500 font-bold"
+                  >
+                    <option value="All">All Statuses ({b2bInquiries.length})</option>
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Quotation Sent">Quotation Sent</option>
+                    <option value="Negotiation">Negotiation</option>
+                    <option value="PO Received">PO Received</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Inquiries Table */}
+              <div className="overflow-x-auto">
+                {b2bLoading ? (
+                  <div className="py-16 text-center text-xs text-muted-foreground space-y-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-purple-400 mx-auto" />
+                    <p>Fetching B2B inquiries from Appwrite database...</p>
+                  </div>
+                ) : filteredB2bInquiries.length === 0 ? (
+                  <div className="py-16 text-center text-xs text-muted-foreground bg-muted/20 border border-border/40 rounded-2xl">
+                    No B2B inquiries match your search or filter.
+                  </div>
+                ) : (
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[10px]">
+                        <th className="py-3 px-3">Customer</th>
+                        <th className="py-3 px-3">Company</th>
+                        <th className="py-3 px-3">Product Required</th>
+                        <th className="py-3 px-3">Quantity</th>
+                        <th className="py-3 px-3">Location</th>
+                        <th className="py-3 px-3">Status</th>
+                        <th className="py-3 px-3">Date</th>
+                        <th className="py-3 px-3 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/40">
+                      {filteredB2bInquiries.map((inquiry) => {
+                        const statusClass = 
+                          inquiry.status === "New" ? "bg-purple-500/10 text-purple-400 border-purple-500/30 font-black" :
+                          inquiry.status === "Contacted" ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30" :
+                          inquiry.status === "Quotation Sent" ? "bg-blue-500/10 text-blue-400 border-blue-500/30" :
+                          inquiry.status === "PO Received" || inquiry.status === "Completed" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" :
+                          inquiry.status === "Cancelled" ? "bg-red-500/10 text-red-400 border-red-500/30" :
+                          "bg-amber-500/10 text-amber-400 border-amber-500/30";
+
+                        return (
+                          <tr key={inquiry.$id || inquiry.email + inquiry.createdAt} className="hover:bg-muted/30 transition-colors">
+                            <td className="py-3 px-3">
+                              <span className="font-extrabold text-foreground block">{inquiry.name}</span>
+                              <span className="text-[10px] text-muted-foreground block">{inquiry.phone}</span>
+                            </td>
+                            <td className="py-3 px-3 font-semibold text-foreground">{inquiry.companyName}</td>
+                            <td className="py-3 px-3 font-semibold text-cyan-400">{inquiry.product}</td>
+                            <td className="py-3 px-3 font-extrabold text-foreground">{inquiry.quantity} Pcs</td>
+                            <td className="py-3 px-3 text-muted-foreground truncate max-w-[120px]">{inquiry.deliveryLocation}</td>
+                            <td className="py-3 px-3">
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase border font-bold ${statusClass}`}>
+                                {inquiry.status}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3 text-muted-foreground text-[10px]">
+                              {inquiry.createdAt ? new Date(inquiry.createdAt).toLocaleDateString("en-IN") : "Recent"}
+                            </td>
+                            <td className="py-3 px-3 text-right">
+                              <button
+                                onClick={() => setSelectedB2bInquiry(inquiry)}
+                                className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 font-bold text-[11px] border border-purple-500/20 transition-all flex items-center gap-1 ml-auto"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                <span>Details</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 11. INQUIRY DETAILS MODAL FOR ADMIN */}
+        {selectedB2bInquiry && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+            <div className="w-full max-w-xl bg-card border border-border rounded-3xl p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+              
+              {/* Modal Header */}
+              <div className="flex justify-between items-start border-b border-border pb-4">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/20">
+                    B2B Inquiry Details
+                  </span>
+                  <h3 className="text-lg font-black text-foreground mt-1">{selectedB2bInquiry.companyName}</h3>
+                  <p className="text-xs text-muted-foreground">ID: {selectedB2bInquiry.$id || "Appwrite-Doc"}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedB2bInquiry(null)}
+                  className="p-1.5 rounded-xl bg-muted text-muted-foreground hover:text-foreground"
+                >
+                  <XCircle className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Detail Sections */}
+              <div className="space-y-4 text-xs">
+                
+                {/* Customer Section */}
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 space-y-2">
+                  <h4 className="font-extrabold text-foreground uppercase tracking-wider text-[10px] text-purple-400">
+                    Customer Information
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Name</span>
+                      <span className="font-bold text-foreground block">{selectedB2bInquiry.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Work Email</span>
+                      <a href={`mailto:${selectedB2bInquiry.email}`} className="font-bold text-cyan-400 hover:underline block truncate">
+                        {selectedB2bInquiry.email}
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Phone Number</span>
+                      <a href={`tel:${selectedB2bInquiry.phone}`} className="font-bold text-foreground hover:underline block">
+                        {selectedB2bInquiry.phone}
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Company</span>
+                      <span className="font-bold text-foreground block">{selectedB2bInquiry.companyName}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Requirement Section */}
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 space-y-2">
+                  <h4 className="font-extrabold text-foreground uppercase tracking-wider text-[10px] text-cyan-400">
+                    Order Requirement
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Product / Category</span>
+                      <span className="font-extrabold text-foreground block">{selectedB2bInquiry.product}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Required Quantity</span>
+                      <span className="font-black text-purple-400 block text-sm">{selectedB2bInquiry.quantity} Units</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Delivery Location</span>
+                      <span className="font-bold text-foreground block">{selectedB2bInquiry.deliveryLocation}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[10px]">Expected Date</span>
+                      <span className="font-bold text-foreground block">
+                        {selectedB2bInquiry.expectedPurchaseDate || "Not Specified"}
+                      </span>
+                    </div>
+                  </div>
+                  {selectedB2bInquiry.requirements && (
+                    <div className="pt-2 border-t border-border/40 mt-2">
+                      <span className="text-muted-foreground block text-[10px]">Additional Notes / Branding</span>
+                      <p className="font-medium text-foreground bg-card p-2.5 rounded-xl border border-border/40 mt-1 leading-relaxed">
+                        {selectedB2bInquiry.requirements}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Tracking & Status Update Section */}
+                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 space-y-3">
+                  <h4 className="font-extrabold text-foreground uppercase tracking-wider text-[10px] text-amber-400">
+                    Status & Pipeline Control
+                  </h4>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-muted-foreground font-semibold">Change Inquiry Status:</span>
+                    <select
+                      value={selectedB2bInquiry.status}
+                      onChange={async (e) => {
+                        const newStat = e.target.value as B2BInquiryData["status"];
+                        if (selectedB2bInquiry.$id) {
+                          await updateB2BInquiryStatus(selectedB2bInquiry.$id, newStat);
+                          setSelectedB2bInquiry({ ...selectedB2bInquiry, status: newStat });
+                          loadB2bInquiries();
+                        }
+                      }}
+                      className="bg-card border border-border rounded-xl px-3 py-2 text-xs text-foreground font-extrabold focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    >
+                      <option value="New">New</option>
+                      <option value="Contacted">Contacted</option>
+                      <option value="Quotation Sent">Quotation Sent</option>
+                      <option value="Negotiation">Negotiation</option>
+                      <option value="PO Received">PO Received</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Direct Action Buttons */}
+                <div className="grid grid-cols-3 gap-2 pt-2">
+                  <a
+                    href={`tel:${selectedB2bInquiry.phone}`}
+                    className="py-3 rounded-xl bg-card border border-border hover:bg-muted text-foreground font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Phone className="h-4 w-4 text-cyan-400" />
+                    <span>Call</span>
+                  </a>
+
+                  <a
+                    href={`mailto:${selectedB2bInquiry.email}?subject=${encodeURIComponent(
+                      `Bulk Order Quotation - ${selectedB2bInquiry.product} (${selectedB2bInquiry.companyName})`
+                    )}`}
+                    className="py-3 rounded-xl bg-card border border-border hover:bg-muted text-foreground font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Mail className="h-4 w-4 text-indigo-400" />
+                    <span>Email</span>
+                  </a>
+
+                  <a
+                    href={`https://wa.me/${selectedB2bInquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                      `Hi ${selectedB2bInquiry.name}, this is Smart Care & Mobile Point regarding your bulk inquiry for ${selectedB2bInquiry.quantity} units of ${selectedB2bInquiry.product}. Here is your custom quotation:`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-3 rounded-xl bg-emerald-500 text-black font-extrabold text-xs flex items-center justify-center gap-1.5 hover:bg-emerald-400 transition-colors shadow-sm"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+
+              </div>
+
             </div>
           </div>
         )}

@@ -22,9 +22,9 @@ import {
   PhoneCall,
   Plus,
   Minus,
-  Info,
   Lock,
-  UserCheck
+  UserCheck,
+  Building2
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
@@ -463,6 +463,25 @@ export default function ProductDetailPage({ params }: PageProps) {
               <PhoneCall className="h-4.5 w-4.5 fill-current" />
               Order Instantly via WhatsApp Chat
             </a>
+
+            {/* Requirement 13: Product Page B2B CTA */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-500/10 via-indigo-500/5 to-cyan-500/10 border border-purple-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-2">
+              <div>
+                <p className="font-extrabold text-xs text-foreground flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-purple-400" />
+                  Buying in bulk?
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Get special pricing for corporate & bulk orders.
+                </p>
+              </div>
+              <Link
+                href="/corporate-orders"
+                className="px-3.5 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500 text-purple-300 hover:text-black font-extrabold text-xs transition-all border border-purple-500/30 shrink-0 text-center"
+              >
+                Request Bulk Pricing
+              </Link>
+            </div>
 
           </div>
 

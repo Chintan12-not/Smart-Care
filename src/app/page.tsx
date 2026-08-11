@@ -32,7 +32,8 @@ import {
   Navigation,
   ChevronLeft,
   Phone,
-  Lock
+  Lock,
+  Building2
 } from "lucide-react";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 
@@ -541,6 +542,34 @@ export default function Home() {
               <h4 className="font-extrabold text-white text-sm mt-0.5">Genuine Accessories Stock</h4>
               <p className="text-[10px] text-zinc-300 mt-1 leading-normal">AAA-grade screen glass, back shells, protectors, and cables ready to swap.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5.5 REQUIREMENT 14: HOMEPAGE B2B BULK ORDERS BANNER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 w-full">
+        <div className="glass-card rounded-3xl p-8 sm:p-12 border border-purple-500/30 bg-gradient-to-r from-purple-950/40 via-background to-cyan-950/40 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+          <div className="space-y-3 text-center md:text-left max-w-xl relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              <Building2 className="h-3.5 w-3.5" />
+              Corporate & Wholesale B2B Procurement
+            </span>
+            <h3 className="text-2xl sm:text-4xl font-black text-foreground tracking-tight">
+              Need Bulk Quantities?
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Get customized pricing for corporate, wholesale and bulk orders. Genuine products with 100% GST invoices & fast regional delivery.
+            </p>
+          </div>
+
+          <div className="relative z-10 shrink-0">
+            <Link
+              href="/corporate-orders"
+              className="px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-500 text-white font-black text-xs uppercase tracking-wider hover:opacity-95 shadow-xl shadow-purple-500/25 flex items-center gap-2 active:scale-[0.99] transition-all"
+            >
+              <span>Request a Bulk Quote</span>
+              <ArrowRight className="h-4 w-4 stroke-[3]" />
+            </Link>
           </div>
         </div>
       </section>

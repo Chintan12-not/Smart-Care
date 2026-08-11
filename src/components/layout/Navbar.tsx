@@ -15,7 +15,8 @@ import {
   Sparkles,
   Search,
   BookOpen,
-  Truck
+  Truck,
+  Building2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CartDrawer from "@/components/cart/CartDrawer";
@@ -101,6 +102,7 @@ export default function Navbar() {
     { name: "AI Device", href: "/mobile-assistant", icon: Sparkles, accent: "text-cyan-500" },
     { name: "Pickup & Drop", href: "/pickup", icon: Truck, accent: "text-amber-500" },
     { name: "Accessories", href: "/accessories", icon: Smartphone },
+    { name: "Corporate & Bulk", href: "/corporate-orders", icon: Building2, accent: "text-purple-400" },
     { name: "Blog", href: "/blog", icon: BookOpen },
   ];
 
