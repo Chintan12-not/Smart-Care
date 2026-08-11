@@ -39,6 +39,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://smartcaremobile.in",
   },
+  icons: {
+    icon: [
+      { url: "/logo.png" },
+      { url: "/icon.png", type: "image/png" }
+    ],
+    apple: [
+      { url: "/logo.png", sizes: "180x180", type: "image/png" }
+    ],
+    shortcut: ["/logo.png"]
+  },
   openGraph: {
     title: "Smart Care & Mobile Point — Gurugram's Premier Mobile Repair & Accessories Store",
     description: "Doorstep mobile repair, genuine phone accessories for 600+ models, and corporate bulk ordering at smartcaremobile.in.",
