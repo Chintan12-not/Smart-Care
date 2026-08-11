@@ -34,6 +34,9 @@ import {
   Phone,
   Lock
 } from "lucide-react";
+import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
+
+
 import { formatINR } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useAuth } from "@/hooks/useAuth";
@@ -281,9 +284,13 @@ export default function Home() {
             className="px-6 py-3.5 rounded-2xl bg-cyan-500 text-black font-bold text-xs flex items-center gap-1.5 hover:bg-cyan-400 shadow-md shadow-cyan-500/10 transition-all hover:scale-[1.01]"
           >
             <ShoppingBag className="h-4 w-4" />
-            Shop Accessories
           </Link>
         </div>
+      </section>
+
+      {/* 1.5 FIND PERFECT ACCESSORY BY PHONE BRAND & MODEL */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10 w-full">
+        <PhoneModelFinder />
       </section>
 
       {/* 2. STATS SECTION */}

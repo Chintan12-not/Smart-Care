@@ -1,0 +1,3757 @@
+{
+  "sheets": {
+    "Phone Models": [
+      [
+        "ID",
+        "Brand",
+        "Model",
+        "Series"
+      ],
+      [
+        "1",
+        "Apple",
+        "iPhone",
+        "iPhone"
+      ],
+      [
+        "2",
+        "Apple",
+        "iPhone 11",
+        "11"
+      ],
+      [
+        "3",
+        "Apple",
+        "iPhone 11 Pro",
+        "11"
+      ],
+      [
+        "4",
+        "Apple",
+        "iPhone 11 Pro Max",
+        "11"
+      ],
+      [
+        "5",
+        "Apple",
+        "iPhone 12",
+        "12"
+      ],
+      [
+        "6",
+        "Apple",
+        "iPhone 12 mini",
+        "12"
+      ],
+      [
+        "7",
+        "Apple",
+        "iPhone 12 Pro",
+        "12"
+      ],
+      [
+        "8",
+        "Apple",
+        "iPhone 12 Pro Max",
+        "12"
+      ],
+      [
+        "9",
+        "Apple",
+        "iPhone 13",
+        "13"
+      ],
+      [
+        "10",
+        "Apple",
+        "iPhone 13 mini",
+        "13"
+      ],
+      [
+        "11",
+        "Apple",
+        "iPhone 13 Pro",
+        "13"
+      ],
+      [
+        "12",
+        "Apple",
+        "iPhone 13 Pro Max",
+        "13"
+      ],
+      [
+        "13",
+        "Apple",
+        "iPhone 14",
+        "14"
+      ],
+      [
+        "14",
+        "Apple",
+        "iPhone 14 Plus",
+        "14"
+      ],
+      [
+        "15",
+        "Apple",
+        "iPhone 14 Pro",
+        "14"
+      ],
+      [
+        "16",
+        "Apple",
+        "iPhone 14 Pro Max",
+        "14"
+      ],
+      [
+        "17",
+        "Apple",
+        "iPhone 15",
+        "15"
+      ],
+      [
+        "18",
+        "Apple",
+        "iPhone 15 Plus",
+        "15"
+      ],
+      [
+        "19",
+        "Apple",
+        "iPhone 15 Pro",
+        "15"
+      ],
+      [
+        "20",
+        "Apple",
+        "iPhone 15 Pro Max",
+        "15"
+      ],
+      [
+        "21",
+        "Apple",
+        "iPhone 16",
+        "16"
+      ],
+      [
+        "22",
+        "Apple",
+        "iPhone 16 Plus",
+        "16"
+      ],
+      [
+        "23",
+        "Apple",
+        "iPhone 16 Pro",
+        "16"
+      ],
+      [
+        "24",
+        "Apple",
+        "iPhone 16 Pro Max",
+        "16"
+      ],
+      [
+        "25",
+        "Apple",
+        "iPhone 16e",
+        "16e"
+      ],
+      [
+        "26",
+        "Apple",
+        "iPhone 17",
+        "17"
+      ],
+      [
+        "27",
+        "Apple",
+        "iPhone 17 Pro",
+        "17"
+      ],
+      [
+        "28",
+        "Apple",
+        "iPhone 17 Pro Max",
+        "17"
+      ],
+      [
+        "29",
+        "Apple",
+        "iPhone 17e",
+        "17e"
+      ],
+      [
+        "30",
+        "Apple",
+        "iPhone 3G",
+        "3G"
+      ],
+      [
+        "31",
+        "Apple",
+        "iPhone 3GS",
+        "3GS"
+      ],
+      [
+        "32",
+        "Apple",
+        "iPhone 4",
+        "4"
+      ],
+      [
+        "33",
+        "Apple",
+        "iPhone 4s",
+        "4s"
+      ],
+      [
+        "34",
+        "Apple",
+        "iPhone 5",
+        "5"
+      ],
+      [
+        "35",
+        "Apple",
+        "iPhone 5c",
+        "5c"
+      ],
+      [
+        "36",
+        "Apple",
+        "iPhone 5s",
+        "5s"
+      ],
+      [
+        "37",
+        "Apple",
+        "iPhone 6",
+        "6"
+      ],
+      [
+        "38",
+        "Apple",
+        "iPhone 6 Plus",
+        "6"
+      ],
+      [
+        "39",
+        "Apple",
+        "iPhone 6s",
+        "6s"
+      ],
+      [
+        "40",
+        "Apple",
+        "iPhone 6s Plus",
+        "6s"
+      ],
+      [
+        "41",
+        "Apple",
+        "iPhone 7",
+        "7"
+      ],
+      [
+        "42",
+        "Apple",
+        "iPhone 7 Plus",
+        "7"
+      ],
+      [
+        "43",
+        "Apple",
+        "iPhone 8",
+        "8"
+      ],
+      [
+        "44",
+        "Apple",
+        "iPhone 8 Plus",
+        "8"
+      ],
+      [
+        "45",
+        "Apple",
+        "iPhone Air",
+        "Air"
+      ],
+      [
+        "46",
+        "Apple",
+        "iPhone SE (1st generation)",
+        "SE"
+      ],
+      [
+        "47",
+        "Apple",
+        "iPhone SE (2nd generation)",
+        "SE"
+      ],
+      [
+        "48",
+        "Apple",
+        "iPhone SE (3rd generation)",
+        "SE"
+      ],
+      [
+        "49",
+        "Apple",
+        "iPhone X",
+        "X"
+      ],
+      [
+        "50",
+        "Apple",
+        "iPhone XR",
+        "XR"
+      ],
+      [
+        "51",
+        "Apple",
+        "iPhone XS",
+        "XS"
+      ],
+      [
+        "52",
+        "Apple",
+        "iPhone XS Max",
+        "XS"
+      ],
+      [
+        "53",
+        "Google",
+        "Pixel",
+        "Pixel"
+      ],
+      [
+        "54",
+        "Google",
+        "Pixel 10",
+        "Pixel"
+      ],
+      [
+        "55",
+        "Google",
+        "Pixel 10 Pro",
+        "Pixel"
+      ],
+      [
+        "56",
+        "Google",
+        "Pixel 10 Pro Fold",
+        "Pixel"
+      ],
+      [
+        "57",
+        "Google",
+        "Pixel 10 Pro XL",
+        "Pixel"
+      ],
+      [
+        "58",
+        "Google",
+        "Pixel 10a",
+        "Pixel"
+      ],
+      [
+        "59",
+        "Google",
+        "Pixel 2",
+        "Pixel"
+      ],
+      [
+        "60",
+        "Google",
+        "Pixel 2 XL",
+        "Pixel"
+      ],
+      [
+        "61",
+        "Google",
+        "Pixel 3",
+        "Pixel"
+      ],
+      [
+        "62",
+        "Google",
+        "Pixel 3 XL",
+        "Pixel"
+      ],
+      [
+        "63",
+        "Google",
+        "Pixel 3a",
+        "Pixel"
+      ],
+      [
+        "64",
+        "Google",
+        "Pixel 3a XL",
+        "Pixel"
+      ],
+      [
+        "65",
+        "Google",
+        "Pixel 4",
+        "Pixel"
+      ],
+      [
+        "66",
+        "Google",
+        "Pixel 4 XL",
+        "Pixel"
+      ],
+      [
+        "67",
+        "Google",
+        "Pixel 4a",
+        "Pixel"
+      ],
+      [
+        "68",
+        "Google",
+        "Pixel 4a 5G",
+        "Pixel"
+      ],
+      [
+        "69",
+        "Google",
+        "Pixel 5",
+        "Pixel"
+      ],
+      [
+        "70",
+        "Google",
+        "Pixel 5a",
+        "Pixel"
+      ],
+      [
+        "71",
+        "Google",
+        "Pixel 6",
+        "Pixel"
+      ],
+      [
+        "72",
+        "Google",
+        "Pixel 6 Pro",
+        "Pixel"
+      ],
+      [
+        "73",
+        "Google",
+        "Pixel 6a",
+        "Pixel"
+      ],
+      [
+        "74",
+        "Google",
+        "Pixel 7",
+        "Pixel"
+      ],
+      [
+        "75",
+        "Google",
+        "Pixel 7 Pro",
+        "Pixel"
+      ],
+      [
+        "76",
+        "Google",
+        "Pixel 7a",
+        "Pixel"
+      ],
+      [
+        "77",
+        "Google",
+        "Pixel 8",
+        "Pixel"
+      ],
+      [
+        "78",
+        "Google",
+        "Pixel 8 Pro",
+        "Pixel"
+      ],
+      [
+        "79",
+        "Google",
+        "Pixel 8a",
+        "Pixel"
+      ],
+      [
+        "80",
+        "Google",
+        "Pixel 9",
+        "Pixel"
+      ],
+      [
+        "81",
+        "Google",
+        "Pixel 9 Pro",
+        "Pixel"
+      ],
+      [
+        "82",
+        "Google",
+        "Pixel 9 Pro Fold",
+        "Pixel"
+      ],
+      [
+        "83",
+        "Google",
+        "Pixel 9 Pro XL",
+        "Pixel"
+      ],
+      [
+        "84",
+        "Google",
+        "Pixel 9a",
+        "Pixel"
+      ],
+      [
+        "85",
+        "Google",
+        "Pixel Fold",
+        "Pixel"
+      ],
+      [
+        "86",
+        "Google",
+        "Pixel XL",
+        "Pixel"
+      ],
+      [
+        "87",
+        "OnePlus",
+        "Nord 2",
+        "Nord"
+      ],
+      [
+        "88",
+        "OnePlus",
+        "Nord 2T",
+        "Nord"
+      ],
+      [
+        "89",
+        "OnePlus",
+        "Nord 3",
+        "Nord"
+      ],
+      [
+        "90",
+        "OnePlus",
+        "Nord 4",
+        "Nord"
+      ],
+      [
+        "91",
+        "OnePlus",
+        "Nord 5",
+        "Nord"
+      ],
+      [
+        "92",
+        "OnePlus",
+        "Nord CE",
+        "Nord"
+      ],
+      [
+        "93",
+        "OnePlus",
+        "Nord CE 2",
+        "Nord"
+      ],
+      [
+        "94",
+        "OnePlus",
+        "Nord CE 2 Lite",
+        "Nord"
+      ],
+      [
+        "95",
+        "OnePlus",
+        "Nord CE 3",
+        "Nord"
+      ],
+      [
+        "96",
+        "OnePlus",
+        "Nord CE 3 Lite",
+        "Nord"
+      ],
+      [
+        "97",
+        "OnePlus",
+        "Nord CE4",
+        "Nord"
+      ],
+      [
+        "98",
+        "OnePlus",
+        "Nord CE4 Lite",
+        "Nord"
+      ],
+      [
+        "99",
+        "OnePlus",
+        "Nord N10 5G",
+        "Nord"
+      ],
+      [
+        "100",
+        "OnePlus",
+        "Nord N100",
+        "Nord"
+      ],
+      [
+        "101",
+        "OnePlus",
+        "Nord N20",
+        "Nord"
+      ],
+      [
+        "102",
+        "OnePlus",
+        "Nord N30",
+        "Nord"
+      ],
+      [
+        "103",
+        "OnePlus",
+        "OnePlus 10 Pro",
+        "10"
+      ],
+      [
+        "104",
+        "OnePlus",
+        "OnePlus 10R",
+        "10R"
+      ],
+      [
+        "105",
+        "OnePlus",
+        "OnePlus 10T",
+        "10T"
+      ],
+      [
+        "106",
+        "OnePlus",
+        "OnePlus 11",
+        "11"
+      ],
+      [
+        "107",
+        "OnePlus",
+        "OnePlus 11R",
+        "11R"
+      ],
+      [
+        "108",
+        "OnePlus",
+        "OnePlus 12",
+        "12"
+      ],
+      [
+        "109",
+        "OnePlus",
+        "OnePlus 12R",
+        "12R"
+      ],
+      [
+        "110",
+        "OnePlus",
+        "OnePlus 13",
+        "13"
+      ],
+      [
+        "111",
+        "OnePlus",
+        "OnePlus 13R",
+        "13R"
+      ],
+      [
+        "112",
+        "OnePlus",
+        "OnePlus 13s",
+        "13s"
+      ],
+      [
+        "113",
+        "OnePlus",
+        "OnePlus 2",
+        "2"
+      ],
+      [
+        "114",
+        "OnePlus",
+        "OnePlus 3",
+        "3"
+      ],
+      [
+        "115",
+        "OnePlus",
+        "OnePlus 3T",
+        "3T"
+      ],
+      [
+        "116",
+        "OnePlus",
+        "OnePlus 5",
+        "5"
+      ],
+      [
+        "117",
+        "OnePlus",
+        "OnePlus 5T",
+        "5T"
+      ],
+      [
+        "118",
+        "OnePlus",
+        "OnePlus 6",
+        "6"
+      ],
+      [
+        "119",
+        "OnePlus",
+        "OnePlus 6T",
+        "6T"
+      ],
+      [
+        "120",
+        "OnePlus",
+        "OnePlus 7",
+        "7"
+      ],
+      [
+        "121",
+        "OnePlus",
+        "OnePlus 7 Pro",
+        "7"
+      ],
+      [
+        "122",
+        "OnePlus",
+        "OnePlus 7T",
+        "7T"
+      ],
+      [
+        "123",
+        "OnePlus",
+        "OnePlus 7T Pro",
+        "7T"
+      ],
+      [
+        "124",
+        "OnePlus",
+        "OnePlus 8",
+        "8"
+      ],
+      [
+        "125",
+        "OnePlus",
+        "OnePlus 8 Pro",
+        "8"
+      ],
+      [
+        "126",
+        "OnePlus",
+        "OnePlus 8T",
+        "8T"
+      ],
+      [
+        "127",
+        "OnePlus",
+        "OnePlus 9",
+        "9"
+      ],
+      [
+        "128",
+        "OnePlus",
+        "OnePlus 9 Pro",
+        "9"
+      ],
+      [
+        "129",
+        "OnePlus",
+        "OnePlus 9R",
+        "9R"
+      ],
+      [
+        "130",
+        "OnePlus",
+        "OnePlus 9RT",
+        "9RT"
+      ],
+      [
+        "131",
+        "OnePlus",
+        "OnePlus Nord",
+        "Nord"
+      ],
+      [
+        "132",
+        "OnePlus",
+        "OnePlus One",
+        "One"
+      ],
+      [
+        "133",
+        "OnePlus",
+        "OnePlus X",
+        "X"
+      ],
+      [
+        "134",
+        "OPPO",
+        "OPPO A12",
+        "A12"
+      ],
+      [
+        "135",
+        "OPPO",
+        "OPPO A15",
+        "A15"
+      ],
+      [
+        "136",
+        "OPPO",
+        "OPPO A16",
+        "A16"
+      ],
+      [
+        "137",
+        "OPPO",
+        "OPPO A17",
+        "A17"
+      ],
+      [
+        "138",
+        "OPPO",
+        "OPPO A18",
+        "A18"
+      ],
+      [
+        "139",
+        "OPPO",
+        "OPPO A3",
+        "A3"
+      ],
+      [
+        "140",
+        "OPPO",
+        "OPPO A31",
+        "A31"
+      ],
+      [
+        "141",
+        "OPPO",
+        "OPPO A38",
+        "A38"
+      ],
+      [
+        "142",
+        "OPPO",
+        "OPPO A39",
+        "A39"
+      ],
+      [
+        "143",
+        "OPPO",
+        "OPPO A5",
+        "A5"
+      ],
+      [
+        "144",
+        "OPPO",
+        "OPPO A53",
+        "A53"
+      ],
+      [
+        "145",
+        "OPPO",
+        "OPPO A54",
+        "A54"
+      ],
+      [
+        "146",
+        "OPPO",
+        "OPPO A57",
+        "A57"
+      ],
+      [
+        "147",
+        "OPPO",
+        "OPPO A58",
+        "A58"
+      ],
+      [
+        "148",
+        "OPPO",
+        "OPPO A59",
+        "A59"
+      ],
+      [
+        "149",
+        "OPPO",
+        "OPPO A7",
+        "A7"
+      ],
+      [
+        "150",
+        "OPPO",
+        "OPPO A74",
+        "A74"
+      ],
+      [
+        "151",
+        "OPPO",
+        "OPPO A76",
+        "A76"
+      ],
+      [
+        "152",
+        "OPPO",
+        "OPPO A77",
+        "A77"
+      ],
+      [
+        "153",
+        "OPPO",
+        "OPPO A78",
+        "A78"
+      ],
+      [
+        "154",
+        "OPPO",
+        "OPPO A79",
+        "A79"
+      ],
+      [
+        "155",
+        "OPPO",
+        "OPPO A9",
+        "A9"
+      ],
+      [
+        "156",
+        "OPPO",
+        "OPPO A98",
+        "A98"
+      ],
+      [
+        "157",
+        "OPPO",
+        "OPPO F1",
+        "F1"
+      ],
+      [
+        "158",
+        "OPPO",
+        "OPPO F11",
+        "F11"
+      ],
+      [
+        "159",
+        "OPPO",
+        "OPPO F15",
+        "F15"
+      ],
+      [
+        "160",
+        "OPPO",
+        "OPPO F17",
+        "F17"
+      ],
+      [
+        "161",
+        "OPPO",
+        "OPPO F19",
+        "F19"
+      ],
+      [
+        "162",
+        "OPPO",
+        "OPPO F21 Pro",
+        "F21"
+      ],
+      [
+        "163",
+        "OPPO",
+        "OPPO F23",
+        "F23"
+      ],
+      [
+        "164",
+        "OPPO",
+        "OPPO F25",
+        "F25"
+      ],
+      [
+        "165",
+        "OPPO",
+        "OPPO F27",
+        "F27"
+      ],
+      [
+        "166",
+        "OPPO",
+        "OPPO F29",
+        "F29"
+      ],
+      [
+        "167",
+        "OPPO",
+        "OPPO F3",
+        "F3"
+      ],
+      [
+        "168",
+        "OPPO",
+        "OPPO F5",
+        "F5"
+      ],
+      [
+        "169",
+        "OPPO",
+        "OPPO F7",
+        "F7"
+      ],
+      [
+        "170",
+        "OPPO",
+        "OPPO F9",
+        "F9"
+      ],
+      [
+        "171",
+        "OPPO",
+        "OPPO Find 5",
+        "Find"
+      ],
+      [
+        "172",
+        "OPPO",
+        "OPPO Find 7",
+        "Find"
+      ],
+      [
+        "173",
+        "OPPO",
+        "OPPO Find X",
+        "Find"
+      ],
+      [
+        "174",
+        "OPPO",
+        "OPPO Find X2",
+        "Find"
+      ],
+      [
+        "175",
+        "OPPO",
+        "OPPO Find X2 Pro",
+        "Find"
+      ],
+      [
+        "176",
+        "OPPO",
+        "OPPO Find X3",
+        "Find"
+      ],
+      [
+        "177",
+        "OPPO",
+        "OPPO Find X3 Pro",
+        "Find"
+      ],
+      [
+        "178",
+        "OPPO",
+        "OPPO Find X5",
+        "Find"
+      ],
+      [
+        "179",
+        "OPPO",
+        "OPPO Find X5 Pro",
+        "Find"
+      ],
+      [
+        "180",
+        "OPPO",
+        "OPPO Find X6",
+        "Find"
+      ],
+      [
+        "181",
+        "OPPO",
+        "OPPO Find X6 Pro",
+        "Find"
+      ],
+      [
+        "182",
+        "OPPO",
+        "OPPO Find X7",
+        "Find"
+      ],
+      [
+        "183",
+        "OPPO",
+        "OPPO Find X7 Ultra",
+        "Find"
+      ],
+      [
+        "184",
+        "OPPO",
+        "OPPO Find X8",
+        "Find"
+      ],
+      [
+        "185",
+        "OPPO",
+        "OPPO Find X8 Pro",
+        "Find"
+      ],
+      [
+        "186",
+        "OPPO",
+        "OPPO Find X8 Ultra",
+        "Find"
+      ],
+      [
+        "187",
+        "OPPO",
+        "OPPO Find X9",
+        "Find"
+      ],
+      [
+        "188",
+        "OPPO",
+        "OPPO Reno",
+        "Reno"
+      ],
+      [
+        "189",
+        "OPPO",
+        "OPPO Reno10",
+        "Reno10"
+      ],
+      [
+        "190",
+        "OPPO",
+        "OPPO Reno11",
+        "Reno11"
+      ],
+      [
+        "191",
+        "OPPO",
+        "OPPO Reno12",
+        "Reno12"
+      ],
+      [
+        "192",
+        "OPPO",
+        "OPPO Reno13",
+        "Reno13"
+      ],
+      [
+        "193",
+        "OPPO",
+        "OPPO Reno14",
+        "Reno14"
+      ],
+      [
+        "194",
+        "OPPO",
+        "OPPO Reno2",
+        "Reno2"
+      ],
+      [
+        "195",
+        "OPPO",
+        "OPPO Reno3",
+        "Reno3"
+      ],
+      [
+        "196",
+        "OPPO",
+        "OPPO Reno4",
+        "Reno4"
+      ],
+      [
+        "197",
+        "OPPO",
+        "OPPO Reno5",
+        "Reno5"
+      ],
+      [
+        "198",
+        "OPPO",
+        "OPPO Reno6",
+        "Reno6"
+      ],
+      [
+        "199",
+        "OPPO",
+        "OPPO Reno7",
+        "Reno7"
+      ],
+      [
+        "200",
+        "OPPO",
+        "OPPO Reno8",
+        "Reno8"
+      ],
+      [
+        "201",
+        "OPPO",
+        "OPPO Reno9",
+        "Reno9"
+      ],
+      [
+        "202",
+        "POCO",
+        "POCO C3",
+        "POCO"
+      ],
+      [
+        "203",
+        "POCO",
+        "POCO C31",
+        "POCO"
+      ],
+      [
+        "204",
+        "POCO",
+        "POCO C40",
+        "POCO"
+      ],
+      [
+        "205",
+        "POCO",
+        "POCO C50",
+        "POCO"
+      ],
+      [
+        "206",
+        "POCO",
+        "POCO C51",
+        "POCO"
+      ],
+      [
+        "207",
+        "POCO",
+        "POCO C55",
+        "POCO"
+      ],
+      [
+        "208",
+        "POCO",
+        "POCO C65",
+        "POCO"
+      ],
+      [
+        "209",
+        "POCO",
+        "POCO C75",
+        "POCO"
+      ],
+      [
+        "210",
+        "POCO",
+        "POCO C85",
+        "POCO"
+      ],
+      [
+        "211",
+        "POCO",
+        "POCO F1",
+        "POCO"
+      ],
+      [
+        "212",
+        "POCO",
+        "POCO F2 Pro",
+        "POCO"
+      ],
+      [
+        "213",
+        "POCO",
+        "POCO F3",
+        "POCO"
+      ],
+      [
+        "214",
+        "POCO",
+        "POCO F4",
+        "POCO"
+      ],
+      [
+        "215",
+        "POCO",
+        "POCO F5",
+        "POCO"
+      ],
+      [
+        "216",
+        "POCO",
+        "POCO F5 Pro",
+        "POCO"
+      ],
+      [
+        "217",
+        "POCO",
+        "POCO F6",
+        "POCO"
+      ],
+      [
+        "218",
+        "POCO",
+        "POCO F6 Pro",
+        "POCO"
+      ],
+      [
+        "219",
+        "POCO",
+        "POCO F7",
+        "POCO"
+      ],
+      [
+        "220",
+        "POCO",
+        "POCO F7 Pro",
+        "POCO"
+      ],
+      [
+        "221",
+        "POCO",
+        "POCO F7 Ultra",
+        "POCO"
+      ],
+      [
+        "222",
+        "POCO",
+        "POCO F8",
+        "POCO"
+      ],
+      [
+        "223",
+        "POCO",
+        "POCO F8 Pro",
+        "POCO"
+      ],
+      [
+        "224",
+        "POCO",
+        "POCO F8 Ultra",
+        "POCO"
+      ],
+      [
+        "225",
+        "POCO",
+        "POCO M2",
+        "POCO"
+      ],
+      [
+        "226",
+        "POCO",
+        "POCO M2 Pro",
+        "POCO"
+      ],
+      [
+        "227",
+        "POCO",
+        "POCO M3",
+        "POCO"
+      ],
+      [
+        "228",
+        "POCO",
+        "POCO M4 Pro",
+        "POCO"
+      ],
+      [
+        "229",
+        "POCO",
+        "POCO M5",
+        "POCO"
+      ],
+      [
+        "230",
+        "POCO",
+        "POCO M6",
+        "POCO"
+      ],
+      [
+        "231",
+        "POCO",
+        "POCO M7",
+        "POCO"
+      ],
+      [
+        "232",
+        "POCO",
+        "POCO M8",
+        "POCO"
+      ],
+      [
+        "233",
+        "POCO",
+        "POCO X2",
+        "POCO"
+      ],
+      [
+        "234",
+        "POCO",
+        "POCO X3",
+        "POCO"
+      ],
+      [
+        "235",
+        "POCO",
+        "POCO X3 Pro",
+        "POCO"
+      ],
+      [
+        "236",
+        "POCO",
+        "POCO X4 Pro",
+        "POCO"
+      ],
+      [
+        "237",
+        "POCO",
+        "POCO X5",
+        "POCO"
+      ],
+      [
+        "238",
+        "POCO",
+        "POCO X5 Pro",
+        "POCO"
+      ],
+      [
+        "239",
+        "POCO",
+        "POCO X6",
+        "POCO"
+      ],
+      [
+        "240",
+        "POCO",
+        "POCO X6 Pro",
+        "POCO"
+      ],
+      [
+        "241",
+        "POCO",
+        "POCO X7",
+        "POCO"
+      ],
+      [
+        "242",
+        "POCO",
+        "POCO X7 Pro",
+        "POCO"
+      ],
+      [
+        "243",
+        "POCO",
+        "POCO X8",
+        "POCO"
+      ],
+      [
+        "244",
+        "Realme",
+        "realme 1",
+        "1"
+      ],
+      [
+        "245",
+        "Realme",
+        "realme 10",
+        "10"
+      ],
+      [
+        "246",
+        "Realme",
+        "realme 10 Pro",
+        "10"
+      ],
+      [
+        "247",
+        "Realme",
+        "realme 10 Pro+",
+        "10"
+      ],
+      [
+        "248",
+        "Realme",
+        "realme 11",
+        "11"
+      ],
+      [
+        "249",
+        "Realme",
+        "realme 11 Pro",
+        "11"
+      ],
+      [
+        "250",
+        "Realme",
+        "realme 11 Pro+",
+        "11"
+      ],
+      [
+        "251",
+        "Realme",
+        "realme 12",
+        "12"
+      ],
+      [
+        "252",
+        "Realme",
+        "realme 12 Pro",
+        "12"
+      ],
+      [
+        "253",
+        "Realme",
+        "realme 12 Pro+",
+        "12"
+      ],
+      [
+        "254",
+        "Realme",
+        "realme 13",
+        "13"
+      ],
+      [
+        "255",
+        "Realme",
+        "realme 13 Pro",
+        "13"
+      ],
+      [
+        "256",
+        "Realme",
+        "realme 13 Pro+",
+        "13"
+      ],
+      [
+        "257",
+        "Realme",
+        "realme 14",
+        "14"
+      ],
+      [
+        "258",
+        "Realme",
+        "realme 14 Pro",
+        "14"
+      ],
+      [
+        "259",
+        "Realme",
+        "realme 14 Pro+",
+        "14"
+      ],
+      [
+        "260",
+        "Realme",
+        "realme 15",
+        "15"
+      ],
+      [
+        "261",
+        "Realme",
+        "realme 15 Pro",
+        "15"
+      ],
+      [
+        "262",
+        "Realme",
+        "realme 2",
+        "2"
+      ],
+      [
+        "263",
+        "Realme",
+        "realme 2 Pro",
+        "2"
+      ],
+      [
+        "264",
+        "Realme",
+        "realme 3",
+        "3"
+      ],
+      [
+        "265",
+        "Realme",
+        "realme 3 Pro",
+        "3"
+      ],
+      [
+        "266",
+        "Realme",
+        "realme 5",
+        "5"
+      ],
+      [
+        "267",
+        "Realme",
+        "realme 5 Pro",
+        "5"
+      ],
+      [
+        "268",
+        "Realme",
+        "realme 6",
+        "6"
+      ],
+      [
+        "269",
+        "Realme",
+        "realme 6 Pro",
+        "6"
+      ],
+      [
+        "270",
+        "Realme",
+        "realme 7",
+        "7"
+      ],
+      [
+        "271",
+        "Realme",
+        "realme 7 Pro",
+        "7"
+      ],
+      [
+        "272",
+        "Realme",
+        "realme 8",
+        "8"
+      ],
+      [
+        "273",
+        "Realme",
+        "realme 8 Pro",
+        "8"
+      ],
+      [
+        "274",
+        "Realme",
+        "realme 9",
+        "9"
+      ],
+      [
+        "275",
+        "Realme",
+        "realme 9 Pro",
+        "9"
+      ],
+      [
+        "276",
+        "Realme",
+        "realme 9 Pro+",
+        "9"
+      ],
+      [
+        "277",
+        "Realme",
+        "realme C1",
+        "C1"
+      ],
+      [
+        "278",
+        "Realme",
+        "realme C11",
+        "C11"
+      ],
+      [
+        "279",
+        "Realme",
+        "realme C12",
+        "C12"
+      ],
+      [
+        "280",
+        "Realme",
+        "realme C15",
+        "C15"
+      ],
+      [
+        "281",
+        "Realme",
+        "realme C2",
+        "C2"
+      ],
+      [
+        "282",
+        "Realme",
+        "realme C20",
+        "C20"
+      ],
+      [
+        "283",
+        "Realme",
+        "realme C21",
+        "C21"
+      ],
+      [
+        "284",
+        "Realme",
+        "realme C25",
+        "C25"
+      ],
+      [
+        "285",
+        "Realme",
+        "realme C3",
+        "C3"
+      ],
+      [
+        "286",
+        "Realme",
+        "realme C30",
+        "C30"
+      ],
+      [
+        "287",
+        "Realme",
+        "realme C31",
+        "C31"
+      ],
+      [
+        "288",
+        "Realme",
+        "realme C33",
+        "C33"
+      ],
+      [
+        "289",
+        "Realme",
+        "realme C35",
+        "C35"
+      ],
+      [
+        "290",
+        "Realme",
+        "realme C51",
+        "C51"
+      ],
+      [
+        "291",
+        "Realme",
+        "realme C53",
+        "C53"
+      ],
+      [
+        "292",
+        "Realme",
+        "realme C55",
+        "C55"
+      ],
+      [
+        "293",
+        "Realme",
+        "realme C61",
+        "C61"
+      ],
+      [
+        "294",
+        "Realme",
+        "realme C63",
+        "C63"
+      ],
+      [
+        "295",
+        "Realme",
+        "realme C65",
+        "C65"
+      ],
+      [
+        "296",
+        "Realme",
+        "realme C67",
+        "C67"
+      ],
+      [
+        "297",
+        "Realme",
+        "realme C71",
+        "C71"
+      ],
+      [
+        "298",
+        "Realme",
+        "realme GT",
+        "GT"
+      ],
+      [
+        "299",
+        "Realme",
+        "realme GT 2",
+        "GT"
+      ],
+      [
+        "300",
+        "Realme",
+        "realme GT 2 Pro",
+        "GT"
+      ],
+      [
+        "301",
+        "Realme",
+        "realme GT 3",
+        "GT"
+      ],
+      [
+        "302",
+        "Realme",
+        "realme GT 5",
+        "GT"
+      ],
+      [
+        "303",
+        "Realme",
+        "realme GT 6",
+        "GT"
+      ],
+      [
+        "304",
+        "Realme",
+        "realme GT 7",
+        "GT"
+      ],
+      [
+        "305",
+        "Realme",
+        "realme Narzo 10",
+        "Narzo"
+      ],
+      [
+        "306",
+        "Realme",
+        "realme Narzo 20",
+        "Narzo"
+      ],
+      [
+        "307",
+        "Realme",
+        "realme Narzo 30",
+        "Narzo"
+      ],
+      [
+        "308",
+        "Realme",
+        "realme Narzo 50",
+        "Narzo"
+      ],
+      [
+        "309",
+        "Realme",
+        "realme Narzo 60",
+        "Narzo"
+      ],
+      [
+        "310",
+        "Realme",
+        "realme Narzo 70",
+        "Narzo"
+      ],
+      [
+        "311",
+        "Realme",
+        "realme Narzo 80",
+        "Narzo"
+      ],
+      [
+        "312",
+        "Redmi",
+        "Redmi 1",
+        "Redmi"
+      ],
+      [
+        "313",
+        "Redmi",
+        "Redmi 10",
+        "Redmi"
+      ],
+      [
+        "314",
+        "Redmi",
+        "Redmi 12",
+        "Redmi"
+      ],
+      [
+        "315",
+        "Redmi",
+        "Redmi 13",
+        "Redmi"
+      ],
+      [
+        "316",
+        "Redmi",
+        "Redmi 14",
+        "Redmi"
+      ],
+      [
+        "317",
+        "Redmi",
+        "Redmi 15",
+        "Redmi"
+      ],
+      [
+        "318",
+        "Redmi",
+        "Redmi 15C",
+        "Redmi"
+      ],
+      [
+        "319",
+        "Redmi",
+        "Redmi 2",
+        "Redmi"
+      ],
+      [
+        "320",
+        "Redmi",
+        "Redmi 3",
+        "Redmi"
+      ],
+      [
+        "321",
+        "Redmi",
+        "Redmi 4",
+        "Redmi"
+      ],
+      [
+        "322",
+        "Redmi",
+        "Redmi 5",
+        "Redmi"
+      ],
+      [
+        "323",
+        "Redmi",
+        "Redmi 6",
+        "Redmi"
+      ],
+      [
+        "324",
+        "Redmi",
+        "Redmi 7",
+        "Redmi"
+      ],
+      [
+        "325",
+        "Redmi",
+        "Redmi 8",
+        "Redmi"
+      ],
+      [
+        "326",
+        "Redmi",
+        "Redmi 9",
+        "Redmi"
+      ],
+      [
+        "327",
+        "Redmi",
+        "Redmi K20",
+        "Redmi"
+      ],
+      [
+        "328",
+        "Redmi",
+        "Redmi K20 Pro",
+        "Redmi"
+      ],
+      [
+        "329",
+        "Redmi",
+        "Redmi K30",
+        "Redmi"
+      ],
+      [
+        "330",
+        "Redmi",
+        "Redmi K30 Pro",
+        "Redmi"
+      ],
+      [
+        "331",
+        "Redmi",
+        "Redmi K40",
+        "Redmi"
+      ],
+      [
+        "332",
+        "Redmi",
+        "Redmi K40 Pro",
+        "Redmi"
+      ],
+      [
+        "333",
+        "Redmi",
+        "Redmi K50",
+        "Redmi"
+      ],
+      [
+        "334",
+        "Redmi",
+        "Redmi K50 Pro",
+        "Redmi"
+      ],
+      [
+        "335",
+        "Redmi",
+        "Redmi K60",
+        "Redmi"
+      ],
+      [
+        "336",
+        "Redmi",
+        "Redmi K60 Pro",
+        "Redmi"
+      ],
+      [
+        "337",
+        "Redmi",
+        "Redmi K70",
+        "Redmi"
+      ],
+      [
+        "338",
+        "Redmi",
+        "Redmi K70 Pro",
+        "Redmi"
+      ],
+      [
+        "339",
+        "Redmi",
+        "Redmi K80",
+        "Redmi"
+      ],
+      [
+        "340",
+        "Redmi",
+        "Redmi K80 Pro",
+        "Redmi"
+      ],
+      [
+        "341",
+        "Redmi",
+        "Redmi K90",
+        "Redmi"
+      ],
+      [
+        "342",
+        "Redmi",
+        "Redmi Note",
+        "Redmi"
+      ],
+      [
+        "343",
+        "Redmi",
+        "Redmi Note 10",
+        "Redmi"
+      ],
+      [
+        "344",
+        "Redmi",
+        "Redmi Note 11",
+        "Redmi"
+      ],
+      [
+        "345",
+        "Redmi",
+        "Redmi Note 12",
+        "Redmi"
+      ],
+      [
+        "346",
+        "Redmi",
+        "Redmi Note 13",
+        "Redmi"
+      ],
+      [
+        "347",
+        "Redmi",
+        "Redmi Note 14",
+        "Redmi"
+      ],
+      [
+        "348",
+        "Redmi",
+        "Redmi Note 15",
+        "Redmi"
+      ],
+      [
+        "349",
+        "Redmi",
+        "Redmi Note 15 Pro",
+        "Redmi"
+      ],
+      [
+        "350",
+        "Redmi",
+        "Redmi Note 15 Pro+",
+        "Redmi"
+      ],
+      [
+        "351",
+        "Redmi",
+        "Redmi Note 2",
+        "Redmi"
+      ],
+      [
+        "352",
+        "Redmi",
+        "Redmi Note 3",
+        "Redmi"
+      ],
+      [
+        "353",
+        "Redmi",
+        "Redmi Note 4",
+        "Redmi"
+      ],
+      [
+        "354",
+        "Redmi",
+        "Redmi Note 5",
+        "Redmi"
+      ],
+      [
+        "355",
+        "Redmi",
+        "Redmi Note 6 Pro",
+        "Redmi"
+      ],
+      [
+        "356",
+        "Redmi",
+        "Redmi Note 7",
+        "Redmi"
+      ],
+      [
+        "357",
+        "Redmi",
+        "Redmi Note 8",
+        "Redmi"
+      ],
+      [
+        "358",
+        "Redmi",
+        "Redmi Note 9",
+        "Redmi"
+      ],
+      [
+        "359",
+        "Samsung",
+        "Galaxy A01",
+        "A01"
+      ],
+      [
+        "360",
+        "Samsung",
+        "Galaxy A02",
+        "A02"
+      ],
+      [
+        "361",
+        "Samsung",
+        "Galaxy A03",
+        "A03"
+      ],
+      [
+        "362",
+        "Samsung",
+        "Galaxy A04",
+        "A04"
+      ],
+      [
+        "363",
+        "Samsung",
+        "Galaxy A05",
+        "A05"
+      ],
+      [
+        "364",
+        "Samsung",
+        "Galaxy A06",
+        "A06"
+      ],
+      [
+        "365",
+        "Samsung",
+        "Galaxy A07",
+        "A07"
+      ],
+      [
+        "366",
+        "Samsung",
+        "Galaxy A10",
+        "A10"
+      ],
+      [
+        "367",
+        "Samsung",
+        "Galaxy A11",
+        "A11"
+      ],
+      [
+        "368",
+        "Samsung",
+        "Galaxy A12",
+        "A12"
+      ],
+      [
+        "369",
+        "Samsung",
+        "Galaxy A13",
+        "A13"
+      ],
+      [
+        "370",
+        "Samsung",
+        "Galaxy A14",
+        "A14"
+      ],
+      [
+        "371",
+        "Samsung",
+        "Galaxy A15",
+        "A15"
+      ],
+      [
+        "372",
+        "Samsung",
+        "Galaxy A16",
+        "A16"
+      ],
+      [
+        "373",
+        "Samsung",
+        "Galaxy A17",
+        "A17"
+      ],
+      [
+        "374",
+        "Samsung",
+        "Galaxy A20",
+        "A20"
+      ],
+      [
+        "375",
+        "Samsung",
+        "Galaxy A21",
+        "A21"
+      ],
+      [
+        "376",
+        "Samsung",
+        "Galaxy A22",
+        "A22"
+      ],
+      [
+        "377",
+        "Samsung",
+        "Galaxy A23",
+        "A23"
+      ],
+      [
+        "378",
+        "Samsung",
+        "Galaxy A24",
+        "A24"
+      ],
+      [
+        "379",
+        "Samsung",
+        "Galaxy A25",
+        "A25"
+      ],
+      [
+        "380",
+        "Samsung",
+        "Galaxy A26",
+        "A26"
+      ],
+      [
+        "381",
+        "Samsung",
+        "Galaxy A27",
+        "A27"
+      ],
+      [
+        "382",
+        "Samsung",
+        "Galaxy A30",
+        "A30"
+      ],
+      [
+        "383",
+        "Samsung",
+        "Galaxy A31",
+        "A31"
+      ],
+      [
+        "384",
+        "Samsung",
+        "Galaxy A32",
+        "A32"
+      ],
+      [
+        "385",
+        "Samsung",
+        "Galaxy A33",
+        "A33"
+      ],
+      [
+        "386",
+        "Samsung",
+        "Galaxy A34",
+        "A34"
+      ],
+      [
+        "387",
+        "Samsung",
+        "Galaxy A35",
+        "A35"
+      ],
+      [
+        "388",
+        "Samsung",
+        "Galaxy A36",
+        "A36"
+      ],
+      [
+        "389",
+        "Samsung",
+        "Galaxy A37",
+        "A37"
+      ],
+      [
+        "390",
+        "Samsung",
+        "Galaxy A40",
+        "A40"
+      ],
+      [
+        "391",
+        "Samsung",
+        "Galaxy A41",
+        "A41"
+      ],
+      [
+        "392",
+        "Samsung",
+        "Galaxy A42",
+        "A42"
+      ],
+      [
+        "393",
+        "Samsung",
+        "Galaxy A50",
+        "A50"
+      ],
+      [
+        "394",
+        "Samsung",
+        "Galaxy A51",
+        "A51"
+      ],
+      [
+        "395",
+        "Samsung",
+        "Galaxy A52",
+        "A52"
+      ],
+      [
+        "396",
+        "Samsung",
+        "Galaxy A53",
+        "A53"
+      ],
+      [
+        "397",
+        "Samsung",
+        "Galaxy A54",
+        "A54"
+      ],
+      [
+        "398",
+        "Samsung",
+        "Galaxy A55",
+        "A55"
+      ],
+      [
+        "399",
+        "Samsung",
+        "Galaxy A56",
+        "A56"
+      ],
+      [
+        "400",
+        "Samsung",
+        "Galaxy A57",
+        "A57"
+      ],
+      [
+        "401",
+        "Samsung",
+        "Galaxy A70",
+        "A70"
+      ],
+      [
+        "402",
+        "Samsung",
+        "Galaxy A71",
+        "A71"
+      ],
+      [
+        "403",
+        "Samsung",
+        "Galaxy A72",
+        "A72"
+      ],
+      [
+        "404",
+        "Samsung",
+        "Galaxy F02s",
+        "F02s"
+      ],
+      [
+        "405",
+        "Samsung",
+        "Galaxy F12",
+        "F12"
+      ],
+      [
+        "406",
+        "Samsung",
+        "Galaxy F13",
+        "F13"
+      ],
+      [
+        "407",
+        "Samsung",
+        "Galaxy F14",
+        "F14"
+      ],
+      [
+        "408",
+        "Samsung",
+        "Galaxy F15",
+        "F15"
+      ],
+      [
+        "409",
+        "Samsung",
+        "Galaxy F22",
+        "F22"
+      ],
+      [
+        "410",
+        "Samsung",
+        "Galaxy F23",
+        "F23"
+      ],
+      [
+        "411",
+        "Samsung",
+        "Galaxy F34",
+        "F34"
+      ],
+      [
+        "412",
+        "Samsung",
+        "Galaxy F54",
+        "F54"
+      ],
+      [
+        "413",
+        "Samsung",
+        "Galaxy M01",
+        "M01"
+      ],
+      [
+        "414",
+        "Samsung",
+        "Galaxy M02",
+        "M02"
+      ],
+      [
+        "415",
+        "Samsung",
+        "Galaxy M03",
+        "M03"
+      ],
+      [
+        "416",
+        "Samsung",
+        "Galaxy M10",
+        "M10"
+      ],
+      [
+        "417",
+        "Samsung",
+        "Galaxy M11",
+        "M11"
+      ],
+      [
+        "418",
+        "Samsung",
+        "Galaxy M12",
+        "M12"
+      ],
+      [
+        "419",
+        "Samsung",
+        "Galaxy M13",
+        "M13"
+      ],
+      [
+        "420",
+        "Samsung",
+        "Galaxy M14",
+        "M14"
+      ],
+      [
+        "421",
+        "Samsung",
+        "Galaxy M15",
+        "M15"
+      ],
+      [
+        "422",
+        "Samsung",
+        "Galaxy M16",
+        "M16"
+      ],
+      [
+        "423",
+        "Samsung",
+        "Galaxy M20",
+        "M20"
+      ],
+      [
+        "424",
+        "Samsung",
+        "Galaxy M21",
+        "M21"
+      ],
+      [
+        "425",
+        "Samsung",
+        "Galaxy M22",
+        "M22"
+      ],
+      [
+        "426",
+        "Samsung",
+        "Galaxy M23",
+        "M23"
+      ],
+      [
+        "427",
+        "Samsung",
+        "Galaxy M30",
+        "M30"
+      ],
+      [
+        "428",
+        "Samsung",
+        "Galaxy M31",
+        "M31"
+      ],
+      [
+        "429",
+        "Samsung",
+        "Galaxy M32",
+        "M32"
+      ],
+      [
+        "430",
+        "Samsung",
+        "Galaxy M33",
+        "M33"
+      ],
+      [
+        "431",
+        "Samsung",
+        "Galaxy M34",
+        "M34"
+      ],
+      [
+        "432",
+        "Samsung",
+        "Galaxy M35",
+        "M35"
+      ],
+      [
+        "433",
+        "Samsung",
+        "Galaxy M36",
+        "M36"
+      ],
+      [
+        "434",
+        "Samsung",
+        "Galaxy M40",
+        "M40"
+      ],
+      [
+        "435",
+        "Samsung",
+        "Galaxy M51",
+        "M51"
+      ],
+      [
+        "436",
+        "Samsung",
+        "Galaxy Note",
+        "Note"
+      ],
+      [
+        "437",
+        "Samsung",
+        "Galaxy Note 10",
+        "Note"
+      ],
+      [
+        "438",
+        "Samsung",
+        "Galaxy Note 10+",
+        "Note"
+      ],
+      [
+        "439",
+        "Samsung",
+        "Galaxy Note 20",
+        "Note"
+      ],
+      [
+        "440",
+        "Samsung",
+        "Galaxy Note 20 Ultra",
+        "Note"
+      ],
+      [
+        "441",
+        "Samsung",
+        "Galaxy Note 3",
+        "Note"
+      ],
+      [
+        "442",
+        "Samsung",
+        "Galaxy Note 4",
+        "Note"
+      ],
+      [
+        "443",
+        "Samsung",
+        "Galaxy Note 5",
+        "Note"
+      ],
+      [
+        "444",
+        "Samsung",
+        "Galaxy Note 7",
+        "Note"
+      ],
+      [
+        "445",
+        "Samsung",
+        "Galaxy Note 8",
+        "Note"
+      ],
+      [
+        "446",
+        "Samsung",
+        "Galaxy Note 9",
+        "Note"
+      ],
+      [
+        "447",
+        "Samsung",
+        "Galaxy Note II",
+        "Note"
+      ],
+      [
+        "448",
+        "Samsung",
+        "Galaxy S",
+        "S"
+      ],
+      [
+        "449",
+        "Samsung",
+        "Galaxy S II",
+        "S"
+      ],
+      [
+        "450",
+        "Samsung",
+        "Galaxy S III",
+        "S"
+      ],
+      [
+        "451",
+        "Samsung",
+        "Galaxy S10",
+        "S10"
+      ],
+      [
+        "452",
+        "Samsung",
+        "Galaxy S10 5G",
+        "S10"
+      ],
+      [
+        "453",
+        "Samsung",
+        "Galaxy S10+",
+        "S10+"
+      ],
+      [
+        "454",
+        "Samsung",
+        "Galaxy S10e",
+        "S10e"
+      ],
+      [
+        "455",
+        "Samsung",
+        "Galaxy S20",
+        "S20"
+      ],
+      [
+        "456",
+        "Samsung",
+        "Galaxy S20 FE",
+        "S20"
+      ],
+      [
+        "457",
+        "Samsung",
+        "Galaxy S20 Ultra",
+        "S20"
+      ],
+      [
+        "458",
+        "Samsung",
+        "Galaxy S20+",
+        "S20+"
+      ],
+      [
+        "459",
+        "Samsung",
+        "Galaxy S21",
+        "S21"
+      ],
+      [
+        "460",
+        "Samsung",
+        "Galaxy S21 FE",
+        "S21"
+      ],
+      [
+        "461",
+        "Samsung",
+        "Galaxy S21 Ultra",
+        "S21"
+      ],
+      [
+        "462",
+        "Samsung",
+        "Galaxy S21+",
+        "S21+"
+      ],
+      [
+        "463",
+        "Samsung",
+        "Galaxy S22",
+        "S22"
+      ],
+      [
+        "464",
+        "Samsung",
+        "Galaxy S22 Ultra",
+        "S22"
+      ],
+      [
+        "465",
+        "Samsung",
+        "Galaxy S22+",
+        "S22+"
+      ],
+      [
+        "466",
+        "Samsung",
+        "Galaxy S23",
+        "S23"
+      ],
+      [
+        "467",
+        "Samsung",
+        "Galaxy S23 FE",
+        "S23"
+      ],
+      [
+        "468",
+        "Samsung",
+        "Galaxy S23 Ultra",
+        "S23"
+      ],
+      [
+        "469",
+        "Samsung",
+        "Galaxy S23+",
+        "S23+"
+      ],
+      [
+        "470",
+        "Samsung",
+        "Galaxy S24",
+        "S24"
+      ],
+      [
+        "471",
+        "Samsung",
+        "Galaxy S24 FE",
+        "S24"
+      ],
+      [
+        "472",
+        "Samsung",
+        "Galaxy S24 Ultra",
+        "S24"
+      ],
+      [
+        "473",
+        "Samsung",
+        "Galaxy S24+",
+        "S24+"
+      ],
+      [
+        "474",
+        "Samsung",
+        "Galaxy S25",
+        "S25"
+      ],
+      [
+        "475",
+        "Samsung",
+        "Galaxy S25 Edge",
+        "S25"
+      ],
+      [
+        "476",
+        "Samsung",
+        "Galaxy S25 FE",
+        "S25"
+      ],
+      [
+        "477",
+        "Samsung",
+        "Galaxy S25 Ultra",
+        "S25"
+      ],
+      [
+        "478",
+        "Samsung",
+        "Galaxy S25+",
+        "S25+"
+      ],
+      [
+        "479",
+        "Samsung",
+        "Galaxy S26",
+        "S26"
+      ],
+      [
+        "480",
+        "Samsung",
+        "Galaxy S26 Ultra",
+        "S26"
+      ],
+      [
+        "481",
+        "Samsung",
+        "Galaxy S26+",
+        "S26+"
+      ],
+      [
+        "482",
+        "Samsung",
+        "Galaxy S4",
+        "S4"
+      ],
+      [
+        "483",
+        "Samsung",
+        "Galaxy S5",
+        "S5"
+      ],
+      [
+        "484",
+        "Samsung",
+        "Galaxy S6",
+        "S6"
+      ],
+      [
+        "485",
+        "Samsung",
+        "Galaxy S6 edge",
+        "S6"
+      ],
+      [
+        "486",
+        "Samsung",
+        "Galaxy S6 edge+",
+        "S6"
+      ],
+      [
+        "487",
+        "Samsung",
+        "Galaxy S7",
+        "S7"
+      ],
+      [
+        "488",
+        "Samsung",
+        "Galaxy S7 edge",
+        "S7"
+      ],
+      [
+        "489",
+        "Samsung",
+        "Galaxy S8",
+        "S8"
+      ],
+      [
+        "490",
+        "Samsung",
+        "Galaxy S8+",
+        "S8+"
+      ],
+      [
+        "491",
+        "Samsung",
+        "Galaxy S9",
+        "S9"
+      ],
+      [
+        "492",
+        "Samsung",
+        "Galaxy S9+",
+        "S9+"
+      ],
+      [
+        "493",
+        "Samsung",
+        "Galaxy XCover Pro",
+        "XCover"
+      ],
+      [
+        "494",
+        "Samsung",
+        "Galaxy XCover5",
+        "XCover5"
+      ],
+      [
+        "495",
+        "Samsung",
+        "Galaxy XCover6 Pro",
+        "XCover6"
+      ],
+      [
+        "496",
+        "Samsung",
+        "Galaxy XCover7",
+        "XCover7"
+      ],
+      [
+        "497",
+        "Samsung",
+        "Galaxy Z Flip",
+        "Z"
+      ],
+      [
+        "498",
+        "Samsung",
+        "Galaxy Z Flip3",
+        "Z"
+      ],
+      [
+        "499",
+        "Samsung",
+        "Galaxy Z Flip4",
+        "Z"
+      ],
+      [
+        "500",
+        "Samsung",
+        "Galaxy Z Flip5",
+        "Z"
+      ],
+      [
+        "501",
+        "Samsung",
+        "Galaxy Z Flip6",
+        "Z"
+      ],
+      [
+        "502",
+        "Samsung",
+        "Galaxy Z Flip7",
+        "Z"
+      ],
+      [
+        "503",
+        "Samsung",
+        "Galaxy Z Flip8",
+        "Z"
+      ],
+      [
+        "504",
+        "Samsung",
+        "Galaxy Z Fold",
+        "Z"
+      ],
+      [
+        "505",
+        "Samsung",
+        "Galaxy Z Fold2",
+        "Z"
+      ],
+      [
+        "506",
+        "Samsung",
+        "Galaxy Z Fold3",
+        "Z"
+      ],
+      [
+        "507",
+        "Samsung",
+        "Galaxy Z Fold4",
+        "Z"
+      ],
+      [
+        "508",
+        "Samsung",
+        "Galaxy Z Fold5",
+        "Z"
+      ],
+      [
+        "509",
+        "Samsung",
+        "Galaxy Z Fold6",
+        "Z"
+      ],
+      [
+        "510",
+        "Samsung",
+        "Galaxy Z Fold7",
+        "Z"
+      ],
+      [
+        "511",
+        "Samsung",
+        "Galaxy Z Fold8",
+        "Z"
+      ],
+      [
+        "512",
+        "Samsung",
+        "Galaxy Z Fold8 Ultra",
+        "Z"
+      ],
+      [
+        "513",
+        "Vivo",
+        "Vivo T1",
+        "T1"
+      ],
+      [
+        "514",
+        "Vivo",
+        "Vivo T2",
+        "T2"
+      ],
+      [
+        "515",
+        "Vivo",
+        "Vivo T3",
+        "T3"
+      ],
+      [
+        "516",
+        "Vivo",
+        "Vivo T4",
+        "T4"
+      ],
+      [
+        "517",
+        "Vivo",
+        "Vivo T5",
+        "T5"
+      ],
+      [
+        "518",
+        "Vivo",
+        "Vivo V11",
+        "V11"
+      ],
+      [
+        "519",
+        "Vivo",
+        "Vivo V15",
+        "V15"
+      ],
+      [
+        "520",
+        "Vivo",
+        "Vivo V17",
+        "V17"
+      ],
+      [
+        "521",
+        "Vivo",
+        "Vivo V19",
+        "V19"
+      ],
+      [
+        "522",
+        "Vivo",
+        "Vivo V20",
+        "V20"
+      ],
+      [
+        "523",
+        "Vivo",
+        "Vivo V21",
+        "V21"
+      ],
+      [
+        "524",
+        "Vivo",
+        "Vivo V23",
+        "V23"
+      ],
+      [
+        "525",
+        "Vivo",
+        "Vivo V25",
+        "V25"
+      ],
+      [
+        "526",
+        "Vivo",
+        "Vivo V27",
+        "V27"
+      ],
+      [
+        "527",
+        "Vivo",
+        "Vivo V29",
+        "V29"
+      ],
+      [
+        "528",
+        "Vivo",
+        "Vivo V30",
+        "V30"
+      ],
+      [
+        "529",
+        "Vivo",
+        "Vivo V40",
+        "V40"
+      ],
+      [
+        "530",
+        "Vivo",
+        "Vivo V5",
+        "V5"
+      ],
+      [
+        "531",
+        "Vivo",
+        "Vivo V50",
+        "V50"
+      ],
+      [
+        "532",
+        "Vivo",
+        "Vivo V60",
+        "V60"
+      ],
+      [
+        "533",
+        "Vivo",
+        "Vivo V7",
+        "V7"
+      ],
+      [
+        "534",
+        "Vivo",
+        "Vivo V9",
+        "V9"
+      ],
+      [
+        "535",
+        "Vivo",
+        "Vivo X1",
+        "X1"
+      ],
+      [
+        "536",
+        "Vivo",
+        "Vivo X100",
+        "X100"
+      ],
+      [
+        "537",
+        "Vivo",
+        "Vivo X100 Pro",
+        "X100"
+      ],
+      [
+        "538",
+        "Vivo",
+        "Vivo X20",
+        "X20"
+      ],
+      [
+        "539",
+        "Vivo",
+        "Vivo X200",
+        "X200"
+      ],
+      [
+        "540",
+        "Vivo",
+        "Vivo X200 Pro",
+        "X200"
+      ],
+      [
+        "541",
+        "Vivo",
+        "Vivo X21",
+        "X21"
+      ],
+      [
+        "542",
+        "Vivo",
+        "Vivo X300",
+        "X300"
+      ],
+      [
+        "543",
+        "Vivo",
+        "Vivo X5",
+        "X5"
+      ],
+      [
+        "544",
+        "Vivo",
+        "Vivo X50",
+        "X50"
+      ],
+      [
+        "545",
+        "Vivo",
+        "Vivo X60",
+        "X60"
+      ],
+      [
+        "546",
+        "Vivo",
+        "Vivo X70",
+        "X70"
+      ],
+      [
+        "547",
+        "Vivo",
+        "Vivo X80",
+        "X80"
+      ],
+      [
+        "548",
+        "Vivo",
+        "Vivo X90",
+        "X90"
+      ],
+      [
+        "549",
+        "Vivo",
+        "Vivo Y100",
+        "Y100"
+      ],
+      [
+        "550",
+        "Vivo",
+        "Vivo Y12",
+        "Y12"
+      ],
+      [
+        "551",
+        "Vivo",
+        "Vivo Y15",
+        "Y15"
+      ],
+      [
+        "552",
+        "Vivo",
+        "Vivo Y17",
+        "Y17"
+      ],
+      [
+        "553",
+        "Vivo",
+        "Vivo Y19",
+        "Y19"
+      ],
+      [
+        "554",
+        "Vivo",
+        "Vivo Y1s",
+        "Y1s"
+      ],
+      [
+        "555",
+        "Vivo",
+        "Vivo Y20",
+        "Y20"
+      ],
+      [
+        "556",
+        "Vivo",
+        "Vivo Y200",
+        "Y200"
+      ],
+      [
+        "557",
+        "Vivo",
+        "Vivo Y21",
+        "Y21"
+      ],
+      [
+        "558",
+        "Vivo",
+        "Vivo Y22",
+        "Y22"
+      ],
+      [
+        "559",
+        "Vivo",
+        "Vivo Y27",
+        "Y27"
+      ],
+      [
+        "560",
+        "Vivo",
+        "Vivo Y28",
+        "Y28"
+      ],
+      [
+        "561",
+        "Vivo",
+        "Vivo Y31",
+        "Y31"
+      ],
+      [
+        "562",
+        "Vivo",
+        "Vivo Y33",
+        "Y33"
+      ],
+      [
+        "563",
+        "Vivo",
+        "Vivo Y35",
+        "Y35"
+      ],
+      [
+        "564",
+        "Vivo",
+        "Vivo Y36",
+        "Y36"
+      ],
+      [
+        "565",
+        "Vivo",
+        "Vivo Y38",
+        "Y38"
+      ],
+      [
+        "566",
+        "Vivo",
+        "Vivo Y39",
+        "Y39"
+      ],
+      [
+        "567",
+        "Vivo",
+        "Vivo Y50",
+        "Y50"
+      ],
+      [
+        "568",
+        "Vivo",
+        "Vivo Y51",
+        "Y51"
+      ],
+      [
+        "569",
+        "Vivo",
+        "Vivo Y52",
+        "Y52"
+      ],
+      [
+        "570",
+        "Vivo",
+        "Vivo Y55",
+        "Y55"
+      ],
+      [
+        "571",
+        "Vivo",
+        "Vivo Y56",
+        "Y56"
+      ],
+      [
+        "572",
+        "Vivo",
+        "Vivo Y58",
+        "Y58"
+      ],
+      [
+        "573",
+        "Xiaomi",
+        "Mi 1",
+        "Mi"
+      ],
+      [
+        "574",
+        "Xiaomi",
+        "Mi 10",
+        "Mi"
+      ],
+      [
+        "575",
+        "Xiaomi",
+        "Mi 10 Pro",
+        "Mi"
+      ],
+      [
+        "576",
+        "Xiaomi",
+        "Mi 10T",
+        "Mi"
+      ],
+      [
+        "577",
+        "Xiaomi",
+        "Mi 10T Pro",
+        "Mi"
+      ],
+      [
+        "578",
+        "Xiaomi",
+        "Mi 11",
+        "Mi"
+      ],
+      [
+        "579",
+        "Xiaomi",
+        "Mi 11 Lite",
+        "Mi"
+      ],
+      [
+        "580",
+        "Xiaomi",
+        "Mi 11 Ultra",
+        "Mi"
+      ],
+      [
+        "581",
+        "Xiaomi",
+        "Mi 12",
+        "Mi"
+      ],
+      [
+        "582",
+        "Xiaomi",
+        "Mi 12 Pro",
+        "Mi"
+      ],
+      [
+        "583",
+        "Xiaomi",
+        "Mi 12T",
+        "Mi"
+      ],
+      [
+        "584",
+        "Xiaomi",
+        "Mi 12T Pro",
+        "Mi"
+      ],
+      [
+        "585",
+        "Xiaomi",
+        "Mi 2",
+        "Mi"
+      ],
+      [
+        "586",
+        "Xiaomi",
+        "Mi 3",
+        "Mi"
+      ],
+      [
+        "587",
+        "Xiaomi",
+        "Mi 4",
+        "Mi"
+      ],
+      [
+        "588",
+        "Xiaomi",
+        "Mi 5",
+        "Mi"
+      ],
+      [
+        "589",
+        "Xiaomi",
+        "Mi 6",
+        "Mi"
+      ],
+      [
+        "590",
+        "Xiaomi",
+        "Mi 8",
+        "Mi"
+      ],
+      [
+        "591",
+        "Xiaomi",
+        "Mi 9",
+        "Mi"
+      ],
+      [
+        "592",
+        "Xiaomi",
+        "Xiaomi 12S",
+        "Xiaomi"
+      ],
+      [
+        "593",
+        "Xiaomi",
+        "Xiaomi 13",
+        "Xiaomi"
+      ],
+      [
+        "594",
+        "Xiaomi",
+        "Xiaomi 13 Pro",
+        "Xiaomi"
+      ],
+      [
+        "595",
+        "Xiaomi",
+        "Xiaomi 13T",
+        "Xiaomi"
+      ],
+      [
+        "596",
+        "Xiaomi",
+        "Xiaomi 13T Pro",
+        "Xiaomi"
+      ],
+      [
+        "597",
+        "Xiaomi",
+        "Xiaomi 14",
+        "Xiaomi"
+      ],
+      [
+        "598",
+        "Xiaomi",
+        "Xiaomi 14 Pro",
+        "Xiaomi"
+      ],
+      [
+        "599",
+        "Xiaomi",
+        "Xiaomi 14 Ultra",
+        "Xiaomi"
+      ],
+      [
+        "600",
+        "Xiaomi",
+        "Xiaomi 14T",
+        "Xiaomi"
+      ],
+      [
+        "601",
+        "Xiaomi",
+        "Xiaomi 14T Pro",
+        "Xiaomi"
+      ],
+      [
+        "602",
+        "Xiaomi",
+        "Xiaomi 15",
+        "Xiaomi"
+      ],
+      [
+        "603",
+        "Xiaomi",
+        "Xiaomi 15 Pro",
+        "Xiaomi"
+      ],
+      [
+        "604",
+        "Xiaomi",
+        "Xiaomi 15 Ultra",
+        "Xiaomi"
+      ],
+      [
+        "605",
+        "Xiaomi",
+        "Xiaomi 15T",
+        "Xiaomi"
+      ],
+      [
+        "606",
+        "Xiaomi",
+        "Xiaomi 15T Pro",
+        "Xiaomi"
+      ],
+      [
+        "607",
+        "Xiaomi",
+        "Xiaomi 17",
+        "Xiaomi"
+      ],
+      [
+        "608",
+        "Xiaomi",
+        "Xiaomi 17 Ultra",
+        "Xiaomi"
+      ]
+    ],
+    "Brand Summary": [
+      [
+        "Brand",
+        "Model Count"
+      ],
+      [
+        "Apple",
+        "52"
+      ],
+      [
+        "Samsung",
+        "154"
+      ],
+      [
+        "Redmi",
+        "47"
+      ],
+      [
+        "Vivo",
+        "60"
+      ],
+      [
+        "OPPO",
+        "68"
+      ],
+      [
+        "Xiaomi",
+        "36"
+      ],
+      [
+        "Realme",
+        "68"
+      ],
+      [
+        "POCO",
+        "42"
+      ],
+      [
+        "OnePlus",
+        "47"
+      ],
+      [
+        "Google",
+        "34"
+      ]
+    ],
+    "Database Schema": [
+      [
+        "Column",
+        "Purpose"
+      ],
+      [
+        "ID",
+        "Unique row ID"
+      ],
+      [
+        "Brand",
+        "Manufacturer/brand"
+      ],
+      [
+        "Model",
+        "Exact market-facing model"
+      ],
+      [
+        "Series",
+        "Model family/series"
+      ],
+      [
+        "Variant",
+        "e.g. Pro / Ultra / Plus / 5G variant"
+      ],
+      [
+        "RAM",
+        "RAM capacity"
+      ],
+      [
+        "Storage",
+        "Internal storage"
+      ],
+      [
+        "Network",
+        "2G/3G/4G/5G"
+      ],
+      [
+        "Release Year",
+        "Year released"
+      ],
+      [
+        "Region",
+        "Country/market"
+      ],
+      [
+        "Notes",
+        "Additional listing notes"
+      ]
+    ]
+  },
+  "shared_strings": []
+}

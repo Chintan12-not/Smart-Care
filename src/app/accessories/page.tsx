@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { 
   Search, 
   ShoppingBag, 
@@ -29,14 +30,38 @@ import { useCart } from "@/hooks/useCart";
 import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 
-export default function AccessoriesPage() {
+function AccessoriesContent() {
   const { addToCart } = useCart();
+  const searchParams = useSearchParams();
+  const queryBrand = searchParams.get("brand") || "";
+  const queryModel = searchParams.get("model") || "";
   
   // Search & Filter states
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("default");
+
+  useEffect(() => {
+    if (queryModel) {
+      setSearch(queryModel);
+    } else if (queryBrand) {
+      setSearch(queryBrand);
+    }
+  }, [queryBrand, queryModel]);
+
+  const handleSelectModelFromFinder = (brand: string, model: string) => {
+    if (model) {
+      setSearch(model);
+    } else {
+      setSearch(brand);
+    }
+    const el = document.getElementById("accessories-grid-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   
   // Interactive feature states
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -229,8 +254,11 @@ export default function AccessoriesPage() {
         )}
       </div>
 
+      {/* Interactive Phone Model Finder */}
+      <PhoneModelFinder onSelectModel={handleSelectModelFromFinder} />
+
       {/* Catalog Search, Category Tabs, and Sorting Controls */}
-      <div className="glass-card rounded-2xl p-5 border border-border flex flex-col lg:flex-row gap-4 items-center justify-between">
+      <div id="accessories-grid-section" className="glass-card rounded-2xl p-5 border border-border flex flex-col lg:flex-row gap-4 items-center justify-between">
         
         {/* Search */}
         <div className="relative w-full lg:max-w-xs">
@@ -626,5 +654,17 @@ export default function AccessoriesPage() {
       )}
 
     </div>
+  );
+}
+
+export default function AccessoriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <AccessoriesContent />
+    </Suspense>
   );
 }
