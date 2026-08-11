@@ -283,13 +283,6 @@ export default function Home() {
             <ShoppingBag className="h-4 w-4" />
             Shop Accessories
           </Link>
-          <Link
-            href="/pickup"
-            className="px-6 py-3.5 rounded-2xl bg-foreground text-background font-bold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-md transition-all hover:scale-[1.01]"
-          >
-            <Wrench className="h-4 w-4" />
-            Book Doorstep Repair
-          </Link>
         </div>
       </section>
 
