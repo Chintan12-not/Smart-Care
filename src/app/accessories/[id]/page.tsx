@@ -255,7 +255,7 @@ export default function ProductDetailPage({ params }: PageProps) {
 *Product*: ${product.name}
 *Price*: ${formatINR(product.price)}
 *Quantity*: ${quantity}
-*URL*: https://smart-care-u57t.vercel.app/accessories/${product.id}`;
+*URL*: https://smartcaremobile.in/accessories/${product.id}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
 
   // Product Images Array compiled

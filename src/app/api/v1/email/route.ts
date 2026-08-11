@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://smart-care-u57t.vercel.app/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
           </div>
           <h2 style="color: #06b6d4; border-bottom: 2px solid #06b6d4; padding-bottom: 8px;">Welcome to Smart Care, ${payload.name || "friend"}!</h2>
           <p>Thank you for signing up for an account on Smart Care & Mobile Point. We are excited to have you join our platform!</p>
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://smart-care-u57t.vercel.app/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
           </div>
           <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 8px;">Pickup Booking Confirmed!</h2>
           <p>Dear ${payload.customerName},</p>
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
           </div>
 
           <p>Our dispatch team is processing your request, and a service agent will contact you shortly to coordinate the pickup.</p>
-          <p>You can track this booking status live under the "Repairs" tab in your <a href="https://smart-care-u57t.vercel.app/dashboard/repairs" style="color: #06b6d4; text-decoration: none; font-weight: bold;">customer dashboard</a>.</p>
+          <p>You can track this booking status live under the "Repairs" tab in your <a href="https://smartcaremobile.in/dashboard/repairs" style="color: #06b6d4; text-decoration: none; font-weight: bold;">customer dashboard</a>.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
           <p style="font-size: 11px; color: #777; text-align: center;">Smart Care Hub, Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
         </div>
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://smart-care-u57t.vercel.app/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
           </div>
           <h2 style="color: #06b6d4; border-bottom: 2px solid #06b6d4; padding-bottom: 8px;">Accessory Purchase Confirmation</h2>
           <p>Thank you for your order, ${payload.shippingAddress.name}!</p>
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
             <p style="margin: 5px 0 0 0;">Phone: ${payload.shippingAddress.phone}</p>
           </div>
 
-          <p>You can view your order tracking details under the "Orders" tab in your <a href="https://smart-care-u57t.vercel.app/dashboard/orders" style="color: #06b6d4; text-decoration: none; font-weight: bold;">customer dashboard</a>.</p>
+          <p>You can view your order tracking details under the "Orders" tab in your <a href="https://smartcaremobile.in/dashboard/orders" style="color: #06b6d4; text-decoration: none; font-weight: bold;">customer dashboard</a>.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
           <p style="font-size: 11px; color: #777; text-align: center;">Smart Care Hub, Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
         </div>
