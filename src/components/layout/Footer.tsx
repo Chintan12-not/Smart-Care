@@ -107,29 +107,34 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Repair Services */}
           <div>
-            <h3 className="text-xs font-bold text-foreground tracking-wider uppercase mb-4">Our Services</h3>
-            <ul className="space-y-2.5 text-xs">
+            <h3 className="text-xs font-bold text-foreground tracking-wider uppercase mb-4">Gurugram Repair Services</h3>
+            <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/mobile-assistant" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  AI Device Diagnostics
+                <Link href="/mobile-repair-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Mobile Repair Gurugram
                 </Link>
               </li>
               <li>
-                <Link href="/pickup" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  Book Pickup & Drop
+                <Link href="/iphone-repair-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  iPhone Repair Gurugram
                 </Link>
               </li>
               <li>
-                <Link href="/accessories" className="text-muted-foreground hover:text-foreground transition-colors duration-200">
-                  Premium Accessories Store
+                <Link href="/samsung-repair-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Samsung Repair Gurugram
                 </Link>
               </li>
               <li>
-                <span className="text-muted-foreground hover:text-foreground transition-colors duration-200 cursor-default">
-                  Document Printing & Xerox
-                </span>
+                <Link href="/screen-replacement-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Screen Replacement Gurugram
+                </Link>
+              </li>
+              <li>
+                <Link href="/pickup" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Doorstep Pickup & Repair
+                </Link>
               </li>
             </ul>
           </div>

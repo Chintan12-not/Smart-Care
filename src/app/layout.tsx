@@ -19,25 +19,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://smartcaremobile.in"),
+  metadataBase: new URL("https://www.smartcaremobile.in"),
   title: {
-    default: "Smart Care & Mobile Point | Doorstep Mobile Repair & Genuine Accessories Gurugram",
+    default: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
     template: "%s | Smart Care & Mobile Point",
   },
-  description: "Gurugram's rated #1 doorstep mobile repair service, genuine phone covers, chargers, tempered glass for 600+ models, document printing & photocopy (Xerox) at smartcaremobile.in.",
+  description: "Doorstep mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models. Contact Smart Care & Mobile Point today.",
   keywords: [
-    "Mobile Repair Gurugram", 
-    "Phone Repair Sector 37C", 
-    "Doorstep Mobile Repair", 
-    "Smart Care Mobile Point", 
+    "mobile repair in Gurugram", 
+    "mobile repair shop in Gurgaon", 
+    "doorstep mobile repair Gurgaon", 
+    "phone repair Gurgaon", 
+    "iPhone repair Gurgaon", 
+    "Samsung repair Gurgaon", 
+    "mobile accessories Gurgaon",
+    "phone accessories Gurgaon",
     "smartcaremobile.in", 
-    "Mobile Accessories Gurugram",
-    "Screen Replacement Gurugram",
-    "Document Printing Xerox Sector 37C",
-    "Corporate Bulk Mobile Orders"
+    "screen replacement Gurugram",
+    "battery replacement Gurugram",
+    "corporate mobile accessories bulk orders"
   ],
   alternates: {
-    canonical: "https://smartcaremobile.in",
+    canonical: "https://www.smartcaremobile.in",
   },
   icons: {
     icon: [
@@ -50,30 +53,37 @@ export const metadata: Metadata = {
     shortcut: ["/logo.png"]
   },
   openGraph: {
-    title: "Smart Care & Mobile Point — Gurugram's Premier Mobile Repair & Accessories Store",
-    description: "Doorstep mobile repair, genuine phone accessories for 600+ models, and corporate bulk ordering at smartcaremobile.in.",
-    url: "https://smartcaremobile.in",
+    title: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
+    description: "Doorstep mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models.",
+    url: "https://www.smartcaremobile.in",
     siteName: "Smart Care & Mobile Point",
     locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "https://smartcaremobile.in/hero_background.png",
+        url: "https://www.smartcaremobile.in/hero_background.png",
         width: 1200,
         height: 630,
-        alt: "Smart Care & Mobile Point Storefront Sector 37C Gurugram",
+        alt: "Smart Care & Mobile Point Storefront in Sector 37C Gurugram",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Smart Care & Mobile Point | smartcaremobile.in",
-    description: "Doorstep mobile repair & genuine accessories store in Gurugram.",
-    images: ["https://smartcaremobile.in/hero_background.png"],
+    title: "Mobile Repair & Accessories in Gurugram | Smart Care",
+    description: "Doorstep mobile repair & genuine accessories store in Gurugram. Contact Smart Care today.",
+    images: ["https://www.smartcaremobile.in/hero_background.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -82,15 +92,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Structured JSON-LD Schema for Google Search Indexing
-  const jsonLd = {
+  // Structured JSON-LD Schema for Google LocalBusiness & Organization Indexing
+  const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "MobilePhoneStore",
+    "@id": "https://www.smartcaremobile.in/#localbusiness",
     "name": "Smart Care & Mobile Point",
-    "url": "https://smartcaremobile.in",
-    "logo": "https://smartcaremobile.in/logo.png",
-    "image": "https://smartcaremobile.in/hero_background.png",
-    "description": "Gurugram's premier doorstep mobile repair center, genuine mobile accessories store, document printing & photocopy hub.",
+    "url": "https://www.smartcaremobile.in",
+    "logo": "https://www.smartcaremobile.in/logo.png",
+    "image": "https://www.smartcaremobile.in/hero_background.png",
+    "description": "Gurugram's premier doorstep mobile repair center, genuine phone accessories store, document printing & photocopy hub.",
     "telephone": "+919289942313",
     "priceRange": "₹₹",
     "address": {
@@ -115,9 +126,35 @@ export default function RootLayout({
       "closes": "21:00"
     },
     "sameAs": [
-      "https://smartcaremobile.in",
+      "https://www.smartcaremobile.in",
       "https://wa.me/919289942313"
+    ],
+    "areaServed": [
+      "Gurugram",
+      "Sector 37C Gurugram",
+      "Sector 45 Gurugram",
+      "DLF Phase 1-5 Gurugram",
+      "Sohna Road Gurugram",
+      "Golf Course Road Gurugram",
+      "Delhi NCR"
     ]
+  };
+
+  const webSiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://www.smartcaremobile.in/#website",
+    "url": "https://www.smartcaremobile.in",
+    "name": "Smart Care & Mobile Point",
+    "description": "Mobile Repair & Genuine Accessories in Gurugram",
+    "publisher": {
+      "@id": "https://www.smartcaremobile.in/#localbusiness"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.smartcaremobile.in/accessories?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   };
 
   return (
@@ -129,7 +166,11 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300">

@@ -270,8 +270,35 @@ export default function ProductDetailPage({ params }: PageProps) {
     { name: "Amit Yadav", rating: 5, date: "15 April 2026", text: "Ordered on WhatsApp and got same day delivery in Sector 47. Case fits beautifully and material feels premium." }
   ];
 
+  // Product JSON-LD Schema
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.image.startsWith("/") ? `https://www.smartcaremobile.in${product.image}` : product.image,
+    "description": product.description || `${product.name} compatible with ${product.brand} smartphones. Available at Smart Care & Mobile Point.`,
+    "brand": {
+      "@type": "Brand",
+      "name": product.brand || "Smart Care"
+    },
+    "sku": product.id,
+    "offers": {
+      "@type": "Offer",
+      "url": `https://www.smartcaremobile.in/accessories/${product.id}`,
+      "priceCurrency": "INR",
+      "price": product.price,
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Smart Care & Mobile Point"
+      }
+    }
+  };
+
   return (
     <div className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
       
       {/* Breadcrumbs */}
       <div className="flex items-center justify-between text-xs text-muted-foreground border-b border-border/40 pb-4">
