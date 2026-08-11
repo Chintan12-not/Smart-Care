@@ -123,12 +123,9 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
                       : "border-border/60 bg-card/60 hover:bg-muted/60 hover:border-border"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-xl shrink-0">{meta.logoText}</span>
-                    <div className="truncate">
-                      <span className="font-extrabold text-xs text-foreground block truncate">{b}</span>
-                      <span className="text-[9px] text-muted-foreground font-semibold block">{count} models</span>
-                    </div>
+                  <div className="min-w-0">
+                    <span className="font-extrabold text-xs text-foreground block truncate">{b}</span>
+                    <span className="text-[9px] text-muted-foreground font-semibold block">{count} models</span>
                   </div>
                   {isSelected && (
                     <div className="h-5 w-5 rounded-full bg-indigo-500 text-black flex items-center justify-center shrink-0">

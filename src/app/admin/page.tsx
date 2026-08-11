@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { formatINR, cn } from "@/lib/utils";
+import phoneData from "@/data/phoneModels.json";
 
 interface DbAccessory {
   id: string;
@@ -51,8 +52,10 @@ export default function AdminPage() {
 
   // Form states
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("charger");
-  const [brand, setBrand] = useState("");
+  const [category, setCategory] = useState("case");
+  const [brand, setBrand] = useState("Apple");
+  const [customBrand, setCustomBrand] = useState("");
+  const [targetModel, setTargetModel] = useState("");
   const [price, setPrice] = useState("");
   const [stockQuantity, setStockQuantity] = useState("50");
   const [description, setDescription] = useState("");
@@ -275,7 +278,8 @@ export default function AdminPage() {
   // Add accessory handler
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !price || !brand) {
+    const finalBrand = brand === "other" ? customBrand.trim() : brand;
+    if (!name || !price || !finalBrand) {
       setDbError("Please fill out all required fields.");
       return;
     }
@@ -290,33 +294,49 @@ export default function AdminPage() {
     // Fallback default image or clean input list
     const imagesArray = imageUrl.trim() ? [imageUrl.trim()] : ["/placeholder_acc.png"];
 
+    const finalModel = targetModel && targetModel !== "Universal / All Models" ? targetModel : "";
+
+    const specs: Record<string, string> = {
+      "Brand": finalBrand,
+    };
+    if (finalModel) {
+      specs["Compatible Model"] = finalModel;
+    } else {
+      specs["Compatibility"] = "Universal / All Models";
+    }
+
+    let finalTitle = name.trim();
+    if (finalModel && !finalTitle.toLowerCase().includes(finalModel.toLowerCase())) {
+      finalTitle = `${finalTitle} (${finalModel})`;
+    }
+
     try {
       const { data, error } = await supabase
         .from("accessories")
         .insert([
           {
-            name,
+            name: finalTitle,
             category,
-            brand,
+            brand: finalBrand,
             price: priceNum,
             stock_quantity: stockNum,
             description: description || null,
             images: imagesArray,
             is_active: isActive,
-            rating_avg: 4.5,
-            reviews_count: 12,
-            specifications: {}
+            rating_avg: 4.8,
+            reviews_count: 15,
+            specifications: specs
           }
         ])
         .select();
 
       if (error) throw error;
 
-      setActionSuccess("Product added successfully!");
+      setActionSuccess(`Product "${finalTitle}" added successfully!`);
       // Reset form
       setName("");
-      setBrand("");
       setPrice("");
+      setTargetModel("");
       setStockQuantity("50");
       setDescription("");
       setImageUrl("");
@@ -496,9 +516,9 @@ export default function AdminPage() {
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
                     >
-                      <option value="charger">Charger & Power</option>
                       <option value="case">Cases & Covers</option>
                       <option value="tempered_glass">Tempered Glass</option>
+                      <option value="charger">Charger & Power</option>
                       <option value="audio">Audio & Sound</option>
                       <option value="power_bank">Power Bank</option>
                       <option value="other">Other Accessories</option>
@@ -510,15 +530,58 @@ export default function AdminPage() {
                       <Box className="h-3.5 w-3.5 text-cyan-500" />
                       Brand <span className="text-red-500">*</span>
                     </label>
+                    <select
+                      value={brand}
+                      onChange={(e) => {
+                        setBrand(e.target.value);
+                        setTargetModel("");
+                      }}
+                      className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    >
+                      {phoneData.brands.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                      <option value="other">Other / Custom Brand</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Custom Brand Input (if Other selected) */}
+                {brand === "other" && (
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground">Custom Brand Name *</label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Apple, Anker"
-                      value={brand}
-                      onChange={(e) => setBrand(e.target.value)}
+                      placeholder="e.g. Anker, Belkin, Boat"
+                      value={customBrand}
+                      onChange={(e) => setCustomBrand(e.target.value)}
                       className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
                     />
                   </div>
+                )}
+
+                {/* Compatible Phone Model Selection from Excel dataset */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                    <FileText className="h-3.5 w-3.5 text-cyan-500" />
+                    Target Compatible Model (608 Models Dataset)
+                  </label>
+                  <select
+                    value={targetModel}
+                    onChange={(e) => setTargetModel(e.target.value)}
+                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                  >
+                    <option value="">Universal / All {brand !== "other" ? brand : ""} Models</option>
+                    {brand !== "other" && ((phoneData.brandModels as any)[brand] || []).map((m: any) => (
+                      <option key={m.id + m.name} value={m.name}>
+                        {brand} {m.name} ({m.series} Series)
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[9px] text-muted-foreground">
+                    Selecting an exact model automatically tags the accessory for customer search & filter matching.
+                  </p>
                 </div>
 
                 {/* Price & Stock */}
