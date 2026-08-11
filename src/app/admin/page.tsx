@@ -17,6 +17,7 @@ import {
   Layers, 
   Box, 
   Star,
+  ToggleLeft,
   ToggleRight,
   Loader2,
   Info,
@@ -416,6 +417,19 @@ export default function AdminPage() {
       setDbError(err.message || "Failed to delete product from database.");
     }
   };
+
+  const filteredB2bInquiries = b2bInquiries.filter((inquiry) => {
+    const matchesSearch =
+      inquiry.name.toLowerCase().includes(b2bSearch.toLowerCase()) ||
+      inquiry.companyName.toLowerCase().includes(b2bSearch.toLowerCase()) ||
+      inquiry.email.toLowerCase().includes(b2bSearch.toLowerCase()) ||
+      inquiry.phone.toLowerCase().includes(b2bSearch.toLowerCase()) ||
+      inquiry.product.toLowerCase().includes(b2bSearch.toLowerCase());
+
+    const matchesStatus = b2bStatusFilter === "All" || inquiry.status === b2bStatusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   if (authLoading || !user || user.role !== "admin") {
     return (

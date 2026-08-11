@@ -54,7 +54,7 @@ export async function createB2BInquiry(inquiry: Omit<B2BInquiryData, "$id" | "st
     deliveryLocation: inquiry.deliveryLocation,
     expectedPurchaseDate: inquiry.expectedPurchaseDate || "",
     requirements: inquiry.requirements || "",
-    status: "New",
+    status: "New" as B2BInquiryData["status"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
