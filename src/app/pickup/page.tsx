@@ -86,101 +86,109 @@ export default function PickupPage() {
   // Initialize leaflet map
   useEffect(() => {
     if (leafletLoaded && typeof window !== "undefined" && (window as any).L) {
-      const L = (window as any).L;
+      try {
+        const L = (window as any).L;
 
-      // Guard: ensure the map container exists in the DOM before initializing
-      const mapContainer = document.getElementById("pickup-map");
-      if (!mapContainer) return;
-      
-      // Guard: prevent "Map container is already initialized" error on re-renders
-      if ((mapContainer as any)._leaflet_id) {
-        return;
-      }
-
-      // Center at Smart Care Shop (Ninex Residency, Sector 37C)
-      const shopLat = 28.4526094;
-      const shopLng = 76.990898;
-
-      // Fix leaflet default icon markers path error
-      delete L.Icon.Default.prototype._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
-
-      const map = L.map("pickup-map").setView([shopLat, shopLng], 14);
-      mapRef.current = map;
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-
-      // Create a custom shop pin
-      const shopIcon = L.divIcon({
-        className: 'custom-shop-pin',
-        html: `<div class="flex items-center justify-center h-8 w-8 rounded-full bg-cyan-500 text-black border-2 border-white shadow-lg"><span class="text-xs">🛠️</span></div>`,
-        iconSize: [32, 32],
-        iconAnchor: [16, 32]
-      });
-
-      // Add static Shop Marker
-      const shopMarker = L.marker([shopLat, shopLng], { icon: shopIcon }).addTo(map);
-      shopMarker.bindPopup("<b>Smart Care Hub Store</b><br>Shop No. 28, Ninex Residency, Sector 37C").openPopup();
-
-      // Add Draggable Customer Marker (offset slightly so it is clearly visible next to the shop marker)
-      const marker = L.marker([shopLat + 0.001, shopLng + 0.001], { draggable: true }).addTo(map);
-      markerRef.current = marker;
-
-      marker.bindPopup("Drag this pin to your address").openPopup();
-
-      const reverseGeocode = async (lat: number, lng: number) => {
-        setIsCalculating(true);
-        setCalcError("");
-        try {
-          const res = await fetch("/api/v1/distance", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lat, lng })
-          });
-          const distData = await res.json();
-          if (distData.success) {
-            setDistanceKm(distData.distanceKm);
-            setPickupCharge(distData.charge);
-            if (distData.address) {
-              setPickupAddress(distData.address);
-            }
-            if (distData.approximateLocation) {
-              setApproximateLocation(distData.approximateLocation);
-            }
-          } else {
-            setCalcError("Could not retrieve geocoded location address.");
-          }
-        } catch (error) {
-          console.error(error);
-          setCalcError("Error reverse geocoding location coordinates.");
-        } finally {
-          setIsCalculating(false);
+        // Guard: ensure the map container exists in the DOM before initializing
+        const mapContainer = document.getElementById("pickup-map");
+        if (!mapContainer) return;
+        
+        // Guard: prevent "Map container is already initialized" error on re-renders
+        if ((mapContainer as any)._leaflet_id) {
+          return;
         }
-      };
 
-      marker.on("dragend", () => {
-        const position = marker.getLatLng();
-        reverseGeocode(position.lat, position.lng);
-      });
+        // Center at Smart Care Shop (Ninex Residency, Sector 37C)
+        const shopLat = 28.4526094;
+        const shopLng = 76.990898;
 
-      map.on("click", (e: any) => {
-        const { lat, lng } = e.latlng;
-        marker.setLatLng([lat, lng]);
-        reverseGeocode(lat, lng);
-      });
+        // Fix leaflet default icon markers path error safely
+        if (L.Icon && L.Icon.Default && L.Icon.Default.prototype) {
+          try {
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+              iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+              iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+              shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+            });
+          } catch (e) {}
+        }
 
-      // Cleanup: destroy map on unmount
-      return () => {
-        try {
-          map.remove();
-        } catch (e) {}
-      };
+        const map = L.map("pickup-map").setView([shopLat, shopLng], 14);
+        mapRef.current = map;
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Create a custom shop pin
+        const shopIcon = L.divIcon({
+          className: 'custom-shop-pin',
+          html: `<div class="flex items-center justify-center h-8 w-8 rounded-full bg-cyan-500 text-black border-2 border-white shadow-lg"><span class="text-xs">🛠️</span></div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32]
+        });
+
+        // Add static Shop Marker
+        const shopMarker = L.marker([shopLat, shopLng], { icon: shopIcon }).addTo(map);
+        shopMarker.bindPopup("<b>Smart Care Hub Store</b><br>Shop No. 28, Ninex Residency, Sector 37C").openPopup();
+
+        // Add Draggable Customer Marker (offset slightly so it is clearly visible next to the shop marker)
+        const marker = L.marker([shopLat + 0.001, shopLng + 0.001], { draggable: true }).addTo(map);
+        markerRef.current = marker;
+
+        marker.bindPopup("Drag this pin to your address").openPopup();
+
+        const reverseGeocode = async (lat: number, lng: number) => {
+          setIsCalculating(true);
+          setCalcError("");
+          try {
+            const res = await fetch("/api/v1/distance", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ lat, lng })
+            });
+            const distData = await res.json();
+            if (distData.success) {
+              setDistanceKm(distData.distanceKm);
+              setPickupCharge(distData.charge);
+              if (distData.address) {
+                setPickupAddress(distData.address);
+              }
+              if (distData.approximateLocation) {
+                setApproximateLocation(distData.approximateLocation);
+              }
+            } else {
+              setCalcError("Could not retrieve geocoded location address.");
+            }
+          } catch (error) {
+            console.error(error);
+            setCalcError("Error reverse geocoding location coordinates.");
+          } finally {
+            setIsCalculating(false);
+          }
+        };
+
+        marker.on("dragend", () => {
+          const position = marker.getLatLng();
+          reverseGeocode(position.lat, position.lng);
+        });
+
+        map.on("click", (e: any) => {
+          const { lat, lng } = e.latlng;
+          marker.setLatLng([lat, lng]);
+          reverseGeocode(lat, lng);
+        });
+
+        // Cleanup: destroy map on unmount
+        return () => {
+          try {
+            map.remove();
+          } catch (e) {}
+        };
+      } catch (err) {
+        console.error("Leaflet initialization error handled:", err);
+      }
     }
   }, [leafletLoaded]);
 

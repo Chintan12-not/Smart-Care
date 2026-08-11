@@ -35,12 +35,27 @@ export default function BillingPage() {
   const [streetAddress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("cod"); // cod | upi | whatsapp
+  const [paymentMethod, setPaymentMethod] = useState("razorpay"); // razorpay | cod | whatsapp
 
   // Submission States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState("");
+
+  // Load Razorpay Script dynamically
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      document.body.appendChild(script);
+      return () => {
+        try {
+          document.body.removeChild(script);
+        } catch (e) {}
+      };
+    }
+  }, []);
 
   // Prefill details if user logged in
   useEffect(() => {
@@ -58,6 +73,131 @@ export default function BillingPage() {
     }
   }, [cart, isSuccess, authLoading, router]);
 
+  // Execute DB insert + localstorage + thank you email dispatch
+  const finalizeOrder = async (orderId: string, payMethod: string, paymentInfo?: any) => {
+    const orderTotal = getCartTotal();
+
+    // 1. Write order to Supabase orders and order_items tables if configured
+    if (isSupabaseConfigured() && user) {
+      try {
+        const dbPaymentMethod = payMethod === "cod" ? "cod" : "online";
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        const { data: newOrder, error: orderError } = await supabase
+          .from("orders")
+          .insert({
+            user_id: user.id,
+            status: payMethod === "razorpay" ? "paid" : "pending",
+            payment_method: dbPaymentMethod,
+            total_amount: orderTotal,
+            shipping_address: {
+              name: fullName,
+              phone: phone,
+              email: email,
+              address: streetAddress,
+              city: city,
+              pincode: pincode,
+              razorpay_payment_id: paymentInfo?.razorpay_payment_id || null,
+              razorpay_order_id: paymentInfo?.razorpay_order_id || null,
+            }
+          })
+          .select()
+          .single();
+
+        if (orderError) throw orderError;
+
+        if (newOrder) {
+          const itemsPayload = cart.map(item => {
+            const isValidUuid = uuidRegex.test(item.id);
+            const dbProductId = isValidUuid ? item.id : "00000000-0000-0000-0000-000000000000";
+            return {
+              order_id: newOrder.id,
+              product_id: dbProductId,
+              item_type: "accessory",
+              quantity: item.quantity,
+              price_per_unit: item.price
+            };
+          });
+
+          const { error: itemsError } = await supabase
+            .from("order_items")
+            .insert(itemsPayload);
+          
+          if (itemsError) throw itemsError;
+        }
+      } catch (dbErr) {
+        console.error("Database order insertion failed, completed via localStorage fallback:", dbErr);
+      }
+    }
+
+    // 2. Localstorage save backup
+    const savedOrders = localStorage.getItem("sc_mock_orders");
+    let list = savedOrders ? JSON.parse(savedOrders) : [];
+    const newMockOrder = {
+      id: orderId,
+      created_at: new Date().toISOString(),
+      status: payMethod === "razorpay" ? "paid" : "pending",
+      payment_method: payMethod,
+      total_amount: orderTotal,
+      razorpay_payment_id: paymentInfo?.razorpay_payment_id || null,
+      shipping_address: {
+        name: fullName,
+        phone,
+        email,
+        address: streetAddress,
+        city,
+        pincode
+      },
+      items: cart.map(item => ({
+        id: `item_${Math.floor(1000 + Math.random() * 9000)}`,
+        product_name: item.name,
+        product_image: item.image,
+        quantity: item.quantity,
+        price: item.price
+      }))
+    };
+    list.unshift(newMockOrder);
+    localStorage.setItem("sc_mock_orders", JSON.stringify(list));
+
+    // 3. Dispatch Thanking Email Confirmation via Resend API endpoint
+    fetch("/api/v1/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "accessory",
+        to: email,
+        payload: {
+          total_amount: orderTotal,
+          payment_method: payMethod === "razorpay" ? "Razorpay Online (Paid)" : payMethod,
+          razorpay_payment_id: paymentInfo?.razorpay_payment_id || undefined,
+          shippingAddress: {
+            name: fullName,
+            phone,
+            address: streetAddress,
+            city,
+            pincode
+          },
+          items: cart.map(item => ({
+            product_name: item.name,
+            quantity: item.quantity,
+            price: item.price
+          }))
+        }
+      })
+    }).catch(err => console.error("Accessory purchase email trigger failed:", err));
+
+    // Celebrate
+    confetti({
+      particleCount: 150,
+      spread: 90,
+      colors: ["#06b6d4", "#10b981", "#fbbf24"]
+    });
+
+    setCreatedOrderId(orderId);
+    clearCart();
+    setIsSuccess(true);
+  };
+
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !phone || !email || !streetAddress || !city || !pincode) {
@@ -72,131 +212,87 @@ export default function BillingPage() {
 
     setIsSubmitting(true);
     const orderTotal = getCartTotal();
-    const orderId = `ord_${Math.floor(100000 + Math.random() * 900000)}`;
+    const generatedOrderId = `ord_${Math.floor(100000 + Math.random() * 900000)}`;
 
     try {
-      // 1. Write order to Supabase orders and order_items tables if configured
-      if (isSupabaseConfigured()) {
-        try {
-          const dbPaymentMethod = paymentMethod === "cod" ? "cod" : "online";
-          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (paymentMethod === "razorpay") {
+        // Create order via Razorpay API backend route
+        const res = await fetch("/api/v1/razorpay/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: orderTotal,
+            receipt: generatedOrderId,
+          }),
+        });
+        const rzpData = await res.json();
 
-          const { data: newOrder, error: orderError } = await supabase
-            .from("orders")
-            .insert({
-              user_id: user.id,
-              status: "pending",
-              payment_method: dbPaymentMethod,
-              total_amount: orderTotal,
-              shipping_address: {
-                name: fullName,
-                phone: phone,
-                email: email,
-                address: streetAddress,
-                city: city,
-                pincode: pincode
-              }
-            })
-            .select()
-            .single();
-
-          if (orderError) throw orderError;
-
-          if (newOrder) {
-            const itemsPayload = cart.map(item => {
-              const isValidUuid = uuidRegex.test(item.id);
-              const dbProductId = isValidUuid ? item.id : "00000000-0000-0000-0000-000000000000";
-              return {
-                order_id: newOrder.id,
-                product_id: dbProductId,
-                item_type: "accessory",
-                quantity: item.quantity,
-                price_per_unit: item.price
-              };
-            });
-
-            const { error: itemsError } = await supabase
-              .from("order_items")
-              .insert(itemsPayload);
-            
-            if (itemsError) throw itemsError;
-          }
-        } catch (dbErr) {
-          console.error("Database order insertion failed, completed via localStorage fallback:", dbErr);
+        if (!rzpData.success) {
+          alert(`Razorpay Order creation issue: ${rzpData.error || "Unable to initialize payment"}`);
+          setIsSubmitting(false);
+          return;
         }
-      }
 
-      // 2. Localstorage save backup
-      const savedOrders = localStorage.getItem("sc_mock_orders");
-      let list = savedOrders ? JSON.parse(savedOrders) : [];
-      const newMockOrder = {
-        id: orderId,
-        created_at: new Date().toISOString(),
-        status: "pending",
-        payment_method: paymentMethod,
-        total_amount: orderTotal,
-        shipping_address: {
-          name: fullName,
-          phone,
-          email,
-          address: streetAddress,
-          city,
-          pincode
-        },
-        items: cart.map(item => ({
-          id: `item_${Math.floor(1000 + Math.random() * 9000)}`,
-          product_name: item.name,
-          product_image: item.image,
-          quantity: item.quantity,
-          price: item.price
-        }))
-      };
-      list.unshift(newMockOrder);
-      localStorage.setItem("sc_mock_orders", JSON.stringify(list));
+        const razorpayKey = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TO6v5XghH0VsgN";
 
-      // 3. Dispatch Thanking Email Confirmation via Resend API endpoint
-      fetch("/api/v1/email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "accessory",
-          to: email,
-          payload: {
-            total_amount: orderTotal,
-            shippingAddress: {
-              name: fullName,
-              phone,
-              address: streetAddress,
-              city,
-              pincode
+        const options = {
+          key: razorpayKey,
+          amount: rzpData.order.amount,
+          currency: rzpData.order.currency,
+          name: "Smart Care Mobile Point",
+          description: `Accessory Order ${generatedOrderId}`,
+          order_id: rzpData.order.id,
+          prefill: {
+            name: fullName,
+            email: email,
+            contact: phone,
+          },
+          theme: {
+            color: "#06b6d4",
+          },
+          handler: async function (response: any) {
+            console.log("Razorpay Payment Success:", response);
+            await finalizeOrder(generatedOrderId, "razorpay", response);
+            setIsSubmitting(false);
+          },
+          modal: {
+            ondismiss: function () {
+              setIsSubmitting(false);
             },
-            items: cart.map(item => ({
-              product_name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            }))
-          }
-        })
-      }).catch(err => console.error("Accessory purchase email trigger failed:", err));
+          },
+        };
 
-      // Celebrate
-      confetti({
-        particleCount: 150,
-        spread: 90,
-        colors: ["#06b6d4", "#10b981", "#fbbf24"]
-      });
-
-      setCreatedOrderId(orderId);
-      clearCart();
-      setIsSuccess(true);
-
+        if (typeof window !== "undefined" && (window as any).Razorpay) {
+          const rzp = new (window as any).Razorpay(options);
+          rzp.on("payment.failed", function (response: any) {
+            alert(`Payment Failed: ${response.error.description}`);
+            setIsSubmitting(false);
+          });
+          rzp.open();
+        } else {
+          alert("Razorpay payment checkout library is loading. Please try again in 3 seconds.");
+          setIsSubmitting(false);
+        }
+      } else if (paymentMethod === "whatsapp") {
+        // Finalize order then open WhatsApp
+        await finalizeOrder(generatedOrderId, "whatsapp");
+        const whatsappNum = "919289942313";
+        const message = `Hello Smart Care! I placed an order ${generatedOrderId} for ${formatINR(orderTotal)}.\nName: ${fullName}\nAddress: ${streetAddress}, ${city} - ${pincode}`;
+        window.open(`https://wa.me/${whatsappNum}?text=${encodeURIComponent(message)}`, "_blank");
+      } else {
+        // COD
+        await finalizeOrder(generatedOrderId, "cod");
+      }
     } catch (err) {
       console.error("Failed placing order:", err);
       alert("There was an error processing your order. Please try again.");
     } finally {
-      setIsSubmitting(false);
+      if (paymentMethod !== "razorpay") {
+        setIsSubmitting(false);
+      }
     }
   };
+
 
   if (authLoading) {
     return (
@@ -365,15 +461,37 @@ export default function BillingPage() {
               </div>
 
               {/* Payment details card */}
-              <div className="glass-card rounded-3xl p-8 border border-border bg-card/40 space-y-4">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
-                  <CreditCard className="h-4.5 w-4.5 text-cyan-500" />
-                  Select Payment Method
-                </h3>
+              <div className="glass-card rounded-3xl p-6 sm:p-8 border border-border bg-card/40 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                    <CreditCard className="h-4.5 w-4.5 text-cyan-500" />
+                    Select Payment Method
+                  </h3>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-500 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">
+                    Test Mode Active
+                  </span>
+                </div>
 
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  {/* Razorpay Online */}
+                  <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center relative ${paymentMethod === "razorpay" ? "border-cyan-500 bg-cyan-500/[0.04] ring-1 ring-cyan-500" : "border-border bg-muted/20 hover:border-border/80"}`}>
+                    <input
+                      type="radio"
+                      name="payment"
+                      value="razorpay"
+                      checked={paymentMethod === "razorpay"}
+                      onChange={() => setPaymentMethod("razorpay")}
+                      className="sr-only"
+                    />
+                    <span className="text-xl">💳</span>
+                    <div>
+                      <span className="text-[11px] font-extrabold text-foreground block">Razorpay Online</span>
+                      <span className="text-[9px] text-cyan-500 font-semibold block mt-0.5">UPI / Cards / NetBanking</span>
+                    </div>
+                  </label>
+
                   {/* COD */}
-                  <label className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center ${paymentMethod === "cod" ? "border-cyan-500 bg-cyan-500/[0.02]" : "border-border bg-muted/20"}`}>
+                  <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center ${paymentMethod === "cod" ? "border-cyan-500 bg-cyan-500/[0.04] ring-1 ring-cyan-500" : "border-border bg-muted/20 hover:border-border/80"}`}>
                     <input
                       type="radio"
                       name="payment"
@@ -382,26 +500,15 @@ export default function BillingPage() {
                       onChange={() => setPaymentMethod("cod")}
                       className="sr-only"
                     />
-                    <span className="text-lg">💵</span>
-                    <span className="text-[11px] font-extrabold text-foreground">Cash on Delivery</span>
-                  </label>
-
-                  {/* UPI */}
-                  <label className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center ${paymentMethod === "upi" ? "border-cyan-500 bg-cyan-500/[0.02]" : "border-border bg-muted/20"}`}>
-                    <input
-                      type="radio"
-                      name="payment"
-                      value="upi"
-                      checked={paymentMethod === "upi"}
-                      onChange={() => setPaymentMethod("upi")}
-                      className="sr-only"
-                    />
-                    <span className="text-lg">📱</span>
-                    <span className="text-[11px] font-extrabold text-foreground">UPI / GPay / PhonePe</span>
+                    <span className="text-xl">💵</span>
+                    <div>
+                      <span className="text-[11px] font-extrabold text-foreground block">Cash on Delivery</span>
+                      <span className="text-[9px] text-muted-foreground block mt-0.5">Pay at Doorstep</span>
+                    </div>
                   </label>
 
                   {/* WhatsApp */}
-                  <label className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center ${paymentMethod === "whatsapp" ? "border-cyan-500 bg-cyan-500/[0.02]" : "border-border bg-muted/20"}`}>
+                  <label className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border transition-all cursor-pointer select-none text-center ${paymentMethod === "whatsapp" ? "border-cyan-500 bg-cyan-500/[0.04] ring-1 ring-cyan-500" : "border-border bg-muted/20 hover:border-border/80"}`}>
                     <input
                       type="radio"
                       name="payment"
@@ -410,11 +517,15 @@ export default function BillingPage() {
                       onChange={() => setPaymentMethod("whatsapp")}
                       className="sr-only"
                     />
-                    <span className="text-lg">💬</span>
-                    <span className="text-[11px] font-extrabold text-foreground">Order on WhatsApp</span>
+                    <span className="text-xl">💬</span>
+                    <div>
+                      <span className="text-[11px] font-extrabold text-foreground block">Order via WhatsApp</span>
+                      <span className="text-[9px] text-muted-foreground block mt-0.5">Direct Agent Support</span>
+                    </div>
                   </label>
                 </div>
               </div>
+
             </form>
 
             {/* Right side: Order Summary (5 cols on desktop, full width on mobile - shown FIRST on mobile) */}
