@@ -220,39 +220,48 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Backdrop & Menu Drawer */}
       {isOpen && (
-        <div className="md:hidden glass-panel border-b border-border absolute w-full top-16 left-0 animate-in slide-in-from-top duration-300">
-          <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
-              return (
+        <>
+          <div 
+            onClick={() => setIsOpen(false)} 
+            className="md:hidden fixed inset-0 top-16 bg-black/80 backdrop-blur-sm z-[80]"
+          />
+          <div className="md:hidden fixed top-16 left-0 w-full bg-background dark:bg-[#0a0d14] border-b border-border/80 shadow-2xl z-[90] animate-in slide-in-from-top duration-300">
+            <div className="p-4 space-y-2">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all min-h-[44px]",
+                      isActive 
+                        ? "bg-cyan-500/10 text-cyan-500 border border-cyan-500/20" 
+                        : "text-foreground hover:bg-muted/60"
+                    )}
+                  >
+                    {link.icon && <link.icon className={cn("h-5 w-5", link.accent || "text-foreground")} />}
+                    <span>{link.name}</span>
+                  </Link>
+                );
+              })}
+              
+              <div className="pt-2 border-t border-border/60">
                 <Link
-                  key={link.name}
-                  href={link.href}
+                  href="/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "block px-3 py-3 rounded-lg text-base font-medium flex items-center gap-2.5",
-                    isActive 
-                      ? "bg-muted text-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
-                  )}
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-foreground text-background font-extrabold text-xs uppercase tracking-wider shadow-md hover:opacity-90 transition-opacity"
                 >
-                  {link.icon && <link.icon className={cn("h-5 w-5", link.accent)} />}
-                  {link.name}
+                  <User className="h-4 w-4" />
+                  <span>User Dashboard</span>
                 </Link>
-              );
-            })}
-            <Link
-              href="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="block w-full text-center mt-4 px-4 py-3 rounded-lg bg-foreground text-background font-medium text-sm flex items-center justify-center gap-2"
-            >
-              <User className="h-4 w-4" />
-              User Dashboard
-            </Link>
+              </div>
+            </div>
           </div>
-        </div>
+        </>
       )}
       <CartDrawer isOpen={isCartDrawerOpen} onClose={() => setIsCartDrawerOpen(false)} />
     </header>
