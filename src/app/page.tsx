@@ -33,7 +33,8 @@ import {
   ChevronLeft,
   Phone,
   Lock,
-  Building2
+  Building2,
+  Printer
 } from "lucide-react";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 
@@ -483,6 +484,60 @@ export default function Home() {
                 ↔
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* DOCUMENT PRINTING & PHOTOCOPY (XEROX) SERVICES SECTION */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 w-full border-t border-border/40">
+        <div className="glass-card rounded-3xl p-8 sm:p-10 border border-blue-500/30 bg-gradient-to-r from-blue-950/20 via-background to-sky-950/20 shadow-xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          <div className="md:col-span-7 space-y-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              <Printer className="h-3.5 w-3.5" />
+              In-Store Express Document Services
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+              High-Speed Document Printing & Photocopy (Xerox)
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Visit our Sector 37C store for instant laser document printing, black & white or full color Xerox copies, document lamination, passport photos, and mobile bill recharges.
+            </p>
+            <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-bold text-foreground">
+              <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-blue-400" />
+                <span>B&W / Color Laser Printout</span>
+              </div>
+              <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-sky-400" />
+                <span>High-Speed Xerox Copy</span>
+              </div>
+              <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                <span>Document Lamination</span>
+              </div>
+              <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-amber-400" />
+                <span>Passport Photo & Recharges</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-5 space-y-4 text-center">
+            <div className="p-5 rounded-2xl bg-card border border-border text-left shadow-sm space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-400 block">Visit Store For Instant Service</span>
+              <p className="text-xs font-bold text-foreground">📍 Shop No. 28, Ninex Residency</p>
+              <p className="text-[11px] text-muted-foreground">Sector 37C, Gurugram, Haryana 122001</p>
+              <p className="text-[11px] text-emerald-500 font-semibold pt-1">🕒 Open Daily: 10:00 AM – 9:00 PM</p>
+            </div>
+            <a
+              href="https://wa.me/919289942313?text=Hi%20Smart%20Care,%20I%20have%20a%20document%20for%20printing/photocopy."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-black font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md"
+            >
+              <Printer className="h-4 w-4" />
+              <span>Send Document via WhatsApp</span>
+            </a>
           </div>
         </div>
       </section>
