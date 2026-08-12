@@ -133,6 +133,35 @@ export async function POST(req: NextRequest) {
           <p style="font-size: 11px; color: #777; text-align: center;">Smart Care Hub, Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
         </div>
       `;
+    } else if (type === "delivered") {
+      subject = `Order Delivered! Thank You - #${payload.order_id || "ORD"}`;
+      htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #10b981;">
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care & Mobile Point Logo" style="width: 180px; height: auto;" />
+          </div>
+          <h2 style="color: #10b981; margin-top: 0; font-size: 22px;">Order Delivered Successfully! 🎉</h2>
+          <p style="font-size: 14px; color: #475569;">Dear <strong>${payload.customerName || payload.shippingAddress?.name || "Valued Customer"}</strong>,</p>
+          <p style="font-size: 14px; color: #475569;">Your order <strong>#${payload.order_id}</strong> has been successfully delivered to your address!</p>
+          
+          <div style="background-color: #f8fafc; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #cbd5e1;">
+            <p style="margin: 0 0 8px 0; font-size: 13px; color: #334155;"><strong>Delivered To:</strong> ${payload.shippingAddress?.address || ""}, ${payload.shippingAddress?.city || ""}</p>
+            <p style="margin: 0; font-size: 13px; color: #10b981; font-weight: bold;">Grand Total Paid: ₹${payload.total_amount}</p>
+          </div>
+
+          <p style="font-size: 14px; color: #475569; font-weight: bold; text-align: center;">
+            Thank you for ordering with Smart Care & Mobile Point! We hope you love your new products. See you next time and keep ordering! 📱✨
+          </p>
+
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="https://smartcaremobile.in/accessories" style="background-color: #10b981; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 10px; font-weight: bold; font-size: 14px; display: inline-block;">Shop More Accessories</a>
+          </div>
+
+          <p style="font-size: 13px; color: #64748b;">Have feedback or need support? Reply to this email or chat with us on <a href="https://wa.me/919289942313" style="color: #10b981; text-decoration: none; font-weight: bold;">WhatsApp (+91 92899 42313)</a>.</p>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">Smart Care & Mobile Point | Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
+        </div>
+      `;
     } else {
       return NextResponse.json({ success: false, error: "Invalid email type" }, { status: 400 });
     }
@@ -140,7 +169,7 @@ export async function POST(req: NextRequest) {
     // Build recipient targets based on email type:
     // - "welcome": ONLY send to the customer email [to]
     // - "accessory" or "pickup": send to customer email [to] AND store owners [enigcon2020@gmail.com, chintanmaheshwari714@gmail.com]
-    const recipientTargets = type === "welcome" 
+    const recipientTargets = (type === "welcome" || type === "delivered") 
       ? [to] 
       : Array.from(new Set([to, ...adminRecipients]));
 

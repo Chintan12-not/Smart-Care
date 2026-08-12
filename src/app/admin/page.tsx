@@ -72,7 +72,115 @@ export default function AdminPage() {
   const [submitting, setSubmitting] = useState(false);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"accessories" | "estimator" | "b2b">("accessories");
+  const [activeTab, setActiveTab] = useState<"accessories" | "estimator" | "b2b" | "orders">("accessories");
+
+  // Customer Orders States
+  const [customerOrders, setCustomerOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
+
+  const loadCustomerOrders = async () => {
+    setOrdersLoading(true);
+    let dbOrders: any[] = [];
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (!error && data) {
+          dbOrders = data;
+        }
+      } catch (e) {
+        console.error("DB orders load error:", e);
+      }
+    }
+
+    let localOrders: any[] = [];
+    const stored = localStorage.getItem("sc_mock_orders");
+    if (stored) {
+      try {
+        localOrders = JSON.parse(stored);
+      } catch (e) {}
+    }
+
+    const combinedMap = new Map<string, any>();
+    localOrders.forEach(o => combinedMap.set(o.id, o));
+    dbOrders.forEach(o => combinedMap.set(o.id, o));
+
+    const merged = Array.from(combinedMap.values()).sort(
+      (a, b) => new Date(b.created_at || Date.now()).getTime() - new Date(a.created_at || Date.now()).getTime()
+    );
+
+    setCustomerOrders(merged);
+    setOrdersLoading(false);
+  };
+
+  const handleMarkDelivered = async (orderId: string) => {
+    try {
+      if (isSupabaseConfigured()) {
+        await supabase
+          .from("orders")
+          .update({ status: "delivered" })
+          .eq("id", orderId);
+      }
+
+      const stored = localStorage.getItem("sc_mock_orders");
+      if (stored) {
+        try {
+          const list = JSON.parse(stored);
+          const updatedList = list.map((o: any) => 
+            o.id === orderId ? { ...o, status: "delivered" } : o
+          );
+          localStorage.setItem("sc_mock_orders", JSON.stringify(updatedList));
+        } catch (e) {}
+      }
+
+      setActionSuccess(`Order #${orderId} marked as Delivered!`);
+      loadCustomerOrders();
+    } catch (e: any) {
+      setDbError(e.message || "Failed to update order status.");
+    }
+  };
+
+  const handleSendDeliveredEmail = async (order: any) => {
+    const targetEmail = order.shipping_address?.email || order.email;
+    if (!targetEmail) {
+      alert("No customer email found for this order.");
+      return;
+    }
+
+    setSendingEmailId(order.id);
+    setDbError(null);
+    setActionSuccess(null);
+
+    try {
+      const res = await fetch("/api/v1/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "delivered",
+          to: targetEmail,
+          payload: {
+            order_id: order.id,
+            customerName: order.shipping_address?.name || "Valued Customer",
+            total_amount: order.total_amount,
+            shippingAddress: order.shipping_address
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActionSuccess(`Automated Thank You email sent via Resend to ${targetEmail}!`);
+      } else {
+        setDbError(data.error || "Failed to send email via Resend.");
+      }
+    } catch (e: any) {
+      setDbError(e.message || "Email dispatch failed.");
+    } finally {
+      setSendingEmailId(null);
+    }
+  };
 
   // B2B Inquiries States (Appwrite Backend)
   const [b2bInquiries, setB2bInquiries] = useState<B2BInquiryData[]>([]);
@@ -528,6 +636,22 @@ export default function AdminPage() {
           >
             <Building2 className="h-4 w-4 text-purple-400" />
             <span>B2B Bulk Inquiries ({b2bInquiries.length})</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setActiveTab("orders");
+              loadCustomerOrders();
+            }}
+            className={cn(
+              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2 flex items-center gap-1.5",
+              activeTab === "orders"
+                ? "border-emerald-500 text-emerald-400 font-extrabold"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <ShoppingBag className="h-4 w-4 text-emerald-400" />
+            <span>Customer Orders ({customerOrders.length})</span>
           </button>
         </div>
 
@@ -1337,6 +1461,156 @@ CREATE POLICY "Allow authenticated insert" ON public.repair_estimator_config FOR
               </div>
 
             </div>
+          </div>
+        )}
+
+        {/* Customer Orders Management Tab */}
+        {activeTab === "orders" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+              <div>
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <ShoppingBag className="h-5 w-5 text-emerald-500" />
+                  Customer Orders & Fulfillment
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Manage incoming customer orders, confirm delivery status, and trigger Resend thank you emails.
+                </p>
+              </div>
+
+              <button
+                onClick={loadCustomerOrders}
+                className="px-4 py-2 rounded-xl bg-muted border border-border text-xs font-bold text-foreground hover:bg-muted/80 transition-colors flex items-center gap-1.5"
+              >
+                <Loader2 className={cn("h-3.5 w-3.5", ordersLoading && "animate-spin")} />
+                Refresh Orders
+              </button>
+            </div>
+
+            {ordersLoading ? (
+              <div className="py-16 text-center">
+                <Loader2 className="h-8 w-8 text-emerald-500 animate-spin mx-auto mb-3" />
+                <p className="text-xs text-muted-foreground font-medium">Fetching customer orders...</p>
+              </div>
+            ) : customerOrders.length === 0 ? (
+              <div className="glass-card rounded-3xl p-12 text-center border border-border bg-card space-y-4">
+                <Box className="h-12 w-12 text-muted-foreground mx-auto stroke-[1.5]" />
+                <div>
+                  <h3 className="font-bold text-foreground text-base">No Customer Orders Found</h3>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                    When customers place orders on the website or billing checkout, they will appear here live.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {customerOrders.map((order) => {
+                  const isDelivered = order.status?.toLowerCase() === "delivered";
+                  const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  });
+
+                  const customerEmail = order.shipping_address?.email || order.email || "N/A";
+                  const customerPhone = order.shipping_address?.phone || order.phone || "N/A";
+                  const customerName = order.shipping_address?.name || order.name || "Customer";
+                  const city = order.shipping_address?.city || "Gurugram";
+                  const address = order.shipping_address?.address || "";
+
+                  return (
+                    <div
+                      key={order.id}
+                      className="glass-card rounded-2xl p-5 border border-border shadow-sm bg-card hover:border-border/80 transition-all space-y-4"
+                    >
+                      {/* Order Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/50 pb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 font-bold border border-emerald-500/20">
+                            #
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-extrabold text-foreground text-sm">Order #{order.id}</span>
+                              <span className={cn(
+                                "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border",
+                                isDelivered
+                                  ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                                  : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                              )}>
+                                {isDelivered ? "Delivered" : (order.status || "Pending")}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-muted-foreground block mt-0.5">{orderDate}</span>
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <span className="text-xs text-muted-foreground block">Total Amount</span>
+                          <strong className="text-base font-black text-emerald-500">{formatINR(order.total_amount || 0)}</strong>
+                        </div>
+                      </div>
+
+                      {/* Details & Address */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 space-y-1">
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground block">Customer</span>
+                          <p className="font-bold text-foreground">{customerName}</p>
+                          <p className="text-muted-foreground">{customerPhone}</p>
+                          <p className="text-cyan-400 truncate">{customerEmail}</p>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 space-y-1">
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground block">Shipping Address</span>
+                          <p className="font-medium text-foreground">{address || "Express Store Delivery"}</p>
+                          <p className="text-muted-foreground">{city} - {order.shipping_address?.pincode || "122001"}</p>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl bg-muted/30 border border-border/40 space-y-1">
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground block">Payment & Order Info</span>
+                          <p className="font-bold text-foreground uppercase">{order.payment_method || "COD / Online"}</p>
+                          <p className="text-emerald-400 font-semibold uppercase">{order.payment_status || order.status || "paid"}</p>
+                          {order.items && order.items.length > 0 && (
+                            <span className="text-[11px] text-muted-foreground block mt-1">
+                              Items: {order.items.map((i: any) => `${i.product_name || 'Accessory'} (${i.quantity}x)`).join(", ")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Order Action Buttons */}
+                      <div className="flex flex-wrap items-center justify-end gap-3 pt-2 border-t border-border/40">
+                        {!isDelivered && (
+                          <button
+                            onClick={() => handleMarkDelivered(order.id)}
+                            className="px-4 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors flex items-center gap-1.5 shadow-sm"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                            <span>Confirm & Mark Delivered</span>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => handleSendDeliveredEmail(order)}
+                          disabled={sendingEmailId === order.id}
+                          className="px-4 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold text-xs hover:bg-cyan-500/20 transition-colors flex items-center gap-1.5"
+                        >
+                          {sendingEmailId === order.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                          ) : (
+                            <Mail className="h-4 w-4 text-cyan-400" />
+                          )}
+                          <span>Send Resend Thank You Email</span>
+                        </button>
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 

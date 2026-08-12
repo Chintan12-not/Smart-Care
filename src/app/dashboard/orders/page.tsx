@@ -38,6 +38,8 @@ export default function OrdersPage() {
 
     const fetchOrders = async () => {
       setLoading(true);
+      let fetchedDbOrders: Order[] = [];
+
       if (isSupabaseConfigured()) {
         try {
           // Fetch orders
@@ -47,18 +49,14 @@ export default function OrdersPage() {
             .eq("user_id", user.id)
             .order("created_at", { ascending: false });
 
-          if (orderError) throw orderError;
-
           if (dbOrders && dbOrders.length > 0) {
             const orderIds = dbOrders.map(o => o.id);
             
             // Fetch order items
-            const { data: dbItems, error: itemsError } = await supabase
+            const { data: dbItems } = await supabase
               .from("order_items")
               .select("*")
               .in("order_id", orderIds);
-
-            if (itemsError) throw itemsError;
 
             // Fetch products details to resolve names
             const { data: dbProducts } = await supabase
@@ -76,56 +74,35 @@ export default function OrdersPage() {
               product_image: productMap.get(item.product_id)?.images?.[0] || null,
             }));
 
-            const ordersWithItems = dbOrders.map(order => ({
+            fetchedDbOrders = dbOrders.map(order => ({
               ...order,
               items: itemsWithDetails.filter(item => item.order_id === order.id),
             }));
-
-            setOrders(ordersWithItems);
-          } else {
-            setOrders([]);
           }
         } catch (e) {
-          console.error("Error fetching orders:", e);
-        }
-      } else {
-        // Fallback: load mock orders from localStorage or set defaults
-        const mockOrdersData = localStorage.getItem("sc_mock_orders");
-        if (mockOrdersData) {
-          setOrders(JSON.parse(mockOrdersData));
-        } else {
-          // Set a default mock order for demonstration
-          const defaultMockOrders: Order[] = [
-            {
-              id: "ord_mock123",
-              created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-              status: "shipped",
-              payment_status: "paid",
-              payment_method: "online",
-              total_amount: 1499.00,
-              shipping_address: {
-                city: "Gurugram",
-                state: "Haryana",
-                details: "Flat 402, Sector 37C",
-                pincode: "122001"
-              },
-              items: [
-                {
-                  id: "item1",
-                  order_id: "ord_mock123",
-                  product_id: "prod1",
-                  quantity: 1,
-                  price_per_unit: 1499.00,
-                  product_name: "Ultra-Fast 65W GaN Charger",
-                  product_image: null
-                }
-              ]
-            }
-          ];
-          localStorage.setItem("sc_mock_orders", JSON.stringify(defaultMockOrders));
-          setOrders(defaultMockOrders);
+          console.error("Error fetching DB orders:", e);
         }
       }
+
+      // Read orders saved in localStorage fallback
+      let localOrders: Order[] = [];
+      const mockOrdersData = localStorage.getItem("sc_mock_orders");
+      if (mockOrdersData) {
+        try {
+          localOrders = JSON.parse(mockOrdersData);
+        } catch (e) {}
+      }
+
+      // Combine both DB orders and LocalStorage orders (deduplicating by ID)
+      const combinedMap = new Map<string, Order>();
+      localOrders.forEach(o => combinedMap.set(o.id, o));
+      fetchedDbOrders.forEach(o => combinedMap.set(o.id, o));
+
+      const mergedOrders = Array.from(combinedMap.values()).sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      setOrders(mergedOrders);
       setLoading(false);
     };
 
