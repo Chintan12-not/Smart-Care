@@ -20,24 +20,33 @@ export async function POST(req: NextRequest) {
     const adminRecipients = ["enigcon2020@gmail.com", "chintanmaheshwari714@gmail.com"];
 
     if (type === "welcome") {
-      subject = "Welcome to Smart Care & Mobile Point!";
+      subject = "Thank You for Joining Smart Care & Mobile Point!";
       htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #10b981;">
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care & Mobile Point Logo" style="width: 180px; height: auto;" />
           </div>
-          <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 8px;">Welcome to Smart Care, ${payload.name || "friend"}!</h2>
-          <p>Thank you for signing up for an account on Smart Care & Mobile Point. We are excited to have you join our platform!</p>
-          <p>With your account, you can now:</p>
-          <ul style="padding-left: 20px;">
-            <li><strong>Schedule Doorstep Pickups</strong>: Professional repair logistics inside Gurugram.</li>
-            <li><strong>Live Tracking</strong>: View your repair bookings status live in your customer dashboard.</li>
-            <li><strong>Order Accessories</strong>: Browse and buy premium products with doorstep shipping.</li>
-            <li><strong>AI Assistant</strong>: Use our mobile diagnostics checker anytime.</li>
-          </ul>
-          <p>If you have any questions or need immediate assistance, reply to this email or chat with us on WhatsApp at +91 9289942313.</p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-          <p style="font-size: 11px; color: #777; text-align: center;">Smart Care Hub, Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
+          <h2 style="color: #0f172a; margin-top: 0; font-size: 22px;">Thank You for Joining Us, ${payload.name || "Valued Customer"}! 🎉</h2>
+          <p style="font-size: 14px; color: #475569;">Welcome to <strong>Smart Care & Mobile Point</strong> — Gurugram's #1 Doorstep Mobile Repair & Genuine Accessories Store!</p>
+          <p style="font-size: 14px; color: #475569;">Your account is now fully active. You can now log into your dashboard anytime to access exclusive customer benefits:</p>
+          
+          <div style="background-color: #f8fafc; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #cbd5e1;">
+            <h4 style="margin: 0 0 10px 0; color: #10b981; font-size: 14px;">Your Member Privileges:</h4>
+            <ul style="padding-left: 20px; margin: 0; font-size: 13px; color: #334155;">
+              <li style="margin-bottom: 8px;"><strong>45-Minute Doorstep Mobile Repair</strong>: Free pickup & delivery across all Gurugram sectors.</li>
+              <li style="margin-bottom: 8px;"><strong>Genuine Phone Accessories</strong>: Covers, 9H tempered glass, and fast chargers for 600+ models.</li>
+              <li style="margin-bottom: 8px;"><strong>Document Printing & Xerox</strong>: In-store express document services at Shop No. 28, Ninex Residency.</li>
+              <li style="margin-bottom: 0;"><strong>Corporate Bulk Discounts</strong>: Direct wholesale rates with 100% GST invoices.</li>
+            </ul>
+          </div>
+
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="https://smartcaremobile.in/dashboard" style="background-color: #10b981; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 10px; font-weight: bold; font-size: 14px; display: inline-block;">Go to Customer Dashboard</a>
+          </div>
+
+          <p style="font-size: 13px; color: #64748b;">Need assistance or repair advice? Chat directly with our certified technicians on <a href="https://wa.me/919289942313" style="color: #10b981; text-decoration: none; font-weight: bold;">WhatsApp (+91 92899 42313)</a>.</p>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">Smart Care & Mobile Point | Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
         </div>
       `;
     } else if (type === "pickup") {
