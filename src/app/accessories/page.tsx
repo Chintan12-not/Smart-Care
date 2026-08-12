@@ -380,22 +380,15 @@ function AccessoriesContent() {
                     )}
                   </div>
                   
-                  {prod.image && (prod.id === "acc-7" || prod.image.startsWith("http") || prod.image.startsWith("/")) ? (
-                    <img
-                      src={prod.image}
-                      alt={prod.name}
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-transparent to-purple-500/10 flex items-center justify-center w-full h-full">
-                      {prod.category === "Chargers" && <Zap className="h-10 w-10 text-cyan-400 opacity-60" />}
-                      {prod.category === "Cables" && <Smartphone className="h-10 w-10 text-cyan-400 opacity-60" />}
-                      {prod.category === "Tempered Glass" && <ShieldCheck className="h-10 w-10 text-emerald-400 opacity-60" />}
-                      {prod.category === "Cases" && <Smartphone className="h-10 w-10 text-cyan-400 opacity-60" />}
-                      {prod.category === "Earbuds" && <Star className="h-10 w-10 text-purple-400 opacity-60" />}
-                      {prod.category === "Power Banks" && <Zap className="h-10 w-10 text-cyan-400 opacity-60" />}
-                    </div>
-                  )}
+                  <img
+                    src={prod.image || (prod.images && prod.images[0]) || "/shop_accessories.png"}
+                    alt={prod.name}
+                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/shop_accessories.png";
+                    }}
+                  />
                 </div>
 
                 {/* Product details */}
@@ -483,7 +476,7 @@ function AccessoriesContent() {
             <div className="flex gap-1">
               {compareProductsList.map(p => (
                 <div key={p.id} className="h-8 w-8 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden flex items-center justify-center flex-shrink-0 relative">
-                  <img src={p.image} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                  <img src={p.image} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
                   <button onClick={() => toggleCompare(p.id)} className="absolute top-0.5 right-0.5 bg-black/70 hover:bg-black text-white rounded-full p-0.5">
                     <X className="h-2 w-2" />
                   </button>
@@ -514,7 +507,7 @@ function AccessoriesContent() {
             {recentlyViewedProductsList.map(p => (
               <Link href={`/accessories/${p.id}`} key={p.id} className="p-3 bg-card border border-border/80 rounded-xl hover:border-cyan-500/20 transition-all flex items-center gap-3 group">
                 <div className="h-10 w-10 rounded-lg bg-muted border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  <img src={p.image} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                  <img src={p.image} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
                 </div>
                 <div className="truncate">
                   <h4 className="text-[11px] font-bold text-foreground truncate group-hover:text-cyan-500 transition-colors">{p.name}</h4>
@@ -542,7 +535,7 @@ function AccessoriesContent() {
                 <div className="font-bold text-muted-foreground border-r border-border/40 p-2 flex items-center">Feature</div>
                 {compareProductsList.map(p => (
                   <div key={p.id} className="p-2 border border-border/40 rounded-xl bg-muted/20 text-center space-y-2">
-                    <img src={p.image} alt="" className="h-12 w-12 rounded-lg object-cover mx-auto" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                    <img src={p.image} alt="" className="h-12 w-12 rounded-lg object-cover mx-auto" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
                     <p className="font-bold text-foreground truncate">{p.name}</p>
                   </div>
                 ))}

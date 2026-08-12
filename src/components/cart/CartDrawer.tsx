@@ -122,9 +122,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       style={{ width: "68px", height: "68px" }}
                     >
                       <img
-                        src={item.image || "/placeholder.jpg"}
+                        src={item.image || "/shop_accessories.png"}
                         alt={item.name}
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "/shop_accessories.png";
+                        }}
                       />
                     </div>
 

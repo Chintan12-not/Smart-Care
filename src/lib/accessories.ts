@@ -24,7 +24,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     price: 1499,
     rating: 4.8,
     reviewsCount: 142,
-    image: "/charger.png",
+    image: "/shop_accessories.png",
     specifications: {
       "Output Wattage": "30W Max",
       "Ports": "1 x USB-C, 1 x USB-A",
@@ -41,7 +41,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     price: 499,
     rating: 4.6,
     reviewsCount: 84,
-    image: "/cable.png",
+    image: "/shop_counter.png",
     specifications: {
       "Length": "2 Meters (6.6 ft)",
       "Material": "Double-Braided Nylon",
@@ -58,7 +58,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     price: 799,
     rating: 4.7,
     reviewsCount: 210,
-    image: "/glass.png",
+    image: "/shop_shelf.png",
     specifications: {
       "Hardness": "9H Tempered Glass",
       "Coating": "Oleophobic anti-fingerprint",
@@ -75,7 +75,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     price: 1199,
     rating: 4.5,
     reviewsCount: 65,
-    image: "/case.png",
+    image: "/s25_case.jpg",
     specifications: {
       "Material": "TPU + Polycarbonate",
       "MagSafe Compatibility": "Yes (Built-in N52 Magnets)",
@@ -92,7 +92,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     price: 2999,
     rating: 4.4,
     reviewsCount: 198,
-    image: "/earbuds.png",
+    image: "/shop_front.png",
     specifications: {
       "Noise Cancellation": "Up to 42dB Active Noise Cancellation",
       "Battery Life": "Up to 30 Hours (With case)",
@@ -109,7 +109,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     price: 1999,
     rating: 4.7,
     reviewsCount: 312,
-    image: "/powerbank.png",
+    image: "/shop_accessories.png",
     specifications: {
       "Capacity": "20000mAh 74Wh",
       "Max Power Output": "22.5W Fast Charge",

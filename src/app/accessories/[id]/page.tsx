@@ -821,7 +821,7 @@ export default function ProductDetailPage({ params }: PageProps) {
               <div key={p.id} className="glass-card rounded-2xl p-3 border border-border flex flex-col justify-between hover:border-cyan-500/20 group transition-all bg-card shadow-sm text-xs">
                 <div>
                   <div className="h-28 w-full rounded-xl bg-muted overflow-hidden flex items-center justify-center relative mb-2.5">
-                    <img src={p.image} alt="" className="w-full h-full object-contain p-1 group-hover:scale-102 transition-transform duration-300" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                    <img src={p.image} alt="" className="w-full h-full object-contain p-1 group-hover:scale-102 transition-transform duration-300" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
                     <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-red-500 text-white text-[8px] font-bold uppercase tracking-wider">Sale</span>
                   </div>
                   <h4 className="font-bold text-[11px] text-foreground line-clamp-2 min-h-[32px] leading-tight mb-1">{p.name}</h4>

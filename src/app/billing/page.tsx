@@ -224,6 +224,20 @@ export default function BillingPage() {
       return;
     }
 
+    // 1. Validate 10-Digit Mobile Number
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      alert("Mobile number must be exactly 10 digits (e.g. 9876543210).");
+      return;
+    }
+
+    // 2. Validate Email Format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      alert("Please enter a valid email address (e.g. name@example.com).");
+      return;
+    }
+
     if (!user) {
       alert("Please log in to place an order.");
       return;
@@ -385,16 +399,25 @@ export default function BillingPage() {
 
                     {/* Phone */}
                     <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                        <Phone className="h-3.5 w-3.5 text-emerald-500" />
-                        Mobile Number
+                      <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center justify-between">
+                        <span className="flex items-center gap-1">
+                          <Phone className="h-3.5 w-3.5 text-emerald-500" />
+                          Mobile Number (10 Digits)
+                        </span>
+                        {phone.replace(/\D/g, "").length > 0 && (
+                          <span className={`text-[9px] font-bold ${phone.replace(/\D/g, "").length === 10 ? "text-emerald-500" : "text-amber-500"}`}>
+                            {phone.replace(/\D/g, "").length}/10 digits
+                          </span>
+                        )}
                       </label>
                       <input
                         type="tel"
                         required
+                        maxLength={10}
+                        pattern="[0-9]{10}"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="e.g. +91 98765 43210"
+                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="e.g. 9876543210"
                         className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500"
                       />
                     </div>
@@ -404,7 +427,7 @@ export default function BillingPage() {
                   <div className="space-y-1.5">
                     <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                       <Mail className="h-3.5 w-3.5 text-emerald-500" />
-                      Email Address (For shipping & invoice updates)
+                      Email Address (Only valid email format)
                     </label>
                     <input
                       type="email"
@@ -448,29 +471,37 @@ export default function BillingPage() {
 
                     {/* Pincode */}
                     <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase font-bold text-muted-foreground">Pincode</label>
+                      <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center justify-between">
+                        <span>Pincode</span>
+                        <span className="text-[9px] font-bold text-cyan-500">
+                          {isGurgaonAddress() ? "Gurugram Pincode (₹50)" : "Other Pincode (₹120)"}
+                        </span>
+                      </label>
                       <input
                         type="text"
                         required
+                        maxLength={6}
                         value={pincode}
-                        onChange={(e) => setPincode(e.target.value)}
+                        onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                         placeholder="122001"
                         className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500"
                       />
                     </div>
                   </div>
 
-                  {/* Shipping Fee Notice Badge */}
+                  {/* Dynamic Pincode Calculated Shipping Fee Badge */}
                   <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs flex items-center gap-3">
                     <Truck className="h-5 w-5 text-emerald-500 shrink-0" />
                     <div>
                       <span className="font-bold text-foreground block">
-                        {isGurgaonAddress() ? "Gurugram Local Express Shipping (₹50)" : "National Standard Shipping (₹120)"}
+                        {isGurgaonAddress() 
+                          ? `Gurugram Express Shipping (₹50) — Pincode ${pincode || "122xxx"}` 
+                          : `Pan-India Express Shipping (₹120) — Pincode ${pincode || "Other"}`}
                       </span>
                       <span className="text-[11px] text-muted-foreground">
                         {isGurgaonAddress()
-                          ? "Same-day or next-day delivery in Gurugram (₹50 Flat Charge)"
-                          : "3-5 business days courier shipping outside Gurugram (₹120 Flat Charge)"}
+                          ? "Same-day / 24-hour doorstep delivery calculated for Gurugram area (₹50 Flat Charge)"
+                          : "3-5 business days courier shipping calculated from your Pincode (₹120 Flat Charge)"}
                       </span>
                     </div>
                   </div>
