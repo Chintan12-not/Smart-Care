@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://smartcaremobile.in";
+  const baseUrl = "https://www.smartcaremobile.in";
   const currentDate = new Date().toISOString();
 
   // Core Static Pages
