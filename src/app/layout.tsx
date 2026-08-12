@@ -44,13 +44,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.png", type: "image/png" },
-      { url: "/icon.png", type: "image/png" }
+      { url: "/logo.png" },
+      { url: "/favicon.png", type: "image/png" }
     ],
     apple: [
-      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" }
+      { url: "/logo.png", sizes: "180x180", type: "image/png" }
     ],
-    shortcut: ["/favicon.png"]
+    shortcut: ["/logo.png"]
   },
   openGraph: {
     title: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
