@@ -64,16 +64,45 @@ export default function AdminPage() {
   const [brand, setBrand] = useState("Apple");
   const [customBrand, setCustomBrand] = useState("");
   const [targetModel, setTargetModel] = useState("");
+  const [compatibleModels, setCompatibleModels] = useState(""); // e.g. "iPhone 13, iPhone 15, iPhone 15 Plus"
+  const [colorInput, setColorInput] = useState(""); // e.g. "Teal Blue, Matte Black, Clear"
+  const [material, setMaterial] = useState("Thermoplastic Polyurethane"); // e.g. TPU, Tempered Glass, Nylon
+  const [warranty, setWarranty] = useState(""); // e.g. "6 Months Smart Care Replacement Warranty"
   const [price, setPrice] = useState("");
   const [originalPrice, setOriginalPrice] = useState(""); // Optional MRP strike price (e.g. 499)
   const [stockQuantity, setStockQuantity] = useState("50");
   const [inStock, setInStock] = useState(true); // In Stock / Out of Stock
   const [isOnSale, setIsOnSale] = useState(false); // Put on Sale toggle
   const [description, setDescription] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([""]); // Up to 10 image URLs!
+  const [imageUrls, setImageUrls] = useState<string[]>([]); // Up to 10 image URLs/data URLs!
   const [isActive, setIsActive] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [isGeneratingAiDesc, setIsGeneratingAiDesc] = useState(false);
+
+  // File Upload Handler (Select Image Files directly!)
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const remainingSlots = 10 - imageUrls.filter(Boolean).length;
+    if (remainingSlots <= 0) {
+      alert("Maximum 10 images limit reached.");
+      return;
+    }
+
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+    filesToProcess.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Url = event.target?.result as string;
+        if (base64Url) {
+          setImageUrls((prev) => [...prev.filter(Boolean), base64Url].slice(0, 10));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   // AI Description Generator
   const handleGenerateAiDescription = async () => {
@@ -91,7 +120,7 @@ export default function AdminPage() {
           name,
           category,
           brand: brand === "other" ? customBrand : brand,
-          targetModel
+          targetModel: compatibleModels || targetModel
         })
       });
       const data = await res.json();
@@ -471,19 +500,18 @@ export default function AdminPage() {
 
     const specs: Record<string, string> = {
       "Brand": finalBrand,
+      "Compatible Phone Models": compatibleModels.trim() || targetModel || "Universal / All Models",
+      "Colour": colorInput.trim() || "Multi-Color / Clear",
+      "Material": material.trim() || "Thermoplastic Polyurethane",
+      "Warranty": warranty.trim() || "Smart Care Quality Standard",
       "original_price": originalPriceNum ? String(originalPriceNum) : "",
       "in_stock": String(inStock),
       "is_on_sale": String(isOnSale)
     };
-    if (finalModel) {
-      specs["Compatible Model"] = finalModel;
-    } else {
-      specs["Compatibility"] = "Universal / All Models";
-    }
 
     let finalTitle = name.trim();
-    if (finalModel && !finalTitle.toLowerCase().includes(finalModel.toLowerCase())) {
-      finalTitle = `${finalTitle} (${finalModel})`;
+    if (targetModel && !finalTitle.toLowerCase().includes(targetModel.toLowerCase())) {
+      finalTitle = `${finalTitle} (${targetModel})`;
     }
 
     try {
@@ -541,6 +569,10 @@ export default function AdminPage() {
         originalPrice: originalPriceNum,
         inStock,
         isOnSale,
+        warranty: warranty.trim(),
+        colors: colorInput.split(",").map(c => c.trim()).filter(Boolean),
+        compatibleModels: compatibleModels.trim() || targetModel,
+        material: material.trim(),
         description: description || "",
         image: imagesArray[0],
         images: imagesArray,
@@ -556,11 +588,15 @@ export default function AdminPage() {
       setPrice("");
       setOriginalPrice("");
       setTargetModel("");
+      setCompatibleModels("");
+      setColorInput("");
+      setMaterial("Thermoplastic Polyurethane");
+      setWarranty("");
       setStockQuantity("50");
       setInStock(true);
       setIsOnSale(false);
       setDescription("");
-      setImageUrls([""]);
+      setImageUrls([]);
       setIsActive(true);
 
       // Reload
@@ -826,27 +862,67 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {/* Compatible Phone Model Selection from Excel dataset */}
+                {/* Compatible Phone Models (Multi-Model Support) */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                     <FileText className="h-3.5 w-3.5 text-cyan-500" />
-                    Target Compatible Model (608 Models Dataset)
+                    Compatible Phone Models (Separate multiple with commas)
                   </label>
-                  <select
-                    value={targetModel}
-                    onChange={(e) => setTargetModel(e.target.value)}
-                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
-                  >
-                    <option value="">Universal / All {brand !== "other" ? brand : ""} Models</option>
-                    {brand !== "other" && ((phoneData.brandModels as any)[brand] || []).map((m: any) => (
-                      <option key={m.id + m.name} value={m.name}>
-                        {brand} {m.name} ({m.series} Series)
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-[9px] text-muted-foreground">
-                    Selecting an exact model automatically tags the accessory for customer search & filter matching.
-                  </p>
+                  <input
+                    type="text"
+                    placeholder="e.g. iPhone 13, iPhone 15, iPhone 15 Plus, iPhone 14"
+                    value={compatibleModels}
+                    onChange={(e) => setCompatibleModels(e.target.value)}
+                    className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                  />
+                </div>
+
+                {/* Color Options & Material */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Colors */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 text-cyan-500" />
+                      Color Options (Comma separated)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Blue, Black, Clear, Teal"
+                      value={colorInput}
+                      onChange={(e) => setColorInput(e.target.value)}
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    />
+                  </div>
+
+                  {/* Material */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                      <Box className="h-3.5 w-3.5 text-cyan-500" />
+                      Material
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Thermoplastic Polyurethane"
+                      value={material}
+                      onChange={(e) => setMaterial(e.target.value)}
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    />
+                  </div>
+                </div>
+
+                {/* Optional Custom Warranty */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                    <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                    Optional Warranty Details
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 6 Months Smart Care Replacement Warranty (Leave empty if no warranty)"
+                    value={warranty}
+                    onChange={(e) => setWarranty(e.target.value)}
+                    className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"
+                  />
                 </div>
 
                 {/* Price, Original Strike MRP, & Stock */}
@@ -936,32 +1012,53 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Multiple Images Upload (Up to 10 Images) */}
-                <div className="space-y-2 border-t border-border/50 pt-3">
+                {/* Product Images Direct Upload & URL Input (Up to 10 Images) */}
+                <div className="space-y-3 border-t border-border/50 pt-3">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                       <Star className="h-3.5 w-3.5 text-cyan-500" />
-                      Product Images Gallery (Up to 10 Images)
+                      Product Images (Upload Files or Paste URLs - Max 10)
                     </label>
                     <span className="text-[10px] text-cyan-400 font-bold">{imageUrls.length} / 10</span>
                   </div>
 
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {imageUrls.map((url, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-muted-foreground w-4 text-center">{idx + 1}</span>
-                        <input
-                          type="url"
-                          placeholder={`Image URL ${idx + 1} (e.g. https://...)`}
-                          value={url}
-                          onChange={(e) => {
-                            const newArr = [...imageUrls];
-                            newArr[idx] = e.target.value;
-                            setImageUrls(newArr);
-                          }}
-                          className="flex-grow bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
-                        />
-                        {imageUrls.length > 1 && (
+                  {/* File Upload Box */}
+                  <div className="p-4 rounded-2xl bg-muted/30 border border-dashed border-cyan-500/40 hover:border-cyan-500 transition-colors text-center cursor-pointer">
+                    <label className="cursor-pointer block space-y-1">
+                      <Plus className="h-6 w-6 text-cyan-400 mx-auto" />
+                      <span className="text-xs font-bold text-foreground block">Click to Select & Upload Image Files</span>
+                      <span className="text-[10px] text-muted-foreground block">Upload photo files directly from your mobile/PC gallery (PNG, JPG, WEBP)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  {/* Images Thumbnails & Links List */}
+                  {imageUrls.length > 0 && (
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {imageUrls.map((url, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          {url ? (
+                            <img src={url} alt="" className="h-8 w-8 rounded-lg object-cover flex-shrink-0 border border-border" />
+                          ) : (
+                            <span className="text-[10px] font-bold text-muted-foreground w-4 text-center">{idx + 1}</span>
+                          )}
+                          <input
+                            type="text"
+                            placeholder={`Image ${idx + 1} URL or Base64`}
+                            value={url.length > 50 ? `${url.substring(0, 45)}...` : url}
+                            onChange={(e) => {
+                              const newArr = [...imageUrls];
+                              newArr[idx] = e.target.value;
+                              setImageUrls(newArr);
+                            }}
+                            className="flex-grow bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium truncate"
+                          />
                           <button
                             type="button"
                             onClick={() => {
@@ -971,10 +1068,10 @@ export default function AdminPage() {
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {imageUrls.length < 10 && (
                     <button
@@ -983,7 +1080,7 @@ export default function AdminPage() {
                       className="w-full py-2 bg-muted/60 border border-dashed border-border hover:border-cyan-500 text-cyan-400 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
                     >
                       <Plus className="h-3.5 w-3.5" />
-                      <span>Add Image URL ({imageUrls.length}/10)</span>
+                      <span>Add Image URL Input ({imageUrls.length}/10)</span>
                     </button>
                   )}
                 </div>

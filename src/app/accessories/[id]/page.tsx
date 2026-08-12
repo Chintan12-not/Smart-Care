@@ -391,8 +391,65 @@ export default function ProductDetailPage({ params }: PageProps) {
 
             <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">{product.name}</h1>
             
-            <p className="text-xs text-muted-foreground leading-relaxed">{product.description}</p>
+            {/* Line-by-Line Bullet Point Description */}
+            <div className="space-y-2 pt-2 border-t border-border/40">
+              {(product.description || "")
+                .split("\n")
+                .map((l) => l.trim())
+                .filter(Boolean)
+                .map((line, idx) => {
+                  const parts = line.split(":");
+                  if (parts.length > 1) {
+                    const titlePart = parts[0].replace(/^[•\*\-\s]+/, "").trim();
+                    const bodyPart = parts.slice(1).join(":").trim();
+                    return (
+                      <div key={idx} className="flex items-start gap-2 text-xs leading-relaxed">
+                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 flex-shrink-0 mt-2" />
+                        <p className="text-foreground font-medium">
+                          <strong className="text-cyan-400 font-extrabold uppercase tracking-wide mr-1.5">{titlePart}:</strong>
+                          <span className="text-muted-foreground">{bodyPart}</span>
+                        </p>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={idx} className="flex items-start gap-2 text-xs leading-relaxed">
+                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 flex-shrink-0 mt-2" />
+                      <p className="text-muted-foreground font-medium">{line}</p>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
+
+          {/* Color Selection Component for Ordering */}
+          {(() => {
+            const colorsList = product.specifications?.["Colour"]
+              ? product.specifications["Colour"].split(",").map((c: string) => c.trim()).filter(Boolean)
+              : ["Blue", "Black", "Clear", "Teal"];
+
+            if (colorsList.length === 0) return null;
+
+            return (
+              <div className="space-y-2 p-4 rounded-2xl bg-muted/30 border border-border/50">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                  Select Color Preference:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {colorsList.map((color: string) => (
+                    <button
+                      key={color}
+                      type="button"
+                      className="px-3.5 py-1.5 rounded-xl border text-xs font-bold transition-all bg-cyan-500/10 border-cyan-500/40 text-cyan-400 flex items-center gap-1.5 shadow-sm"
+                    >
+                      <span className="h-2.5 w-2.5 rounded-full bg-cyan-400 inline-block" />
+                      <span>{color}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Pricing Box details */}
           <div className="p-5 rounded-3xl bg-muted/40 border border-border/80 space-y-3">
@@ -401,8 +458,12 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider block">Special Sale Price</span>
                 <div className="flex items-baseline gap-2.5">
                   <span className="text-3xl font-black text-foreground">{formatINR(product.price)}</span>
-                  <span className="text-sm text-muted-foreground line-through font-medium">{formatINR(originalPrice)}</span>
-                  <span className="text-xs text-emerald-500 font-extrabold">{discountPercentage}% OFF</span>
+                  {originalPrice > product.price && (
+                    <span className="text-sm text-muted-foreground line-through font-medium">{formatINR(originalPrice)}</span>
+                  )}
+                  {discountPercentage > 0 && (
+                    <span className="text-xs text-emerald-500 font-extrabold">{discountPercentage}% OFF</span>
+                  )}
                 </div>
               </div>
               <div className="text-right space-y-1">
@@ -410,25 +471,6 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <span className="text-[9px] text-muted-foreground block mt-1">Free Doorstep Delivery</span>
               </div>
             </div>
-          </div>
-
-          {/* Product Bullet highlights */}
-          <div className="p-4 bg-muted/30 border border-border/50 rounded-2xl space-y-2 text-xs">
-            <p className="font-extrabold text-[10px] uppercase tracking-wider text-cyan-500">Key Features & Highlights</p>
-            <ul className="space-y-1.5 text-muted-foreground leading-relaxed">
-              <li className="flex items-start gap-1.5">
-                <span className="text-cyan-500 mt-0.5">✔</span>
-                <span><strong>Anti-Yellow Protection:</strong> Advanced clarity coating guarantees long transparent life.</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <span className="text-cyan-500 mt-0.5">✔</span>
-                <span><strong>Slim profile & Grip:</strong> Ergonomic layout fits nicely without adding bulky weight.</span>
-              </li>
-              <li className="flex items-start gap-1.5">
-                <span className="text-cyan-500 mt-0.5">✔</span>
-                <span><strong>Impact Bumper corners:</strong> Shock absorption shields device against accidental drops.</span>
-              </li>
-            </ul>
           </div>
 
           {/* Quantity selector & Actions */}
@@ -639,25 +681,68 @@ export default function ProductDetailPage({ params }: PageProps) {
           {/* Tab 2: Specifications */}
           {activeTab === "specifications" && (
             <div className="space-y-6 animate-in fade-in duration-200">
-              {/* Product origin info card */}
-              <div className="p-4 bg-muted/30 border border-border/50 rounded-2xl max-w-2xl text-xs space-y-2 mb-4">
-                <p className="font-bold text-foreground text-xs">Standard Product Meta Information</p>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-muted-foreground mt-2">
-                  <p>• <strong>Net Quantity:</strong> 1 Unit</p>
-                  <p>• <strong>Country of Origin:</strong> India</p>
-                  <p>• <strong>Manufacturer:</strong> Smart Care Logistics Hub, Gurugram</p>
-                  <p>• <strong>Warranty:</strong> 6 Months Limited Warranty</p>
+              
+              {/* Optional Warranty Banner Card */}
+              {(product.specifications?.["Warranty"] || (product as any).warranty) && (
+                <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-2xl flex items-center gap-3 max-w-2xl">
+                  <ShieldCheck className="h-6 w-6 flex-shrink-0 text-emerald-400" />
+                  <div>
+                    <p className="font-extrabold text-xs uppercase tracking-wider text-emerald-400">Official Product Warranty</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">
+                      {product.specifications?.["Warranty"] || (product as any).warranty}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Structured E-Commerce Specifications Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs max-w-3xl">
+                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
+                  <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Brand</span>
+                  <span className="text-foreground font-bold">{product.brand || "Generic"}</span>
+                </div>
+
+                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
+                  <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Compatible Phone Models</span>
+                  <span className="text-foreground font-bold truncate max-w-[200px]">
+                    {product.specifications?.["Compatible Phone Models"] || product.specifications?.["Compatible Model"] || product.name}
+                  </span>
+                </div>
+
+                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
+                  <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Colour</span>
+                  <span className="text-foreground font-bold">
+                    {product.specifications?.["Colour"] || "Multi-Color / Clear"}
+                  </span>
+                </div>
+
+                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
+                  <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Compatible Devices</span>
+                  <span className="text-foreground font-bold truncate max-w-[200px]">
+                    {product.specifications?.["Compatible Phone Models"] || "All Compatible Models"}
+                  </span>
+                </div>
+
+                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between sm:col-span-2">
+                  <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Material</span>
+                  <span className="text-foreground font-bold">
+                    {product.specifications?.["Material"] || "Thermoplastic Polyurethane"}
+                  </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
-                    <span className="text-muted-foreground font-semibold uppercase text-[9px] tracking-wider">{key}</span>
-                    <span className="text-foreground font-bold">{value}</span>
-                  </div>
-                ))}
+              {/* Other Technical Specs */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs max-w-3xl pt-2 border-t border-border/40">
+                {Object.entries(product.specifications)
+                  .filter(([k]) => !["original_price", "in_stock", "is_on_sale", "Brand", "Colour", "Material", "Warranty", "Compatible Phone Models"].includes(k))
+                  .map(([key, value]) => (
+                    <div key={key} className="p-3.5 bg-card border border-border rounded-2xl flex items-center justify-between">
+                      <span className="text-muted-foreground font-semibold uppercase text-[9px] tracking-wider">{key}</span>
+                      <span className="text-foreground font-bold truncate max-w-[150px]">{value}</span>
+                    </div>
+                  ))}
               </div>
+
             </div>
           )}
 

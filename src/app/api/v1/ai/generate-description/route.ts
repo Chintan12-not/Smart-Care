@@ -13,19 +13,23 @@ export async function POST(req: Request) {
 
     const titleLower = name.toLowerCase();
     const catLower = (category || "").toLowerCase();
-    const targetText = targetModel ? `for ${brand} ${targetModel}` : `for ${brand} devices`;
+    const targetText = targetModel ? `${targetModel}` : `${brand} devices`;
 
-    const prompt = `Write a high-converting, irresistible, e-commerce product description for a mobile phone accessory.
+    const prompt = `Write a high-converting e-commerce product description for a mobile phone accessory.
 Product Title: "${name}"
 Category: "${category || "Mobile Accessory"}"
 Brand: "${brand || "Universal"}"
 Compatible Device: "${targetModel || "Universal / All Models"}"
 
-Instructions:
-- Write 3 to 4 detailed, bullet points highlighting key features, material engineering, protection/performance, and warranty.
-- Make it sound premium, authoritative, and extremely persuasive for online buyers.
-- Directly reference the exact compatibility (${targetText}).
-- Use crisp bullet points (starting with •). Do not include introductory filler lines like "Here is a description:".`;
+Strict Formatting Rules:
+- Return 4 to 5 bullet lines. Each line MUST start with an UPPERCASE KEYWORD IN CAPS followed by a colon.
+- Example:
+  MAGSAFE COMPATIBLE: Built-in magnetic ring ensures seamless compatibility...
+  PERFECT FIT: Precisely designed for the ${targetText}, with accurate cutouts...
+  STRONG PROTECTION: Offers reliable all-round protection against everyday drops...
+  SLEEK AND STYLISH DESIGN: Features a slim profile that adds a modern look...
+  EASY INSTALLATION: Snaps on and off quickly and effortlessly without any tools required.
+- Do NOT include markdown headers, introductory text, or bullet symbols like • or *. Just plain lines starting with UPPERCASE KEYWORD:`;
 
     if (GEMINI_API_KEY && !GEMINI_API_KEY.includes("PASTE_")) {
       try {
@@ -50,38 +54,35 @@ Instructions:
       }
     }
 
-    // High Quality Category-Specific Detailed Fallbacks
+    // High-Quality Uppercase Keyword Format Fallbacks
     let fallbackDesc = "";
 
     if (catLower.includes("tempered") || titleLower.includes("glass") || titleLower.includes("screen")) {
-      fallbackDesc = `• 9H Hardness Shatterproof Protection: Engineered with Japanese Asahi tempered glass to shield ${targetText} from severe drops, scratches, and key scuffs.
-• 99.9% HD Crystal Clarity: Ultra-thin 0.3mm design preserves original touch sensitivity, vibrant screen colors, and smooth 120Hz display scrolling.
-• Oleophobic Anti-Fingerprint Coating: Hydrophobic layer repels oil, smudges, and sweat for a clean display screen all day.
-• Bubble-Free Easy Installation: Auto-adsorption technology ensures flawless, zero-bubble alignment in seconds.`;
+      fallbackDesc = `9H HARDNESS SHATTERPROOF: Engineered with premium Japanese tempered glass to shield ${targetText} from severe drops, sharp scratches, and key scuffs.
+99.9% HD CRYSTAL CLARITY: Ultra-clear 0.3mm optical design preserves original screen brightness, touch sensitivity, and smooth display responsiveness.
+OLEOPHOBIC ANTI-FINGERPRINT: Hydrophobic top layer repels fingerprint smudges, oils, and sweat for a clean display screen all day.
+EASY BUBBLE-FREE INSTALLATION: Advanced auto-adsorption technology ensures effortless, zero-bubble alignment within seconds without tools.`;
     } else if (catLower.includes("case") || catLower.includes("cover") || titleLower.includes("case") || titleLower.includes("cover")) {
-      fallbackDesc = `• Military-Grade Drop Protection: Reinforced TPU shock-absorbing corners and raised camera bezels protect ${targetText} against impact from drops up to 10 feet.
-• Precision Custom Cutouts: Engineered with exact button tactility, speaker grilles, and port access without adding unnecessary bulk.
-• Anti-Yellowing & Scratch Resistant: Premium UV-resistant matte finish keeps your phone looking pristine and fingerprint-free.
-• Wireless Charging Ready: Ultra-slim profile seamlessly supports MagSafe & Qi wireless charging pads without removing the cover.`;
-    } else if (catLower.includes("charger") || catLower.includes("power") || titleLower.includes("charger") || titleLower.includes("adapter")) {
-      fallbackDesc = `• GaN Fast Charging Technology: Delivers maximum high-speed Power Delivery (PD) charging to ${targetText} up to 3x faster than standard wall bricks.
-• Smart Temperature Control: Built-in intelligent chip monitors heat, prevents over-current, voltage spikes, and short-circuits.
-• Universal Multi-Device Support: Compact fold-out plug design optimized for flagship smartphones, tablets, and wireless earbuds.
-• 6-Month Smart Care Warranty: Certified CE/RoHS safety compliance backed by official replacement guarantee.`;
-    } else if (catLower.includes("cable") || titleLower.includes("cable") || titleLower.includes("wire")) {
-      fallbackDesc = `• Ultra-Durable Braided Nylon: Double-braided ballistic nylon jacket tested to withstand over 12,000+ extreme 90-degree bend cycles.
-• Fast Charging & High-Speed Data Sync: Supports up to 60W Power Delivery and 480Mbps data transfer speeds for ${targetText}.
-• Reinforced Strain Relief: Anti-fray aluminum casing prevents neck breakage at connector joint tips under heavy usage.
-• Tangle-Free Length: Flexible, hassle-free design easy to bundle for travel, car, office, and bedside use.`;
-    } else if (catLower.includes("audio") || catLower.includes("earbud") || titleLower.includes("audio") || titleLower.includes("headphone")) {
-      fallbackDesc = `• Immersive HD Sound & Deep Bass: Custom 10mm dynamic drivers deliver crystal-clear highs and deep bass performance for ${targetText}.
-• Passive Noise Isolation: Ergonomic silicone ear-tips seal external ambient noise for undisturbed music and crystal-clear voice calls.
-• IPX5 Sweat & Water Resistance: Designed to handle intense workouts, rain splashes, and daily commuting.
-• All-Day Playtime: Long-lasting battery life with quick charging support to keep your music going all day long.`;
+      fallbackDesc = `MAGSAFE COMPATIBLE: Built-in magnetic ring ensures seamless compatibility with MagSafe chargers and accessories, enabling effortless wireless charging.
+PERFECT FIT: Precisely designed for ${targetText}, with accurate cutouts for all buttons, ports, and camera lenses for full, unobstructed access.
+STRONG PROTECTION: Offers reliable all-round protection with shock-absorbing corners against everyday drops, bumps, and scratches.
+SLEEK AND STYLISH DESIGN: Features a premium semi-transparent finish with a slim profile that adds a modern look while keeping the case lightweight.
+EASY INSTALLATION: Flexible yet sturdy construction allows the case to snap on and off your phone quickly and effortlessly without tools.`;
+    } else if (catLower.includes("charger") || catLower.includes("power") || titleLower.includes("charger")) {
+      fallbackDesc = `FAST POWER DELIVERY: Delivers maximum high-speed charging to ${targetText} up to 3x faster than standard wall adapter bricks.
+SMART SAFETY PROTECTION: Built-in intelligent chip actively monitors heat, prevents over-current, voltage spikes, and short-circuits.
+UNIVERSAL COMPATIBILITY: Engineered for flagship smartphones, tablets, and wireless audio devices with optimal power output.
+COMPACT TRAVEL DESIGN: Ultra-lightweight and portable build easy to carry for daily commute, office, and travel use.`;
+    } else if (catLower.includes("cable") || titleLower.includes("cable")) {
+      fallbackDesc = `ULTRA-DURABLE BRAIDED NYLON: Double-braided ballistic nylon jacket tested to withstand over 12,000+ extreme 90-degree bends.
+60W FAST CHARGING & SYNC: Supports high-speed Power Delivery charging and fast 480Mbps data transfer for ${targetText}.
+REINFORCED STRAIN RELIEF: Anti-fray aluminum connectors prevent neck breakage at cable tips under heavy daily usage.
+TANGLE-FREE DESIGN: Flexible, hassle-free cable construction easy to roll for travel, car, office, and bedside use.`;
     } else {
-      fallbackDesc = `• Premium Grade Build: Crafted with high-grade durable materials specifically tailored ${targetText} for long-lasting daily use.
-• Precision Fit & Engineering: Seamless compatibility with smooth tactile feel, zero signal interference, and sleek modern aesthetics.
-• 100% Quality Inspected: Rigorously tested for maximum durability, heat resistance, and 6-month Smart Care warranty coverage.`;
+      fallbackDesc = `PREMIUM BUILD QUALITY: Crafted with high-grade durable materials specifically engineered for ${targetText} for long-lasting performance.
+PERFECT FIT & FINISH: Designed with exact dimensions for full accessibility, smooth tactile feel, and modern aesthetic styling.
+ALL-ROUND PROTECTION: Shields your device against everyday wear, scratches, dust, and light impact drops.
+EASY TO USE: Lightweight and user-friendly construction designed for effortless daily operation.`;
     }
 
     return NextResponse.json({ success: true, description: fallbackDesc });
