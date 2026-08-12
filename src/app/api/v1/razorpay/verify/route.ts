@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "ASOrWRvNHOQJ5d1BYf2lzTOc";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "8aD2Kd9Fr55IM6AiHW17GXXU";
 
     // HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
     const generatedSignature = crypto

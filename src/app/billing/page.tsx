@@ -265,7 +265,7 @@ export default function BillingPage() {
           return;
         }
 
-        const razorpayKey = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TO6v5XghH0VsgN";
+        const razorpayKey = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TOsdFkVaG73hSI";
 
         const options = {
           key: razorpayKey,
