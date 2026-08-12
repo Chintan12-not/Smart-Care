@@ -255,14 +255,37 @@ export default function BillingPage() {
 
         const options = {
           key: razorpayKey,
-          amount: rzpData.order.amount,
-          currency: "INR",
+          amount: rzpData.amount || rzpData.order?.amount,
+          currency: rzpData.currency || "INR",
           name: "Smart Care & Mobile Point",
           description: `Accessory Order #${generatedOrderId}`,
           image: "https://smartcaremobile.in/logo.png",
-          order_id: rzpData.order.id,
+          order_id: rzpData.order_id || rzpData.order?.id,
           handler: async function (response: any) {
-            await finalizeOrder(generatedOrderId, "razorpay", response);
+            try {
+              // STEP 3: Verify HMAC-SHA256 Signature with backend
+              const verifyRes = await fetch("/api/verify-payment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              });
+              const verifyData = await verifyRes.json();
+
+              if (verifyData.success) {
+                await finalizeOrder(generatedOrderId, "razorpay", response);
+              } else {
+                alert(`Payment Verification Failed: ${verifyData.error || "Invalid signature"}`);
+                setIsSubmitting(false);
+              }
+            } catch (vErr: any) {
+              console.error("Signature verification endpoint error:", vErr);
+              alert("Payment verification error. Please contact store support.");
+              setIsSubmitting(false);
+            }
           },
           prefill: {
             name: fullName,
@@ -280,6 +303,11 @@ export default function BillingPage() {
         };
 
         const rzp = new (window as any).Razorpay(options);
+        rzp.on("payment.failed", function (response: any) {
+          console.error("[Razorpay Payment Failed]", response.error);
+          alert(`Payment Failed: ${response.error?.description || "Transaction cancelled or declined."}`);
+          setIsSubmitting(false);
+        });
         rzp.open();
       } else if (paymentMethod === "whatsapp") {
         // WhatsApp direct order
