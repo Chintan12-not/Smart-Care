@@ -28,6 +28,8 @@ import {
   Search,
   Filter,
   Eye,
+  Pencil,
+  Save,
   FileText
 } from "lucide-react";
 import Link from "next/link";
@@ -41,10 +43,15 @@ interface DbAccessory {
   category: string;
   brand: string;
   price: number;
+  original_price?: number | null;
   stock_quantity: number;
+  in_stock?: boolean;
+  is_on_sale?: boolean;
   rating_avg: number;
   reviews_count: number;
   images: string[];
+  description?: string | null;
+  specifications?: Record<string, string>;
   is_active: boolean;
 }
 
@@ -78,6 +85,51 @@ export default function AdminPage() {
   const [isActive, setIsActive] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [isGeneratingAiDesc, setIsGeneratingAiDesc] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+
+  // Pre-fill form for editing an existing product
+  const handleStartEditProduct = (prod: DbAccessory) => {
+    setEditingProductId(prod.id);
+    setName(prod.name);
+    setCategory(prod.category || "case");
+    setBrand(prod.brand || "Apple");
+    setPrice(String(prod.price || ""));
+    
+    const specs = prod.specifications || {};
+    setOriginalPrice(prod.original_price ? String(prod.original_price) : (specs.original_price || ""));
+    setStockQuantity(String(prod.stock_quantity ?? 50));
+    setInStock(prod.in_stock ?? (specs.in_stock !== undefined ? specs.in_stock === "true" : true));
+    setIsOnSale(prod.is_on_sale ?? (specs.is_on_sale !== undefined ? specs.is_on_sale === "true" : false));
+    setDescription(prod.description || "");
+    setImageUrls(prod.images && prod.images.length > 0 ? prod.images : []);
+    setIsActive(prod.is_active);
+    
+    setCompatibleModels(specs["Compatible Phone Models"] || specs["Compatible Model"] || "");
+    setColorInput(specs["Colour"] || "");
+    setMaterial(specs["Material"] || "Thermoplastic Polyurethane");
+    setWarranty(specs["Warranty"] || "");
+
+    // Scroll smoothly to form top
+    window.scrollTo({ top: 200, behavior: "smooth" });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProductId(null);
+    setName("");
+    setPrice("");
+    setOriginalPrice("");
+    setTargetModel("");
+    setCompatibleModels("");
+    setColorInput("");
+    setMaterial("Thermoplastic Polyurethane");
+    setWarranty("");
+    setStockQuantity("50");
+    setInStock(true);
+    setIsOnSale(false);
+    setDescription("");
+    setImageUrls([]);
+    setIsActive(true);
+  };
 
   // File Upload Handler (Select Image Files directly!)
   const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -533,35 +585,53 @@ export default function AdminPage() {
           specifications: specs
         };
 
-        // Try full payload first
-        const { error: err1 } = await supabase.from("accessories").insert([fullPayload]);
+        const basePayload: any = {
+          name: finalTitle,
+          category,
+          brand: finalBrand,
+          price: priceNum,
+          stock_quantity: stockNum,
+          description: description || null,
+          images: imagesArray,
+          is_active: isActive,
+          rating_avg: 4.8,
+          reviews_count: 15,
+          specifications: specs
+        };
 
-        if (err1) {
-          console.warn("Full payload insert failed (schema missing columns), trying base payload fallback:", err1.message);
-          // Fallback to base columns that exist in all Supabase schemas
-          const basePayload: any = {
-            name: finalTitle,
-            category,
-            brand: finalBrand,
-            price: priceNum,
-            stock_quantity: stockNum,
-            description: description || null,
-            images: imagesArray,
-            is_active: isActive,
-            rating_avg: 4.8,
-            reviews_count: 15,
-            specifications: specs
-          };
-          const { error: err2 } = await supabase.from("accessories").insert([basePayload]);
-          if (err2) throw err2;
+        if (editingProductId) {
+          // UPDATE existing product
+          const { error: err1 } = await supabase
+            .from("accessories")
+            .update(fullPayload)
+            .eq("id", editingProductId);
+
+          if (err1) {
+            console.warn("Full payload update failed, using base payload fallback:", err1.message);
+            const { error: err2 } = await supabase
+              .from("accessories")
+              .update(basePayload)
+              .eq("id", editingProductId);
+            if (err2) throw err2;
+          }
+        } else {
+          // INSERT new product
+          const { error: err1 } = await supabase.from("accessories").insert([fullPayload]);
+
+          if (err1) {
+            console.warn("Full payload insert failed, using base payload fallback:", err1.message);
+            const { error: err2 } = await supabase.from("accessories").insert([basePayload]);
+            if (err2) throw err2;
+          }
         }
       }
 
-      // LocalStorage backup
+      // LocalStorage backup update
       const local = localStorage.getItem("sc_custom_accessories");
       let list = local ? JSON.parse(local) : [];
-      list.unshift({
-        id: `acc-custom-${Date.now()}`,
+
+      const newItem = {
+        id: editingProductId || `acc-custom-${Date.now()}`,
         name: finalTitle,
         category,
         brand: finalBrand,
@@ -579,11 +649,19 @@ export default function AdminPage() {
         rating: 4.9,
         reviewsCount: 18,
         specifications: specs
-      });
+      };
+
+      if (editingProductId) {
+        list = list.map((item: any) => item.id === editingProductId ? newItem : item);
+      } else {
+        list.unshift(newItem);
+      }
       localStorage.setItem("sc_custom_accessories", JSON.stringify(list));
 
-      setActionSuccess(`Product "${finalTitle}" added successfully!`);
+      setActionSuccess(editingProductId ? `Product "${finalTitle}" updated successfully!` : `Product "${finalTitle}" added successfully!`);
+      
       // Reset form
+      setEditingProductId(null);
       setName("");
       setPrice("");
       setOriginalPrice("");
@@ -593,6 +671,11 @@ export default function AdminPage() {
       setMaterial("Thermoplastic Polyurethane");
       setWarranty("");
       setStockQuantity("50");
+      setInStock(true);
+      setIsOnSale(false);
+      setDescription("");
+      setImageUrls([]);
+      setIsActive(true);
       setInStock(true);
       setIsOnSale(false);
       setDescription("");
@@ -782,9 +865,23 @@ export default function AdminPage() {
           {/* Form Side (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="glass-card rounded-3xl p-6 border border-border shadow-md space-y-6 bg-card">
-              <div className="flex items-center gap-2 text-cyan-500 border-b border-border/60 pb-3">
-                <Plus className="h-5 w-5" />
-                <h2 className="font-bold text-sm uppercase tracking-wider">Add Accessory Product</h2>
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div className="flex items-center gap-2 text-cyan-500">
+                  {editingProductId ? <Pencil className="h-5 w-5 text-amber-500" /> : <Plus className="h-5 w-5" />}
+                  <h2 className="font-bold text-sm uppercase tracking-wider">
+                    {editingProductId ? "Edit Accessory Product" : "Add Accessory Product"}
+                  </h2>
+                </div>
+
+                {editingProductId && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 transition-colors text-[10px] font-bold uppercase tracking-wider"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
               </div>
 
               <form onSubmit={handleAddProduct} className="space-y-4">
@@ -1130,12 +1227,22 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full py-3 bg-foreground hover:opacity-90 disabled:opacity-50 text-background font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 mt-4 shadow-sm"
+                  className={cn(
+                    "w-full py-3 hover:opacity-90 disabled:opacity-50 font-bold rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 mt-4 shadow-sm",
+                    editingProductId 
+                      ? "bg-amber-500 text-black hover:bg-amber-400" 
+                      : "bg-foreground text-background"
+                  )}
                 >
                   {submitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Saving to Supabase...
+                      Saving to Database...
+                    </>
+                  ) : editingProductId ? (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Update Product Details
                     </>
                   ) : (
                     <>
@@ -1180,7 +1287,12 @@ export default function AdminPage() {
                   {products.map((prod) => (
                     <div 
                       key={prod.id} 
-                      className="p-3.5 rounded-2xl bg-muted/30 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-cyan-500/20 transition-all"
+                      className={cn(
+                        "p-3.5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all",
+                        editingProductId === prod.id
+                          ? "bg-amber-500/10 border-amber-500/50"
+                          : "bg-muted/30 border-border hover:border-cyan-500/20"
+                      )}
                     >
                       <div className="flex items-center gap-3">
                         <div className="h-12 w-12 rounded-xl bg-card border border-border/80 overflow-hidden flex items-center justify-center flex-shrink-0 relative">
@@ -1203,10 +1315,20 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-border/50">
+                      <div className="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-2 sm:pt-0 border-border/50">
                         <span className="font-extrabold text-xs text-foreground">{formatINR(prod.price)}</span>
                         
                         <div className="flex items-center gap-1.5">
+                          {/* Edit Product button */}
+                          <button
+                            onClick={() => handleStartEditProduct(prod)}
+                            className="px-2.5 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/25 hover:bg-cyan-500/20 text-cyan-400 font-bold text-[10px] uppercase flex items-center gap-1 transition-colors"
+                            title="Edit product details"
+                          >
+                            <Pencil className="h-3 w-3" />
+                            <span>Edit</span>
+                          </button>
+
                           {/* Toggle Active status */}
                           <button
                             onClick={() => handleToggleActive(prod.id, prod.is_active)}
