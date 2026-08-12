@@ -137,36 +137,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid email type" }, { status: 400 });
     }
 
-    // Build recipient targets (Customer + Admins enigcon2020@gmail.com and chintanmaheshwari714@gmail.com)
-    const allRecipients = Array.from(new Set([to, ...adminRecipients]));
+    // Build recipient targets based on email type:
+    // - "welcome": ONLY send to the customer email [to]
+    // - "accessory" or "pickup": send to customer email [to] AND store owners [enigcon2020@gmail.com, chintanmaheshwari714@gmail.com]
+    const recipientTargets = type === "welcome" 
+      ? [to] 
+      : Array.from(new Set([to, ...adminRecipients]));
 
     if (isMock) {
-      console.log(`[Resend Mock Email] Simulating email to: ${allRecipients.join(", ")}`);
+      console.log(`[Resend Mock Email] Simulating ${type} email to: ${recipientTargets.join(", ")}`);
       return NextResponse.json({
         success: true,
         message: "Email simulated successfully (Mock Mode active).",
-        recipients: allRecipients,
+        recipients: recipientTargets,
         mocked: true
       });
     }
 
     const resend = new Resend(apiKey);
     
-    console.log(`[Email API] Sending ${type} email via Resend to: ${allRecipients.join(", ")}`);
+    console.log(`[Email API] Sending ${type} email via Resend to: ${recipientTargets.join(", ")}`);
     
     const result = await resend.emails.send({
-      from: "Smart Care Orders <orders@smartcaremobile.in>",
-      to: allRecipients,
+      from: type === "welcome" ? "Smart Care <welcome@smartcaremobile.in>" : "Smart Care Orders <orders@smartcaremobile.in>",
+      to: recipientTargets,
       subject: type === "accessory" || type === "pickup" ? `[NEW ORDER] ${subject}` : subject,
       html: htmlContent,
     }) as any;
 
     if (result.error) {
-      // Fallback to onboarding@resend.dev if domain DNS is not yet verified in Resend
+      // Fallback to onboarding@resend.dev if custom domain DNS is not yet verified in Resend
       console.warn("[Email API] Primary domain email failed, attempting onboarding@resend.dev fallback:", result.error);
       const fallbackResult = await resend.emails.send({
         from: "Smart Care <onboarding@resend.dev>",
-        to: allRecipients,
+        to: recipientTargets,
         subject: type === "accessory" || type === "pickup" ? `[NEW ORDER] ${subject}` : subject,
         html: htmlContent,
       }) as any;
