@@ -471,6 +471,9 @@ export default function AdminPage() {
 
     const specs: Record<string, string> = {
       "Brand": finalBrand,
+      "original_price": originalPriceNum ? String(originalPriceNum) : "",
+      "in_stock": String(inStock),
+      "is_on_sale": String(isOnSale)
     };
     if (finalModel) {
       specs["Compatible Model"] = finalModel;
@@ -485,28 +488,45 @@ export default function AdminPage() {
 
     try {
       if (isSupabaseConfigured()) {
-        const { error } = await supabase
-          .from("accessories")
-          .insert([
-            {
-              name: finalTitle,
-              category,
-              brand: finalBrand,
-              price: priceNum,
-              original_price: originalPriceNum,
-              stock_quantity: stockNum,
-              in_stock: inStock,
-              is_on_sale: isOnSale,
-              description: description || null,
-              images: imagesArray,
-              is_active: isActive,
-              rating_avg: 4.8,
-              reviews_count: 15,
-              specifications: specs
-            }
-          ]);
+        const fullPayload: any = {
+          name: finalTitle,
+          category,
+          brand: finalBrand,
+          price: priceNum,
+          original_price: originalPriceNum,
+          stock_quantity: stockNum,
+          in_stock: inStock,
+          is_on_sale: isOnSale,
+          description: description || null,
+          images: imagesArray,
+          is_active: isActive,
+          rating_avg: 4.8,
+          reviews_count: 15,
+          specifications: specs
+        };
 
-        if (error) throw error;
+        // Try full payload first
+        const { error: err1 } = await supabase.from("accessories").insert([fullPayload]);
+
+        if (err1) {
+          console.warn("Full payload insert failed (schema missing columns), trying base payload fallback:", err1.message);
+          // Fallback to base columns that exist in all Supabase schemas
+          const basePayload: any = {
+            name: finalTitle,
+            category,
+            brand: finalBrand,
+            price: priceNum,
+            stock_quantity: stockNum,
+            description: description || null,
+            images: imagesArray,
+            is_active: isActive,
+            rating_avg: 4.8,
+            reviews_count: 15,
+            specifications: specs
+          };
+          const { error: err2 } = await supabase.from("accessories").insert([basePayload]);
+          if (err2) throw err2;
+        }
       }
 
       // LocalStorage backup
