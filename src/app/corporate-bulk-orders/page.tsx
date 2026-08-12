@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "GST invoice mobile accessories"
   ],
   alternates: {
-    canonical: "https://www.smartcaremobile.in/corporate-bulk-orders",
+    canonical: "https://smartcaremobile.in/corporate-bulk-orders",
   },
   openGraph: {
     title: "Corporate & Wholesale Bulk Orders | Smart Care & Mobile Point",
     description: "Bulk mobile accessories procurement for companies, IT hubs & retailers with GST invoicing and fast regional delivery.",
-    url: "https://www.smartcaremobile.in/corporate-bulk-orders",
+    url: "https://smartcaremobile.in/corporate-bulk-orders",
   },
 };
 

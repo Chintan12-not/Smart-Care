@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Terms & Conditions | Smart Care & Mobile Point Gurugram",
   description: "Terms & Conditions for Smart Care & Mobile Point. Learn about our mobile repair warranty, doorstep service policies, genuine accessory guarantees, and customer terms.",
   alternates: {
-    canonical: "https://www.smartcaremobile.in/terms",
+    canonical: "https://smartcaremobile.in/terms",
   },
 };
 

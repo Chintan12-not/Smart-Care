@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
       `${brandName} tempered glass`
     ],
     alternates: {
-      canonical: `https://www.smartcaremobile.in/accessories/brand/${rawBrand.toLowerCase()}`,
+      canonical: `https://smartcaremobile.in/accessories/brand/${rawBrand.toLowerCase()}`,
     },
   };
 }

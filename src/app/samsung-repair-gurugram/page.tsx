@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Samsung battery replacement Gurugram"
   ],
   alternates: {
-    canonical: "https://www.smartcaremobile.in/samsung-repair-gurugram",
+    canonical: "https://smartcaremobile.in/samsung-repair-gurugram",
   },
 };
 

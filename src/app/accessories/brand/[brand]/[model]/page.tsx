@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ModelPageProps): Promise<Meta
       `${brandName} ${modelName} accessories Gurugram`
     ],
     alternates: {
-      canonical: `https://www.smartcaremobile.in/accessories/brand/${rawBrand.toLowerCase()}/${rawModel.toLowerCase()}`,
+      canonical: `https://smartcaremobile.in/accessories/brand/${rawBrand.toLowerCase()}/${rawModel.toLowerCase()}`,
     },
   };
 }
@@ -57,10 +57,10 @@ export default async function ModelAccessoriesPage({ params }: ModelPageProps) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.smartcaremobile.in" },
-      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": "https://www.smartcaremobile.in/accessories" },
-      { "@type": "ListItem", "position": 3, "name": matchedBrandKey, "item": `https://www.smartcaremobile.in/accessories/brand/${normalizedBrand}` },
-      { "@type": "ListItem", "position": 4, "name": modelFormatted, "item": `https://www.smartcaremobile.in/accessories/brand/${normalizedBrand}/${rawModel}` }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://smartcaremobile.in" },
+      { "@type": "ListItem", "position": 2, "name": "Accessories", "item": "https://smartcaremobile.in/accessories" },
+      { "@type": "ListItem", "position": 3, "name": matchedBrandKey, "item": `https://smartcaremobile.in/accessories/brand/${normalizedBrand}` },
+      { "@type": "ListItem", "position": 4, "name": modelFormatted, "item": `https://smartcaremobile.in/accessories/brand/${normalizedBrand}/${rawModel}` }
     ]
   };
 

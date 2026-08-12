@@ -278,7 +278,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
-    "image": product.image.startsWith("/") ? `https://www.smartcaremobile.in${product.image}` : product.image,
+    "image": product.image.startsWith("/") ? `https://smartcaremobile.in${product.image}` : product.image,
     "description": product.description || `${product.name} compatible with ${product.brand} smartphones. Available at Smart Care & Mobile Point.`,
     "brand": {
       "@type": "Brand",
@@ -287,7 +287,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     "sku": product.id,
     "offers": {
       "@type": "Offer",
-      "url": `https://www.smartcaremobile.in/accessories/${product.id}`,
+      "url": `https://smartcaremobile.in/accessories/${product.id}`,
       "priceCurrency": "INR",
       "price": product.price,
       "itemCondition": "https://schema.org/NewCondition",

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "display change cost Gurgaon"
   ],
   alternates: {
-    canonical: "https://www.smartcaremobile.in/screen-replacement-gurugram",
+    canonical: "https://smartcaremobile.in/screen-replacement-gurugram",
   },
 };
 

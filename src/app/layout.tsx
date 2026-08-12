@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.smartcaremobile.in"),
+  metadataBase: new URL("https://smartcaremobile.in"),
   title: {
     default: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
     template: "%s | Smart Care & Mobile Point",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "corporate mobile accessories bulk orders"
   ],
   alternates: {
-    canonical: "https://www.smartcaremobile.in",
+    canonical: "https://smartcaremobile.in",
   },
   icons: {
     icon: [
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
     description: "Doorstep mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models.",
-    url: "https://www.smartcaremobile.in",
+    url: "https://smartcaremobile.in",
     siteName: "Smart Care & Mobile Point",
     locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "https://www.smartcaremobile.in/hero_background.png",
+        url: "https://smartcaremobile.in/hero_background.png",
         width: 1200,
         height: 630,
         alt: "Smart Care & Mobile Point Storefront in Sector 37C Gurugram",
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Mobile Repair & Accessories in Gurugram | Smart Care",
     description: "Doorstep mobile repair & genuine accessories store in Gurugram. Contact Smart Care today.",
-    images: ["https://www.smartcaremobile.in/hero_background.png"],
+    images: ["https://smartcaremobile.in/hero_background.png"],
   },
   robots: {
     index: true,
@@ -96,11 +96,11 @@ export default function RootLayout({
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "MobilePhoneStore",
-    "@id": "https://www.smartcaremobile.in/#localbusiness",
+    "@id": "https://smartcaremobile.in/#localbusiness",
     "name": "Smart Care & Mobile Point",
-    "url": "https://www.smartcaremobile.in",
-    "logo": "https://www.smartcaremobile.in/logo.png",
-    "image": "https://www.smartcaremobile.in/hero_background.png",
+    "url": "https://smartcaremobile.in",
+    "logo": "https://smartcaremobile.in/logo.png",
+    "image": "https://smartcaremobile.in/hero_background.png",
     "description": "Gurugram's premier doorstep mobile repair center, genuine phone accessories store, document printing & photocopy hub.",
     "telephone": "+919289942313",
     "priceRange": "₹₹",
@@ -126,7 +126,7 @@ export default function RootLayout({
       "closes": "21:00"
     },
     "sameAs": [
-      "https://www.smartcaremobile.in",
+      "https://smartcaremobile.in",
       "https://wa.me/919289942313"
     ],
     "areaServed": [
@@ -143,16 +143,16 @@ export default function RootLayout({
   const webSiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": "https://www.smartcaremobile.in/#website",
-    "url": "https://www.smartcaremobile.in",
+    "@id": "https://smartcaremobile.in/#website",
+    "url": "https://smartcaremobile.in",
     "name": "Smart Care & Mobile Point",
     "description": "Mobile Repair & Genuine Accessories in Gurugram",
     "publisher": {
-      "@id": "https://www.smartcaremobile.in/#localbusiness"
+      "@id": "https://smartcaremobile.in/#localbusiness"
     },
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://www.smartcaremobile.in/accessories?search={search_term_string}",
+      "target": "https://smartcaremobile.in/accessories?search={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };

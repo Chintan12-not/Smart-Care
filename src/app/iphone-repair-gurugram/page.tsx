@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "iPhone service center Sector 37C Gurugram"
   ],
   alternates: {
-    canonical: "https://www.smartcaremobile.in/iphone-repair-gurugram",
+    canonical: "https://smartcaremobile.in/iphone-repair-gurugram",
   },
   openGraph: {
     title: "iPhone Repair Service in Gurugram | Smart Care & Mobile Point",
     description: "Express iPhone repair service in Gurugram. Free doorstep pickup & OEM parts warranty.",
-    url: "https://www.smartcaremobile.in/iphone-repair-gurugram",
+    url: "https://smartcaremobile.in/iphone-repair-gurugram",
   },
 };
 

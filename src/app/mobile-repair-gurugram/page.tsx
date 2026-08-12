@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "mobile screen replacement Gurgaon"
   ],
   alternates: {
-    canonical: "https://www.smartcaremobile.in/mobile-repair-gurugram",
+    canonical: "https://smartcaremobile.in/mobile-repair-gurugram",
   },
   openGraph: {
     title: "Doorstep Mobile Repair Service in Gurugram | Smart Care",
     description: "Express mobile repair service in Gurugram. Free doorstep pickup & same-day delivery.",
-    url: "https://www.smartcaremobile.in/mobile-repair-gurugram",
+    url: "https://smartcaremobile.in/mobile-repair-gurugram",
   },
 };
 
