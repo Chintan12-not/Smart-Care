@@ -352,15 +352,32 @@ function AccessoriesContent() {
                   </button>
                 </div>
 
-                {/* Product Visual */}
-                <div className="h-44 w-full rounded-xl bg-muted/40 border border-border/40 overflow-hidden flex items-center justify-center relative mb-4 group-hover:border-cyan-500/20 transition-all duration-300">
-                  {discountPercent && (
-                    <span className="absolute top-3.5 left-3.5 px-2.5 py-1 rounded-lg bg-red-500 text-white text-[9px] font-extrabold uppercase tracking-wider flex items-center gap-0.5 z-10 animate-pulse">
-                      <Percent className="h-3 w-3" /> {discountPercent}
-                    </span>
-                  )}
+                {/* Product Image & Badges */}
+                <div className="aspect-square rounded-2xl bg-muted/40 overflow-hidden relative border border-border/50 group-hover:border-cyan-500/20 transition-all flex items-center justify-center p-4 mb-4">
                   
-                  {prod.image && (prod.id === "acc-7" || prod.image.startsWith("/")) ? (
+                  {/* Badges: On Sale, Discount %, Out of Stock */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+                    {prod.isOnSale && (
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
+                        <Zap className="h-2.5 w-2.5 fill-black" />
+                        ON SALE
+                      </span>
+                    )}
+
+                    {prod.originalPrice && prod.originalPrice > prod.price && (
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-black shadow-md">
+                        {Math.round(((prod.originalPrice - prod.price) / prod.originalPrice) * 100)}% OFF
+                      </span>
+                    )}
+
+                    {prod.inStock === false && (
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-500 text-white shadow-md">
+                        OUT OF STOCK
+                      </span>
+                    )}
+                  </div>
+                  
+                  {prod.image && (prod.id === "acc-7" || prod.image.startsWith("http") || prod.image.startsWith("/")) ? (
                     <img
                       src={prod.image}
                       alt={prod.name}
@@ -398,8 +415,14 @@ function AccessoriesContent() {
                 {/* Pricing & Checkout trigger */}
                 <div className="flex items-center justify-between mt-5 border-t border-border/40 pt-4 gap-2">
                   <div className="flex flex-col">
-                    <span className="text-sm font-extrabold text-foreground">{formatINR(prod.price)}</span>
-                    {discountPercent && <span className="text-[9px] text-muted-foreground line-through">₹399</span>}
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-sm font-extrabold text-foreground">{formatINR(prod.price)}</span>
+                      {prod.originalPrice && prod.originalPrice > prod.price && (
+                        <span className="text-[10px] text-muted-foreground line-through font-semibold">
+                          {formatINR(prod.originalPrice)}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-1.5">
@@ -410,13 +433,23 @@ function AccessoriesContent() {
                     >
                       <Eye className="h-4.5 w-4.5" />
                     </button>
-                    <button
-                      onClick={() => handleAddToCart(prod)}
-                      className="px-4 py-2.5 rounded-xl bg-foreground text-background font-bold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity"
-                    >
-                      <ShoppingBag className="h-3.5 w-3.5" />
-                      Add to Cart
-                    </button>
+
+                    {prod.inStock === false ? (
+                      <button
+                        disabled
+                        className="px-3.5 py-2.5 rounded-xl bg-muted border border-border/60 text-muted-foreground font-bold text-[10px] cursor-not-allowed opacity-60"
+                      >
+                        Out of Stock
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleAddToCart(prod)}
+                        className="px-4 py-2.5 rounded-xl bg-foreground text-background font-bold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity"
+                      >
+                        <ShoppingBag className="h-3.5 w-3.5" />
+                        Add to Cart
+                      </button>
+                    )}
                   </div>
                 </div>
 

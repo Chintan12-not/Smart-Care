@@ -4,6 +4,9 @@ export interface AccessoryProduct {
   category: string;
   brand: string;
   price: number;
+  originalPrice?: number | null;
+  inStock?: boolean;
+  isOnSale?: boolean;
   rating: number;
   reviewsCount: number;
   image: string;

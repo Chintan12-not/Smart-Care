@@ -65,11 +65,46 @@ export default function AdminPage() {
   const [customBrand, setCustomBrand] = useState("");
   const [targetModel, setTargetModel] = useState("");
   const [price, setPrice] = useState("");
+  const [originalPrice, setOriginalPrice] = useState(""); // Optional MRP strike price (e.g. 499)
   const [stockQuantity, setStockQuantity] = useState("50");
+  const [inStock, setInStock] = useState(true); // In Stock / Out of Stock
+  const [isOnSale, setIsOnSale] = useState(false); // Put on Sale toggle
   const [description, setDescription] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([""]); // Up to 10 image URLs!
   const [isActive, setIsActive] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [isGeneratingAiDesc, setIsGeneratingAiDesc] = useState(false);
+
+  // AI Description Generator
+  const handleGenerateAiDescription = async () => {
+    if (!name) {
+      alert("Please enter a Product Title first.");
+      return;
+    }
+    setIsGeneratingAiDesc(true);
+    setDbError(null);
+    try {
+      const res = await fetch("/api/v1/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          category,
+          brand: brand === "other" ? customBrand : brand,
+          targetModel
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.description) {
+        setDescription(data.description);
+        setActionSuccess("✨ AI Description generated successfully!");
+      }
+    } catch (e: any) {
+      console.error("AI description generator error:", e);
+    } finally {
+      setIsGeneratingAiDesc(false);
+    }
+  };
 
   // Tab State
   const [activeTab, setActiveTab] = useState<"accessories" | "estimator" | "b2b" | "orders">("accessories");
@@ -425,10 +460,12 @@ export default function AdminPage() {
     setActionSuccess(null);
 
     const priceNum = parseFloat(price);
+    const originalPriceNum = originalPrice ? parseFloat(originalPrice) : null;
     const stockNum = parseInt(stockQuantity) || 0;
     
-    // Fallback default image or clean input list
-    const imagesArray = imageUrl.trim() ? [imageUrl.trim()] : ["/placeholder_acc.png"];
+    // Clean and filter valid up to 10 images
+    const validImages = imageUrls.map(url => url.trim()).filter(Boolean);
+    const imagesArray = validImages.length > 0 ? validImages.slice(0, 10) : ["https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80"];
 
     const finalModel = targetModel && targetModel !== "Universal / All Models" ? targetModel : "";
 
@@ -447,35 +484,63 @@ export default function AdminPage() {
     }
 
     try {
-      const { data, error } = await supabase
-        .from("accessories")
-        .insert([
-          {
-            name: finalTitle,
-            category,
-            brand: finalBrand,
-            price: priceNum,
-            stock_quantity: stockNum,
-            description: description || null,
-            images: imagesArray,
-            is_active: isActive,
-            rating_avg: 4.8,
-            reviews_count: 15,
-            specifications: specs
-          }
-        ])
-        .select();
+      if (isSupabaseConfigured()) {
+        const { error } = await supabase
+          .from("accessories")
+          .insert([
+            {
+              name: finalTitle,
+              category,
+              brand: finalBrand,
+              price: priceNum,
+              original_price: originalPriceNum,
+              stock_quantity: stockNum,
+              in_stock: inStock,
+              is_on_sale: isOnSale,
+              description: description || null,
+              images: imagesArray,
+              is_active: isActive,
+              rating_avg: 4.8,
+              reviews_count: 15,
+              specifications: specs
+            }
+          ]);
 
-      if (error) throw error;
+        if (error) throw error;
+      }
+
+      // LocalStorage backup
+      const local = localStorage.getItem("sc_custom_accessories");
+      let list = local ? JSON.parse(local) : [];
+      list.unshift({
+        id: `acc-custom-${Date.now()}`,
+        name: finalTitle,
+        category,
+        brand: finalBrand,
+        price: priceNum,
+        originalPrice: originalPriceNum,
+        inStock,
+        isOnSale,
+        description: description || "",
+        image: imagesArray[0],
+        images: imagesArray,
+        rating: 4.9,
+        reviewsCount: 18,
+        specifications: specs
+      });
+      localStorage.setItem("sc_custom_accessories", JSON.stringify(list));
 
       setActionSuccess(`Product "${finalTitle}" added successfully!`);
       // Reset form
       setName("");
       setPrice("");
+      setOriginalPrice("");
       setTargetModel("");
       setStockQuantity("50");
+      setInStock(true);
+      setIsOnSale(false);
       setDescription("");
-      setImageUrl("");
+      setImageUrls([""]);
       setIsActive(true);
 
       // Reload
@@ -764,25 +829,44 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                {/* Price & Stock */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Price, Original Strike MRP, & Stock */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Selling Price */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                      <DollarSign className="h-3.5 w-3.5 text-cyan-500" />
-                      Price (INR) <span className="text-red-500">*</span>
+                      <DollarSign className="h-3.5 w-3.5 text-emerald-500" />
+                      Selling Price (₹) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
                       required
                       min="0"
                       step="0.01"
-                      placeholder="e.g. 1499"
+                      placeholder="e.g. 199"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"
                     />
                   </div>
 
+                  {/* Original / MRP Strike Price */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                      <Tag className="h-3.5 w-3.5 text-amber-500" />
+                      Original MRP (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="e.g. 499"
+                      value={originalPrice}
+                      onChange={(e) => setOriginalPrice(e.target.value)}
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500 font-semibold"
+                    />
+                  </div>
+
+                  {/* Stock Quantity */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                       <Box className="h-3.5 w-3.5 text-cyan-500" />
@@ -799,31 +883,111 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Image URL */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                    <Star className="h-3.5 w-3.5 text-cyan-500" />
-                    Product Image URL
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="e.g. https://example.com/charger.png"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
-                  />
-                  <p className="text-[9px] text-muted-foreground/80 pl-1">Leave empty to use generic fallback mock image placeholder.</p>
+                {/* Stock Status & Sale Badges */}
+                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-muted/40 border border-border/50">
+                  {/* In Stock / Out of Stock */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-foreground block">Stock Availability</span>
+                      <span className="text-[9px] text-muted-foreground">{inStock ? "In Stock (Available)" : "Out of Stock"}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setInStock(!inStock)}
+                      className={cn("text-lg", inStock ? "text-emerald-500" : "text-red-500")}
+                    >
+                      {inStock ? <ToggleRight className="h-7 w-7 text-emerald-500" /> : <ToggleLeft className="h-7 w-7 text-red-500" />}
+                    </button>
+                  </div>
+
+                  {/* Put on Sale Toggle */}
+                  <div className="flex items-center justify-between border-l border-border/50 pl-3">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-foreground block">🔥 Put on Sale</span>
+                      <span className="text-[9px] text-muted-foreground">{isOnSale ? "Sale Badge Active" : "Regular Price"}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsOnSale(!isOnSale)}
+                      className="text-lg"
+                    >
+                      {isOnSale ? <ToggleRight className="h-7 w-7 text-amber-500" /> : <ToggleLeft className="h-7 w-7 text-muted-foreground" />}
+                    </button>
+                  </div>
                 </div>
 
-                {/* Description */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                    <FileText className="h-3.5 w-3.5 text-cyan-500" />
-                    Specifications & Description
-                  </label>
+                {/* Multiple Images Upload (Up to 10 Images) */}
+                <div className="space-y-2 border-t border-border/50 pt-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 text-cyan-500" />
+                      Product Images Gallery (Up to 10 Images)
+                    </label>
+                    <span className="text-[10px] text-cyan-400 font-bold">{imageUrls.length} / 10</span>
+                  </div>
+
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {imageUrls.map((url, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-muted-foreground w-4 text-center">{idx + 1}</span>
+                        <input
+                          type="url"
+                          placeholder={`Image URL ${idx + 1} (e.g. https://...)`}
+                          value={url}
+                          onChange={(e) => {
+                            const newArr = [...imageUrls];
+                            newArr[idx] = e.target.value;
+                            setImageUrls(newArr);
+                          }}
+                          className="flex-grow bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
+                        />
+                        {imageUrls.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setImageUrls(imageUrls.filter((_, i) => i !== idx));
+                            }}
+                            className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {imageUrls.length < 10 && (
+                    <button
+                      type="button"
+                      onClick={() => setImageUrls([...imageUrls, ""])}
+                      className="w-full py-2 bg-muted/60 border border-dashed border-border hover:border-cyan-500 text-cyan-400 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Image URL ({imageUrls.length}/10)</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Description & AI Auto Generator */}
+                <div className="space-y-1.5 border-t border-border/50 pt-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                      <FileText className="h-3.5 w-3.5 text-cyan-500" />
+                      Specifications & Description
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleGenerateAiDescription}
+                      disabled={isGeneratingAiDesc}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-[10px] font-bold flex items-center gap-1"
+                    >
+                      <Loader2 className={cn("h-3 w-3", isGeneratingAiDesc && "animate-spin")} />
+                      <span>✨ Auto-Generate Description (AI)</span>
+                    </button>
+                  </div>
                   <textarea
                     rows={3}
-                    placeholder="Premium quality charger with safety features and intelligent auto cut-off..."
+                    placeholder="Click ✨ Auto-Generate Description (AI) or type custom description..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium placeholder:text-muted-foreground/60"
@@ -837,7 +1001,7 @@ export default function AdminPage() {
                     onClick={() => setIsActive(!isActive)}
                     className="text-cyan-500 hover:opacity-90 transition-opacity"
                   >
-                    {isActive ? <ToggleRight className="h-8 w-8" /> : <ToggleLeft className="h-8 w-8 text-muted-foreground" />}
+                    {isActive ? <ToggleRight className="h-8 w-8 text-emerald-500" /> : <ToggleLeft className="h-8 w-8 text-muted-foreground" />}
                   </button>
                   <div>
                     <span className="text-xs font-bold text-foreground block">Is Active / Listed</span>
