@@ -3,7 +3,25 @@ import Razorpay from "razorpay";
 
 export async function POST(req: Request) {
   try {
-    const { amount, currency = "INR", receipt } = await req.json();
+    const body = await req.json();
+    const { amount, currency = "INR", receipt } = body;
+
+    // Check if Cloudflare Backend Proxy is configured
+    const cfBackendUrl = process.env.CLOUDFLARE_RAZORPAY_BACKEND_URL || process.env.NEXT_PUBLIC_CLOUDFLARE_RAZORPAY_BACKEND_URL;
+    if (cfBackendUrl) {
+      try {
+        const cfResponse = await fetch(`${cfBackendUrl.replace(/\/$/, "")}/create-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const cfData = await cfResponse.json();
+        return NextResponse.json(cfData, { status: cfResponse.status });
+      } catch (cfErr: any) {
+        console.error("[Cloudflare Razorpay Proxy Error]:", cfErr);
+        // Fallback to Vercel native Razorpay if Cloudflare worker call fails
+      }
+    }
 
     const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TOiFZDDTMcDv2P";
     const keySecret = process.env.RAZORPAY_KEY_SECRET || "ASOrWRvNHOQJ5d1BYf2lzTOc";
