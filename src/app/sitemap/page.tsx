@@ -232,12 +232,6 @@ export default function HtmlSitemapPage() {
                   <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                 </Link>
               </li>
-              <li>
-                <a href="/sitemap.xml" target="_blank" className="flex items-center justify-between text-cyan-400 hover:underline">
-                  <span>XML Sitemap File for Search Engines (sitemap.xml)</span>
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                </a>
-              </li>
             </ul>
           </div>
 
