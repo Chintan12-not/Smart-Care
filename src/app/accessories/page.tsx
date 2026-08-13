@@ -95,11 +95,11 @@ function AccessoriesContent() {
     }
   }, []);
 
-  // 2. Fetch products from Supabase & LocalStorage
+  // 2. Fetch products from Supabase & LocalStorage with strict name deduplication
   useEffect(() => {
     async function loadProducts() {
       setIsLoading(true);
-      let baseList: AccessoryProduct[] = [...MOCK_ACCESSORIES];
+      let customMapped: AccessoryProduct[] = [];
 
       // Load custom products saved in LocalStorage via Admin
       if (typeof window !== "undefined") {
@@ -107,7 +107,7 @@ function AccessoriesContent() {
         if (savedCustom) {
           try {
             const parsedCustom: any[] = JSON.parse(savedCustom);
-            const customMapped: AccessoryProduct[] = parsedCustom.map((item) => ({
+            customMapped = parsedCustom.map((item) => ({
               id: String(item.id),
               name: item.name || "Accessory Product",
               category: item.category || "case",
@@ -123,14 +123,13 @@ function AccessoriesContent() {
               specifications: item.specifications || {},
               description: item.description || ""
             }));
-            // Merge custom items at top of list
-            baseList = [...customMapped, ...baseList.filter(m => !customMapped.some(c => c.id === m.id))];
           } catch (e) {
             console.warn("Failed to parse custom accessories from localStorage:", e);
           }
         }
       }
 
+      let dbMapped: AccessoryProduct[] = [];
       if (isSupabaseConfigured()) {
         try {
           const { data, error } = await supabase
@@ -141,7 +140,7 @@ function AccessoriesContent() {
           if (error) throw error;
           
           if (data && data.length > 0) {
-            const dbMapped: AccessoryProduct[] = data.map((item) => ({
+            dbMapped = data.map((item) => ({
               id: String(item.id),
               name: item.name,
               category: item.category,
@@ -157,16 +156,28 @@ function AccessoriesContent() {
               specifications: item.specifications || {},
               description: item.description || ""
             }));
-            // Combine DB mapped with custom LocalStorage items
-            const dbIds = new Set(dbMapped.map(d => d.id));
-            baseList = [...dbMapped, ...baseList.filter(b => !dbIds.has(b.id))];
           }
         } catch (err) {
           console.error("Error loading products from Supabase:", err);
         }
       }
 
-      setProducts(baseList);
+      // Combine priority: Custom Admin Items > DB Items > Mock Catalog
+      const combinedRaw = [...customMapped, ...dbMapped, ...MOCK_ACCESSORIES];
+      
+      // Deduplicate strictly by product name key
+      const seenNames = new Set<string>();
+      const finalUnique: AccessoryProduct[] = [];
+
+      for (const item of combinedRaw) {
+        const normKey = item.name.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 18);
+        if (!seenNames.has(normKey)) {
+          seenNames.add(normKey);
+          finalUnique.push(item);
+        }
+      }
+
+      setProducts(finalUnique);
       setIsLoading(false);
     }
 

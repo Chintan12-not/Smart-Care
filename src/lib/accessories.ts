@@ -49,7 +49,7 @@ export const MOCK_ACCESSORIES: AccessoryProduct[] = [
     isOnSale: true,
     rating: 4.8,
     reviewsCount: 38,
-    image: "/shop_shelf.png",
+    image: "/s25_case.jpg",
     specifications: {
       "Brand": "Apple",
       "Compatible Phone Models": "iPhone 15 Plus",
