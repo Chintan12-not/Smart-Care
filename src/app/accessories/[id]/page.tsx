@@ -471,6 +471,108 @@ export default function ProductDetailPage({ params }: PageProps) {
               </a>
             </div>
           </div>
+
+          {/* Ratings & Quality Breakdown Card */}
+          <div className="glass-card rounded-3xl p-5 sm:p-6 border border-border/80 shadow-sm space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border/50">
+              <div>
+                <h4 className="font-extrabold text-xs sm:text-sm text-foreground">Customer Satisfaction Score</h4>
+                <p className="text-[11px] text-muted-foreground">Based on verified Smart Care store purchases</p>
+              </div>
+              <div className="text-right">
+                <span className="text-xl font-black text-amber-400">4.9 / 5</span>
+                <div className="flex text-amber-400 justify-end">
+                  <Star className="h-3 w-3 fill-current" />
+                  <Star className="h-3 w-3 fill-current" />
+                  <Star className="h-3 w-3 fill-current" />
+                  <Star className="h-3 w-3 fill-current" />
+                  <Star className="h-3 w-3 fill-current" />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] font-bold">
+                  <span className="text-muted-foreground">Product Build & Quality</span>
+                  <span className="text-emerald-500">98% Positive</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full w-[98%]" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] font-bold">
+                  <span className="text-muted-foreground">Packaging & Protection</span>
+                  <span className="text-cyan-500">100% Safe</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-cyan-500 rounded-full w-[100%]" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] font-bold">
+                  <span className="text-muted-foreground">Value for Money</span>
+                  <span className="text-amber-500">95% Top Rating</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-amber-500 rounded-full w-[95%]" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Frequently Asked Questions Card */}
+          <div className="glass-card rounded-3xl p-5 sm:p-6 border border-border/80 shadow-sm space-y-4">
+            <div className="flex items-center gap-2.5 pb-3 border-b border-border/50">
+              <MessageSquare className="h-4 w-4 text-cyan-500" />
+              <h4 className="font-extrabold text-xs sm:text-sm text-foreground">Frequently Asked Questions</h4>
+            </div>
+
+            <div className="space-y-3 divide-y divide-border/40">
+              <div className="pt-2">
+                <h5 className="font-bold text-[11px] text-foreground flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />
+                  Is this product 100% genuine & tested?
+                </h5>
+                <p className="text-[10px] text-muted-foreground mt-1 pl-5">
+                  Yes, every accessory at Smart Care undergoes a multi-point quality test before dispatch or store placement.
+                </p>
+              </div>
+
+              <div className="pt-2.5">
+                <h5 className="font-bold text-[11px] text-foreground flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />
+                  Can I get free installation at your Gurugram shop?
+                </h5>
+                <p className="text-[10px] text-muted-foreground mt-1 pl-5">
+                  Absoluty! Bring your receipt to Shop No. 28, Ninex Residency, Sec 37C for complimentary professional fitting.
+                </p>
+              </div>
+
+              <div className="pt-2.5">
+                <h5 className="font-bold text-[11px] text-foreground flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />
+                  How fast is delivery in Gurugram?
+                </h5>
+                <p className="text-[10px] text-muted-foreground mt-1 pl-5">
+                  Orders placed before 4 PM receive same-day express doorstep delivery within Gurugram & NCR.
+                </p>
+              </div>
+
+              <div className="pt-2.5">
+                <h5 className="font-bold text-[11px] text-foreground flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />
+                  What is the return & replacement policy?
+                </h5>
+                <p className="text-[10px] text-muted-foreground mt-1 pl-5">
+                  We offer a 7-Day hassle-free replacement guarantee for any manufacturing defects or sizing issues.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right Column: checkout and description panel (6 cols) */}
