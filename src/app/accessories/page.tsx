@@ -95,67 +95,79 @@ function AccessoriesContent() {
     }
   }, []);
 
-  // 2. Fetch products from Supabase + LocalStorage custom items
+  // 2. Fetch products from Supabase & LocalStorage
   useEffect(() => {
     async function loadProducts() {
       setIsLoading(true);
-      let localCustomItems: AccessoryProduct[] = [];
+      let baseList: AccessoryProduct[] = [...MOCK_ACCESSORIES];
+
+      // Load custom products saved in LocalStorage via Admin
       if (typeof window !== "undefined") {
-        const local = localStorage.getItem("sc_custom_accessories");
-        if (local) {
-          try { localCustomItems = JSON.parse(local); } catch (e) {}
+        const savedCustom = localStorage.getItem("sc_custom_accessories");
+        if (savedCustom) {
+          try {
+            const parsedCustom: any[] = JSON.parse(savedCustom);
+            const customMapped: AccessoryProduct[] = parsedCustom.map((item) => ({
+              id: String(item.id),
+              name: item.name || "Accessory Product",
+              category: item.category || "case",
+              brand: item.brand || "Generic",
+              price: Number(item.price || 0),
+              originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
+              inStock: item.inStock !== false,
+              isOnSale: item.isOnSale || false,
+              rating: Number(item.rating || 4.8),
+              reviewsCount: Number(item.reviewsCount || 15),
+              image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
+              images: item.images || [item.image || "/shop_accessories.png"],
+              specifications: item.specifications || {},
+              description: item.description || ""
+            }));
+            // Merge custom items at top of list
+            baseList = [...customMapped, ...baseList.filter(m => !customMapped.some(c => c.id === m.id))];
+          } catch (e) {
+            console.warn("Failed to parse custom accessories from localStorage:", e);
+          }
         }
       }
 
-      if (!isSupabaseConfigured()) {
-        const combined = [...localCustomItems, ...MOCK_ACCESSORIES];
-        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
-        setProducts(unique);
-        setIsLoading(false);
-        return;
-      }
+      if (isSupabaseConfigured()) {
+        try {
+          const { data, error } = await supabase
+            .from("accessories")
+            .select("*")
+            .eq("is_active", true);
 
-      try {
-        const { data, error } = await supabase
-          .from("accessories")
-          .select("*")
-          .eq("is_active", true);
-
-        if (error) throw error;
-        
-        let loadedItems: AccessoryProduct[] = [];
-        if (data && data.length > 0) {
-          loadedItems = data.map((item) => ({
-            id: item.id,
-            name: item.name,
-            category: item.category,
-            brand: item.brand,
-            price: Number(item.price),
-            originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
-            inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
-            isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
-            rating: Number(item.rating_avg || 4.5),
-            reviewsCount: Number(item.reviews_count || 10),
-            image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
-            images: item.images || [],
-            specifications: item.specifications || {},
-            description: item.description || ""
-          }));
-        } else {
-          loadedItems = MOCK_ACCESSORIES;
+          if (error) throw error;
+          
+          if (data && data.length > 0) {
+            const dbMapped: AccessoryProduct[] = data.map((item) => ({
+              id: String(item.id),
+              name: item.name,
+              category: item.category,
+              brand: item.brand,
+              price: Number(item.price),
+              originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
+              inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
+              isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
+              rating: Number(item.rating_avg || 4.5),
+              reviewsCount: Number(item.reviews_count || 10),
+              image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
+              images: item.images || [],
+              specifications: item.specifications || {},
+              description: item.description || ""
+            }));
+            // Combine DB mapped with custom LocalStorage items
+            const dbIds = new Set(dbMapped.map(d => d.id));
+            baseList = [...dbMapped, ...baseList.filter(b => !dbIds.has(b.id))];
+          }
+        } catch (err) {
+          console.error("Error loading products from Supabase:", err);
         }
-
-        const combined = [...localCustomItems, ...loadedItems];
-        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
-        setProducts(unique);
-      } catch (err) {
-        console.error("Error loading products from Supabase:", err);
-        const combined = [...localCustomItems, ...MOCK_ACCESSORIES];
-        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
-        setProducts(unique);
-      } finally {
-        setIsLoading(false);
       }
+
+      setProducts(baseList);
+      setIsLoading(false);
     }
 
     loadProducts();
@@ -218,52 +230,12 @@ function AccessoriesContent() {
     }
   };
 
-  const handleShareProduct = async (product: AccessoryProduct) => {
-    const url = `${window.location.origin}/accessories/${product.id}`;
-    const shareData = {
-      title: product.name,
-      text: `${product.name} at Smart Care & Mobile Point Gurugram`,
-      url: url,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {}
-    } else {
-      try {
-        await navigator.clipboard.writeText(url);
-        setAddedItemName(`Link copied for ${product.name}`);
-        setTimeout(() => setAddedItemName(""), 2000);
-      } catch (err) {}
-    }
-  };
-
-  // 8. Filters & Search matching (Enhanced for Brand & Model Selection)
+  // 8. Filters & Search matching
   const filteredProducts = products.filter((prod) => {
-    const searchLower = search.toLowerCase().trim();
-    
-    const compatStr = (
-      prod.specifications?.["Compatible Phone Models"] || 
-      prod.specifications?.["Compatible Devices"] || 
-      prod.specifications?.["Compatible Model"] || 
-      ""
-    ).toLowerCase();
-
-    const isUniversal = compatStr.includes("universal") || compatStr.includes("all model") || compatStr.includes("all compatible");
-
     const matchesSearch = 
-      !searchLower ||
-      prod.name.toLowerCase().includes(searchLower) ||
-      prod.brand.toLowerCase().includes(searchLower) ||
-      prod.category.toLowerCase().includes(searchLower) ||
-      compatStr.includes(searchLower) ||
-      isUniversal ||
-      searchLower.split(/\s+/).some(term => term.length > 1 && (
-        prod.name.toLowerCase().includes(term) ||
-        prod.brand.toLowerCase().includes(term) ||
-        compatStr.includes(term)
-      ));
+      prod.name.toLowerCase().includes(search.toLowerCase()) ||
+      prod.brand.toLowerCase().includes(search.toLowerCase()) ||
+      prod.category.toLowerCase().includes(search.toLowerCase());
 
     const matchesCategory = 
       category === "all" || 
@@ -412,20 +384,8 @@ function AccessoriesContent() {
                     )}
                   </div>
 
-                  {/* Wishlist, Share & Compare float buttons (Top Right z-30) */}
+                  {/* Wishlist & Compare float buttons (Top Right z-30) */}
                   <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleShareProduct(prod);
-                      }}
-                      className="p-1.5 rounded-lg bg-zinc-950/90 border border-zinc-800 text-white hover:text-cyan-400 hover:bg-black transition-colors shadow-md backdrop-blur-md"
-                      title="Share product link"
-                      aria-label="Share product"
-                    >
-                      <Share2 className="h-3.5 w-3.5" />
-                    </button>
                     <button
                       onClick={() => toggleCompare(prod.id)}
                       className={cn(
