@@ -321,28 +321,36 @@ export default function ProductDetailPage({ params }: PageProps) {
       {/* Main Product Column split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Column: Premium Gallery (5 cols) */}
+        {/* Left Column: Premium Gallery (6 cols) */}
         <div className="lg:col-span-6 space-y-4">
           <div 
-            className="relative h-96 sm:h-[450px] w-full rounded-3xl bg-muted overflow-hidden flex items-center justify-center border border-border/80 cursor-zoom-in group shadow-sm bg-card"
+            className="relative h-96 sm:h-[480px] w-full rounded-3xl overflow-hidden flex items-center justify-center border border-border/80 cursor-zoom-in group shadow-md bg-card/60 backdrop-blur-sm"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
+            {/* Ambient Soft Backdrop Fill */}
+            <img
+              src={displayImages[activeImageIndex]}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 scale-110 pointer-events-none"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+
             <img
               src={displayImages[activeImageIndex]}
               alt={product.name}
               style={zoomStyle}
-              className="w-full h-full object-contain p-4 transition-transform duration-100"
-              onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }}
+              className="w-full h-full object-contain p-2 sm:p-4 z-10 transition-transform duration-100 drop-shadow-sm"
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }}
             />
             
             {/* Hover to zoom badge */}
-            <span className="absolute bottom-4 left-4 px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider">
+            <span className="absolute bottom-4 left-4 z-20 px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider">
               Hover to Zoom
             </span>
 
             {/* Sale label bubble */}
-            <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-red-500 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
+            <span className="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-red-500 text-white text-[10px] font-black uppercase tracking-wider shadow-md">
               Sale
             </span>
           </div>
@@ -359,7 +367,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     activeImageIndex === idx ? "border-cyan-500 scale-102 shadow-sm" : "border-border hover:border-muted-foreground/30"
                   )}
                 >
-                  <img src={img} alt="" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }} />
+                  <img src={img} alt="" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }} />
                 </button>
               ))}
             </div>
@@ -703,23 +711,16 @@ export default function ProductDetailPage({ params }: PageProps) {
                 </div>
 
                 <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
-                  <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Compatible Phone Models</span>
-                  <span className="text-foreground font-bold truncate max-w-[200px]">
-                    {product.specifications?.["Compatible Phone Models"] || product.specifications?.["Compatible Model"] || product.name}
-                  </span>
-                </div>
-
-                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
                   <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Colour</span>
                   <span className="text-foreground font-bold">
                     {product.specifications?.["Colour"] || "Multi-Color / Clear"}
                   </span>
                 </div>
 
-                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between">
+                <div className="p-4 bg-card border border-border rounded-2xl flex items-center justify-between sm:col-span-2">
                   <span className="text-muted-foreground font-semibold uppercase text-[10px] tracking-wider">Compatible Devices</span>
-                  <span className="text-foreground font-bold truncate max-w-[200px]">
-                    {product.specifications?.["Compatible Phone Models"] || "All Compatible Models"}
+                  <span className="text-foreground font-bold truncate max-w-[400px]">
+                    {product.specifications?.["Compatible Phone Models"] || product.specifications?.["Compatible Model"] || "Universal / All Compatible Models"}
                   </span>
                 </div>
 

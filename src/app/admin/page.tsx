@@ -76,11 +76,21 @@ export default function AdminPage() {
   const [targetModel, setTargetModel] = useState("");
   const [compatibleModels, setCompatibleModels] = useState(""); // e.g. "iPhone 13, iPhone 15, iPhone 15 Plus"
   const [modelSearchQuery, setModelSearchQuery] = useState("");
+  const [modelBrandTab, setModelBrandTab] = useState<string>("Apple");
 
-  // Model Selector helper logic
+  // Sync model brand tab when main brand dropdown changes
+  useEffect(() => {
+    if (brand && brand !== "other" && (phoneData.brands as string[]).includes(brand)) {
+      setModelBrandTab(brand);
+    }
+  }, [brand]);
+
+  // Multi-Brand Model Selector helper logic
   const selectedModelsList = compatibleModels ? compatibleModels.split(",").map(s => s.trim()).filter(Boolean) : [];
-  const availableBrandModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[brand] || [];
-  const filteredBrandModels = availableBrandModels.filter(m =>
+  
+  const currentTabModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[modelBrandTab] || [];
+  
+  const filteredBrandModels = currentTabModels.filter(m =>
     m.name.toLowerCase().includes(modelSearchQuery.toLowerCase())
   );
 
@@ -94,8 +104,8 @@ export default function AdminPage() {
     }
   };
 
-  const selectAllBrandModels = () => {
-    const allNames = availableBrandModels.map(m => m.name);
+  const selectAllCurrentBrandModels = () => {
+    const allNames = currentTabModels.map(m => m.name);
     const combined = Array.from(new Set([...selectedModelsList, ...allNames]));
     setCompatibleModels(combined.join(", "));
   };
@@ -990,26 +1000,26 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {/* Dynamic Compatible Phone Models Selector Bar */}
-                <div className="space-y-3 p-4 bg-muted/40 border border-border/80 rounded-2xl">
+                {/* Dynamic Multi-Brand & Multi-Model Compatible Devices Selector */}
+                <div className="space-y-3.5 p-4 bg-muted/40 border border-border/80 rounded-2xl">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-2.5">
                     <div>
                       <label className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
                         <Smartphone className="h-4 w-4 text-cyan-500" />
-                        <span>Compatible Models for <span className="text-cyan-500 font-black">{brand === "other" ? (customBrand || "Custom Brand") : brand}</span></span>
+                        <span>Compatible Devices (Multi-Brand & Multi-Model Support)</span>
                       </label>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Click models below to add/remove them from this accessory</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Select models across multiple brands (e.g. Samsung + Apple + OnePlus)</p>
                     </div>
 
                     {/* Quick Action Buttons */}
                     <div className="flex items-center gap-2">
-                      {availableBrandModels.length > 0 && (
+                      {currentTabModels.length > 0 && (
                         <button
                           type="button"
-                          onClick={selectAllBrandModels}
+                          onClick={selectAllCurrentBrandModels}
                           className="px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-500 text-[10px] font-bold hover:bg-cyan-500/20 transition-all"
                         >
-                          Select All {brand} ({availableBrandModels.length})
+                          Select All {modelBrandTab} ({currentTabModels.length})
                         </button>
                       )}
                       {selectedModelsList.length > 0 && (
@@ -1018,9 +1028,34 @@ export default function AdminPage() {
                           onClick={clearSelectedModels}
                           className="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-bold hover:bg-red-500/20 transition-all"
                         >
-                          Clear ({selectedModelsList.length})
+                          Clear All ({selectedModelsList.length})
                         </button>
                       )}
+                    </div>
+                  </div>
+
+                  {/* Brand Filter Tabs Bar */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Filter Models by Smartphone Brand:</span>
+                    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                      {(phoneData.brands as string[]).map((b) => {
+                        const isActiveTab = modelBrandTab === b;
+                        const countInTab = (phoneData.brandModels as Record<string, Array<any>>)[b]?.length || 0;
+                        return (
+                          <button
+                            key={b}
+                            type="button"
+                            onClick={() => setModelBrandTab(b)}
+                            className={`px-3 py-1.5 rounded-xl border text-[11px] font-bold whitespace-nowrap transition-all ${
+                              isActiveTab
+                                ? "bg-cyan-500 text-black border-cyan-500 shadow-sm"
+                                : "bg-card border-border/80 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            }`}
+                          >
+                            {b} ({countInTab})
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -1050,12 +1085,12 @@ export default function AdminPage() {
                   )}
 
                   {/* Model Search Bar */}
-                  {availableBrandModels.length > 0 && (
+                  {currentTabModels.length > 0 && (
                     <div className="relative">
                       <Search className="h-3.5 w-3.5 text-muted-foreground absolute left-3 top-2.5" />
                       <input
                         type="text"
-                        placeholder={`Search ${brand} models (e.g. S24, A55, iPhone 15)...`}
+                        placeholder={`Search ${modelBrandTab} models (e.g. S24, A55, iPhone 15)...`}
                         value={modelSearchQuery}
                         onChange={(e) => setModelSearchQuery(e.target.value)}
                         className="w-full bg-card border border-border rounded-xl pl-9 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
@@ -1064,11 +1099,11 @@ export default function AdminPage() {
                   )}
 
                   {/* Model Select Chips Grid */}
-                  {availableBrandModels.length > 0 && (
+                  {currentTabModels.length > 0 && (
                     <div className="max-h-48 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
                       {filteredBrandModels.length === 0 ? (
                         <div className="col-span-full py-4 text-center text-xs text-muted-foreground">
-                          No {brand} model matching "{modelSearchQuery}"
+                          No {modelBrandTab} model matching "{modelSearchQuery}"
                         </div>
                       ) : (
                         filteredBrandModels.map((m) => {
@@ -1102,7 +1137,7 @@ export default function AdminPage() {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Galaxy S24 Ultra, Galaxy S24+, Universal / All Models"
+                      placeholder="e.g. Galaxy S24 Ultra, iPhone 15 Pro, Universal / All Models"
                       value={compatibleModels}
                       onChange={(e) => setCompatibleModels(e.target.value)}
                       className="w-full bg-card border border-border rounded-xl px-3.5 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"

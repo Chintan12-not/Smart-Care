@@ -380,10 +380,18 @@ function AccessoriesContent() {
                     )}
                   </div>
                   
+                  {/* Ambient Soft Backdrop Fill */}
+                  <img
+                    src={prod.image || (prod.images && prod.images[0]) || "/shop_accessories.png"}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-15 scale-110 pointer-events-none"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+
                   <img
                     src={prod.image || (prod.images && prod.images[0]) || "/shop_accessories.png"}
                     alt={prod.name}
-                    className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                    className="w-full h-full object-contain p-1.5 z-10 group-hover:scale-[1.03] transition-transform duration-300 drop-shadow-sm"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = "/shop_accessories.png";
