@@ -106,7 +106,7 @@ export default function ProductDetailPage({ params }: PageProps) {
           try {
             const parsedCustom: any[] = JSON.parse(savedCustom);
             const customMatch = parsedCustom.find((p: any) => String(p.id) === String(productId));
-            if (customMatch && !customMatch.image?.includes("shop_shelf") && !customMatch.name?.toLowerCase().includes("transparent teal")) {
+            if (customMatch) {
               foundProd = {
                 id: String(customMatch.id),
                 name: customMatch.name || "Accessory Product",

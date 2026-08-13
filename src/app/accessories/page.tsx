@@ -165,18 +165,14 @@ function AccessoriesContent() {
       // Combine priority: Custom Admin Items > DB Items
       const combinedRaw = [...customMapped, ...dbMapped];
       
-      // Deduplicate strictly by product name key & filter out unwanted legacy test items
-      const seenNames = new Set<string>();
+      // Deduplicate by ID and Name to ensure ALL Admin products display cleanly
+      const seenIds = new Set<string>();
       const finalUnique: AccessoryProduct[] = [];
 
       for (const item of combinedRaw) {
-        const normKey = item.name.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 18);
-        const isLegacyTest = item.image?.includes("shop_shelf") || 
-                             item.image?.includes("shop_counter") || 
-                             item.name.toLowerCase().includes("transparent teal");
-                             
-        if (!seenNames.has(normKey) && !isLegacyTest) {
-          seenNames.add(normKey);
+        const itemKey = item.id || item.name;
+        if (!seenIds.has(itemKey)) {
+          seenIds.add(itemKey);
           finalUnique.push(item);
         }
       }
@@ -252,9 +248,16 @@ function AccessoriesContent() {
       prod.brand.toLowerCase().includes(search.toLowerCase()) ||
       prod.category.toLowerCase().includes(search.toLowerCase());
 
+    // Flexible category matching (handles singular/plural like Charger vs Chargers, Case vs Cases)
+    const prodCatNorm = prod.category.toLowerCase().trim();
+    const selCatNorm = category.toLowerCase().trim();
+    const prodStem = prodCatNorm.endsWith("s") ? prodCatNorm.slice(0, -1) : prodCatNorm;
+    const selStem = selCatNorm.endsWith("s") ? selCatNorm.slice(0, -1) : selCatNorm;
+
     const matchesCategory = 
       category === "all" || 
-      prod.category.toLowerCase() === category.toLowerCase();
+      prodCatNorm === selCatNorm ||
+      prodStem === selStem;
 
     return matchesSearch && matchesCategory;
   });
