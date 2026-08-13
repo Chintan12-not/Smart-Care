@@ -980,37 +980,30 @@ export default function ProductDetailPage({ params }: PageProps) {
       </section>
 
       {/* Instagram Banner Section */}
-      <section className="border-t border-border/40 pt-10 mt-10 text-center space-y-6">
-        <div className="space-y-2">
-          <a href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz" target="_blank" rel="noopener noreferrer" className="inline-block hover:opacity-80 transition-opacity">
-            <InstagramIcon className="h-7 w-7 text-cyan-500 mx-auto animate-pulse" />
+      <section className="border-t border-border/40 pt-10 mt-10 text-center space-y-4">
+        <div className="space-y-2 max-w-lg mx-auto p-6 rounded-3xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 border border-pink-500/20">
+          <a href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz" target="_blank" rel="noopener noreferrer" className="inline-block hover:scale-110 transition-transform">
+            <InstagramIcon className="h-8 w-8 text-pink-500 mx-auto" />
           </a>
           <h3 className="text-base font-extrabold text-foreground">
-            <a href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-500 transition-colors">
+            <a href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz" target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors">
               Follow Us on Instagram
             </a>
           </h3>
           <p className="text-xs text-muted-foreground">
-            Tag us in your phone cases photos at <span className="font-extrabold text-cyan-500">@smart.care313</span> to get featured!
+            Tag us in your phone cases photos at <span className="font-extrabold text-pink-500">@smart.care313</span> to get featured!
           </p>
-        </div>
-
-        {/* Instashow images grid placeholder */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-4xl mx-auto">
-          {[1, 2, 3, 4, 5, 6].map(num => (
-            <div key={num} className="aspect-square rounded-2xl bg-muted border border-border/60 overflow-hidden relative group cursor-pointer">
-              <div className="absolute inset-0 bg-cyan-500/10 group-hover:bg-cyan-500/0 transition-colors z-5" />
-              <img 
-                src={`/accessories.png`} 
-                alt="" 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 filter grayscale-[20%] group-hover:grayscale-0" 
-                onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }}
-              />
-              <span className="absolute bottom-2 right-2 text-[8px] bg-black/60 text-white font-bold px-1.5 py-0.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                ♥ 4.2k
-              </span>
-            </div>
-          ))}
+          <div className="pt-2">
+            <a
+              href="https://www.instagram.com/smart.care313?igsh=c2JxcHRmaW1mNXkz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold text-xs shadow-md hover:opacity-90 transition-opacity"
+            >
+              <InstagramIcon className="h-4 w-4" />
+              Follow @smart.care313
+            </a>
+          </div>
         </div>
       </section>
 
