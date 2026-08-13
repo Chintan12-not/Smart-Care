@@ -39,7 +39,7 @@ import {
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 
 
-import { formatINR, cn } from "@/lib/utils";
+import { formatINR } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,90 +48,6 @@ export default function Home() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [showAuthPopup, setShowAuthPopup] = useState(false);
-
-  // Featured Accessories Homepage State
-  const [homeAccessories, setHomeAccessories] = useState<any[]>([]);
-  const [homeActiveImages, setHomeActiveImages] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedCustom = localStorage.getItem("sc_custom_accessories");
-      if (savedCustom) {
-        try {
-          const parsed = JSON.parse(savedCustom);
-          if (parsed.length > 0) {
-            setHomeAccessories(parsed);
-            return;
-          }
-        } catch (e) {}
-      }
-    }
-    // Default featured items
-    setHomeAccessories([
-      {
-        id: "acc-7",
-        name: "Samsung 25W Power Adapter – Super Fast Charging",
-        category: "Charger",
-        brand: "Samsung",
-        price: 899,
-        originalPrice: 1999,
-        inStock: true,
-        isOnSale: true,
-        rating: 4.9,
-        reviewsCount: 56,
-        image: "/shop_accessories.png",
-        description: "Official 25W USB-C Super Fast Charging Adapter with safety protection."
-      },
-      {
-        id: "acc-8",
-        name: "Magnetic Case for iPhone 15 Plus, Transparent",
-        category: "Case",
-        brand: "Apple",
-        price: 399,
-        originalPrice: 799,
-        inStock: true,
-        isOnSale: true,
-        rating: 4.8,
-        reviewsCount: 38,
-        image: "/s25_case.jpg",
-        description: "Ultra-clear crystal back case tailored for iPhone 15 Plus with N52 MagSafe magnets."
-      },
-      {
-        id: "acc-9",
-        name: "Samsung Galaxy S25 Magnetic MagSafe Case",
-        category: "Case",
-        brand: "Samsung",
-        price: 199,
-        originalPrice: 400,
-        inStock: true,
-        isOnSale: true,
-        rating: 4.7,
-        reviewsCount: 42,
-        image: "/s25_case.jpg",
-        description: "Sleek magnetic back cover custom-fit for Samsung Galaxy S25 with camera shield."
-      }
-    ]);
-  }, []);
-
-  // Automatic Image Slideshow Timer for Homepage Featured Accessories
-  useEffect(() => {
-    if (!homeAccessories || homeAccessories.length === 0) return;
-
-    const timer = setInterval(() => {
-      setHomeActiveImages((prev) => {
-        const next: Record<string, number> = { ...prev };
-        homeAccessories.forEach((prod) => {
-          if (prod.images && prod.images.length > 1) {
-            const current = prev[prod.id] || 0;
-            next[prod.id] = (current + 1) % prod.images.length;
-          }
-        });
-        return next;
-      });
-    }, 3000);
-
-    return () => clearInterval(timer);
-  }, [homeAccessories]);
 
   // Trigger login/signup popup on land if guest
   useEffect(() => {
@@ -188,7 +104,7 @@ export default function Home() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/accessories?search=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/repair?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -327,18 +243,18 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center space-y-8 relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-500 shadow-sm">
           <ShieldCheck className="h-4 w-4" />
-          <span>Gurugram&apos;s Rated #1 Doorstep Device Repair & Accessories Store</span>
+          <span>Gurugram&apos;s Rated #1 Doorstep Mobile Repair & Pickup Service</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.12]">
-          Expert Mobile Repair &{" "}
+          Expert Doorstep Mobile Repair &{" "}
           <span className="text-emerald-500">
-            Genuine Accessories
+            Express Service
           </span>
         </h1>
 
         <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Doorstep mobile repair pickup, 45-minute express screen replacement, genuine accessories for 600+ phone models, and corporate bulk ordering.
+          Doorstep mobile repair pickup, 45-minute express screen replacement, genuine OEM screen/battery spares for 600+ phone models, and corporate device maintenance.
         </p>
 
         {/* Global search */}
@@ -346,13 +262,13 @@ export default function Home() {
           <Search className="h-5 w-5 text-muted-foreground ml-3 shrink-0" />
           <input
             type="text"
-            placeholder="Search accessories or phone models (e.g. iPhone 15 Pro, Charger)..."
+            placeholder="Search repair services or phone models (e.g. iPhone 15 Screen, Samsung Battery)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-transparent border-0 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none font-medium"
           />
           <button type="submit" className="px-5 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-[11px] hover:bg-emerald-400 transition-all shrink-0">
-            Search
+            Search Repairs
           </button>
         </form>
 
@@ -366,25 +282,20 @@ export default function Home() {
             Book Doorstep Pickup & Repair
           </Link>
           <Link
-            href="/accessories"
+            href="/repair"
             className="px-6 py-3.5 rounded-2xl bg-card border border-border text-foreground font-extrabold text-xs flex items-center gap-2 hover:bg-muted transition-all"
           >
-            <ShoppingBag className="h-4 w-4 text-emerald-500" />
-            <span>Browse Accessories</span>
+            <Wrench className="h-4 w-4 text-emerald-500" />
+            <span>Book Express Repair</span>
           </Link>
           <Link
             href="/corporate-orders"
             className="px-6 py-3.5 rounded-2xl bg-muted/80 border border-border/80 text-foreground font-extrabold text-xs flex items-center gap-2 hover:bg-muted transition-all"
           >
             <Building2 className="h-4 w-4 text-purple-400" />
-            <span>Corporate & Bulk Orders</span>
+            <span>Corporate & Bulk Repair</span>
           </Link>
         </div>
-      </section>
-
-      {/* 1.5 FIND PERFECT ACCESSORY BY PHONE BRAND & MODEL */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10 w-full">
-        <PhoneModelFinder />
       </section>
 
       {/* 2. STATS SECTION */}
@@ -458,140 +369,6 @@ export default function Home() {
               Book Pickup Now
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* HIGHLIGHTED TRENDING ACCESSORIES SHOWCASE */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-          <div className="space-y-2 text-center md:text-left">
-            <span className="px-3.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-pink-500/20 text-amber-500 border border-amber-500/30 inline-flex items-center gap-1.5 shadow-sm">
-              <Zap className="h-3 w-3 fill-amber-500" />
-              HOT TRENDING ACCESSORIES
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              Featured Cases, Fast Chargers & Audio Tech
-            </h2>
-            <p className="text-xs text-muted-foreground max-w-xl">
-              100% Genuine store-tested accessories for Apple, Samsung, OnePlus & Vivo. Available for express Gurugram doorstep delivery or store pick-up.
-            </p>
-          </div>
-
-          <Link
-            href="/accessories"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-cyan-500/20 transition-all self-center md:self-end flex-shrink-0 group"
-          >
-            Explore Full Store
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-
-        {/* Featured Accessories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {homeAccessories.slice(0, 3).map((prod) => {
-            const currentImgIndex = homeActiveImages[prod.id] || 0;
-            const imagesList = prod.images && prod.images.length > 0 ? prod.images : [prod.image || "/shop_accessories.png"];
-            const currentImg = imagesList[currentImgIndex % imagesList.length];
-
-            return (
-              <div 
-                key={prod.id} 
-                className="glass-card rounded-3xl p-5 border border-border flex flex-col justify-between hover:shadow-xl hover:border-cyan-500/40 transition-all duration-300 relative group bg-card"
-              >
-                {/* Product Image Frame with Automatic Cross-Fade Slide */}
-                <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 pt-12 mb-4 shadow-sm">
-                  
-                  {/* Badges: On Sale & Discount */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-30 pointer-events-none">
-                    {prod.isOnSale && (
-                      <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
-                        <Zap className="h-2.5 w-2.5 fill-black" />
-                        ON SALE
-                      </span>
-                    )}
-
-                    {prod.originalPrice && prod.originalPrice > prod.price && (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-black shadow-md">
-                        {Math.round(((prod.originalPrice - prod.price) / prod.originalPrice) * 100)}% OFF
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Brand Tag Top Right */}
-                  <span className="absolute top-2.5 right-2.5 z-30 px-2 py-1 rounded-lg bg-zinc-950/90 text-white text-[10px] font-extrabold uppercase tracking-wider border border-zinc-800 backdrop-blur-md">
-                    {prod.brand}
-                  </span>
-
-                  {/* Product Image with Animated Cross-Fade Transition */}
-                  <img
-                    key={currentImgIndex}
-                    src={currentImg}
-                    alt={prod.name}
-                    className="w-full h-full object-contain p-1 z-10 group-hover:scale-[1.05] transition-all duration-500 ease-in-out rounded-xl animate-in fade-in zoom-in-95"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/shop_accessories.png";
-                    }}
-                  />
-
-                  {/* Auto-Slide Indicator Dots */}
-                  {imagesList.length > 1 && (
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md">
-                      {imagesList.map((_: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className={cn(
-                            "h-1 rounded-full transition-all duration-300",
-                            currentImgIndex === idx ? "w-4 bg-cyan-400" : "w-1 bg-white/60"
-                          )}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Details */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold text-cyan-500 uppercase tracking-wider">{prod.category}</span>
-                    <div className="flex items-center text-amber-400 text-[10px] font-bold">
-                      <Star className="h-3 w-3 fill-amber-400 mr-0.5" />
-                      {prod.rating || 4.8}
-                    </div>
-                  </div>
-
-                  <Link href={`/accessories/${prod.id}`} className="block">
-                    <h3 className="text-sm font-extrabold text-foreground group-hover:text-cyan-500 transition-colors line-clamp-1">
-                      {prod.name}
-                    </h3>
-                  </Link>
-
-                  <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed h-8">
-                    {prod.description}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-border/40">
-                    <div>
-                      <span className="text-lg font-black text-foreground">{formatINR(prod.price)}</span>
-                      {prod.originalPrice && prod.originalPrice > prod.price && (
-                        <span className="text-xs text-muted-foreground line-through ml-1.5 font-semibold">
-                          {formatINR(prod.originalPrice)}
-                        </span>
-                      )}
-                    </div>
-
-                    <Link
-                      href={`/accessories/${prod.id}`}
-                      className="px-4 py-2 rounded-xl bg-foreground text-background font-extrabold text-[10px] uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1"
-                    >
-                      View Item
-                      <ChevronRight className="h-3 w-3" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
         </div>
       </section>
 
