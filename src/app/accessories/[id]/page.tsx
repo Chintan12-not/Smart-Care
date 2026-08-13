@@ -403,6 +403,74 @@ export default function ProductDetailPage({ params }: PageProps) {
               ))}
             </div>
           )}
+
+          {/* Buyer Assurance & Store Guarantee Feature Block (Fills empty space beneath gallery) */}
+          <div className="glass-card rounded-3xl p-5 sm:p-6 border border-border/80 shadow-sm space-y-4">
+            <div className="flex items-center gap-3 pb-3 border-b border-border/50">
+              <div className="h-10 w-10 rounded-2xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold shadow-sm flex-shrink-0">
+                <ShieldCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="font-extrabold text-xs sm:text-sm text-foreground">Smart Care Certified Guarantee</h4>
+                <p className="text-[11px] text-muted-foreground">100% Genuine quality product verified by technical team</p>
+              </div>
+            </div>
+
+            {/* 4 Feature Badges Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-muted/30 border border-border/40">
+                <ShieldCheck className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h5 className="font-bold text-[11px] text-foreground">Store Warranty</h5>
+                  <p className="text-[10px] text-muted-foreground">Smart Care direct replacement</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-muted/30 border border-border/40">
+                <Truck className="h-4 w-4 text-cyan-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h5 className="font-bold text-[11px] text-foreground">Express Delivery</h5>
+                  <p className="text-[10px] text-muted-foreground">Same-day Gurugram shipping</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-muted/30 border border-border/40">
+                <RefreshCw className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h5 className="font-bold text-[11px] text-foreground">Easy Replacement</h5>
+                  <p className="text-[10px] text-muted-foreground">7-Day hassle-free return</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-muted/30 border border-border/40">
+                <Lock className="h-4 w-4 text-purple-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h5 className="font-bold text-[11px] text-foreground">Razorpay Secure</h5>
+                  <p className="text-[10px] text-muted-foreground">UPI, Cards & Netbanking</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Store Pickup Banner & Instant Assistance */}
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-cyan-500/10 via-emerald-500/5 to-cyan-500/10 border border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <Building2 className="h-5 w-5 text-cyan-500 flex-shrink-0" />
+                <div>
+                  <span className="text-[9px] font-black uppercase text-cyan-500 tracking-wider">Store Pick-up Available</span>
+                  <p className="text-[11px] font-bold text-foreground">Shop 28, Ninex Residency, Sec 37C</p>
+                </div>
+              </div>
+              <a
+                href="https://wa.me/919289942313?text=Hi%20Smart%20Care,%20I%20have%20a%20question%20about%20this%20accessory"
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] uppercase tracking-wider flex items-center gap-1.5 shadow-md flex-shrink-0 transition-colors"
+              >
+                <PhoneCall className="h-3.5 w-3.5" />
+                Ask Store Expert
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Right Column: checkout and description panel (6 cols) */}
