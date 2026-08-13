@@ -1,6 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
-import BlogClient, { ARTICLES } from "./BlogClient";
+import BlogClient from "./BlogClient";
+import { ARTICLES } from "@/lib/articles";
 
 export const metadata: Metadata = {
   title: "Mobile Repair & Smartphone Battery Maintenance Blog | Gurugram",

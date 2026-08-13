@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { ChevronRight, Clock, User, Calendar, PhoneCall, Truck, ArrowLeft } from "lucide-react";
-import { ARTICLES } from "../BlogClient";
+import { ARTICLES } from "@/lib/articles";
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
