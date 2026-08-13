@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { 
   ArrowLeft, 
   ShoppingBag, 
@@ -51,16 +51,14 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params?: Promise<{ id: string }>;
 }
 
-export default function ProductDetailPage({ params }: PageProps) {
+export default function ProductDetailPage() {
   const router = useRouter();
+  const routeParams = useParams();
+  const productId = (routeParams?.id as string) || "";
   const { addToCart } = useCart();
-  
-  // Resolve params promise
-  const resolvedParams = React.use(params);
-  const productId = resolvedParams.id;
 
   const [product, setProduct] = useState<AccessoryProduct | null>(null);
   const [productsList, setProductsList] = useState<AccessoryProduct[]>(MOCK_ACCESSORIES);
