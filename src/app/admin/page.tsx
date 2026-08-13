@@ -73,6 +73,7 @@ export default function AdminPage() {
   const [category, setCategory] = useState("case");
   const [brand, setBrand] = useState("Apple");
   const [customBrand, setCustomBrand] = useState("");
+  const [targetModel, setTargetModel] = useState("");
   const [compatibleModels, setCompatibleModels] = useState(""); // e.g. "iPhone 13, iPhone 15, iPhone 15 Plus"
   const [modelSearchQuery, setModelSearchQuery] = useState("");
 
