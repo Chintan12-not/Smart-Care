@@ -332,34 +332,11 @@ function AccessoriesContent() {
             return (
               <div key={prod.id} className="glass-card rounded-2xl p-5 border border-border flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group">
                 
-                {/* Wishlist and Compare float buttons */}
-                <div className="absolute top-7 right-7 z-10 flex gap-2">
-                  <button
-                    onClick={() => toggleCompare(prod.id)}
-                    className={cn(
-                      "p-1.5 rounded-lg border text-[10px] font-bold transition-all shadow-sm",
-                      isCompared 
-                        ? "bg-cyan-500/10 text-cyan-500 border-cyan-500/30"
-                        : "bg-background/80 text-muted-foreground border-border/80 hover:text-foreground"
-                    )}
-                    title="Compare specifications"
-                  >
-                    Compare
-                  </button>
-                  <button
-                    onClick={() => toggleWishlist(prod.id)}
-                    className="p-1.5 rounded-lg bg-background/80 border border-border/80 text-muted-foreground hover:text-red-500 transition-colors shadow-sm"
-                    aria-label="Add to Wishlist"
-                  >
-                    <Heart className={cn("h-4 w-4", isWishlisted && "fill-red-500 text-red-500")} />
-                  </button>
-                </div>
-
-                {/* Product Image & Badges */}
-                <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 mb-4 shadow-sm">
+                {/* Product Image Container with Badges & Action Buttons */}
+                <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 pt-12 mb-4 shadow-sm">
                   
-                  {/* Badges: On Sale, Discount %, Out of Stock */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+                  {/* Badges: On Sale, Discount %, Out of Stock (Top Left z-30) */}
+                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-30 pointer-events-none">
                     {prod.isOnSale && (
                       <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
                         <Zap className="h-2.5 w-2.5 fill-black" />
@@ -380,6 +357,30 @@ function AccessoriesContent() {
                     )}
                   </div>
 
+                  {/* Wishlist & Compare float buttons (Top Right z-30) */}
+                  <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
+                    <button
+                      onClick={() => toggleCompare(prod.id)}
+                      className={cn(
+                        "px-2.5 py-1 rounded-lg border text-[10px] font-bold transition-all shadow-md backdrop-blur-md",
+                        isCompared 
+                          ? "bg-cyan-500 text-black border-cyan-400 font-extrabold"
+                          : "bg-zinc-950/90 text-white border-zinc-800 hover:bg-black"
+                      )}
+                      title="Compare specifications"
+                    >
+                      Compare
+                    </button>
+                    <button
+                      onClick={() => toggleWishlist(prod.id)}
+                      className="p-1.5 rounded-lg bg-zinc-950/90 border border-zinc-800 text-white hover:text-red-400 transition-colors shadow-md backdrop-blur-md"
+                      aria-label="Add to Wishlist"
+                    >
+                      <Heart className={cn("h-3.5 w-3.5", isWishlisted && "fill-red-500 text-red-500")} />
+                    </button>
+                  </div>
+
+                  {/* Clean Product Image (z-10) */}
                   <img
                     src={prod.image || (prod.images && prod.images[0]) || "/shop_accessories.png"}
                     alt={prod.name}
