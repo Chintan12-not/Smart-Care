@@ -18,8 +18,6 @@ import {
   ShieldCheck, 
   ChevronRight,
   ChevronLeft,
-  Play,
-  Pause,
   Sparkles,
   RefreshCw,
   PhoneCall,
@@ -69,6 +67,7 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [productsList, setProductsList] = useState<AccessoryProduct[]>(MOCK_ACCESSORIES);
   const [isLoading, setIsLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isAutoSliding, setIsAutoSliding] = useState(true);
   const [addedMessage, setAddedMessage] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
@@ -76,25 +75,21 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [isCompatible, setIsCompatible] = useState<boolean | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"description" | "specifications" | "reviews" | "shipping">("description");
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isHoveringGallery, setIsHoveringGallery] = useState(false);
 
   const displayImages = product?.images && product.images.length > 0 
     ? product.images 
     : [product?.image || "/shop_accessories.png"];
 
-  // Automatic sliding interval
+  // Automatic Image Slideshow Timer
   useEffect(() => {
-    if (!isAutoPlaying || isHoveringGallery || displayImages.length <= 1) {
-      return;
-    }
+    if (!isAutoSliding || displayImages.length <= 1) return;
 
-    const interval = setInterval(() => {
-      setActiveImageIndex((prevIndex) => (prevIndex + 1) % displayImages.length);
-    }, 3500);
+    const slideTimer = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % displayImages.length);
+    }, 3200);
 
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, isHoveringGallery, displayImages.length]);
+    return () => clearInterval(slideTimer);
+  }, [displayImages, isAutoSliding]);
 
   // Load wishlist status
   useEffect(() => {
@@ -322,7 +317,6 @@ export default function ProductDetailPage({ params }: PageProps) {
 *URL*: https://smartcaremobile.in/accessories/${product.id}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
 
-
   // Mock Reviews data
   const mockReviews = [
     { name: "Rahul Verma", rating: 5, date: "12 May 2026", text: "Amazing quality case! Completely transparent and does not turn yellow quickly like other cheap covers. Worth every rupee." },
@@ -378,92 +372,60 @@ export default function ProductDetailPage({ params }: PageProps) {
       {/* Main Product Column split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Column: Premium Animated Auto-Slide Gallery (6 cols) */}
+        {/* Left Column: Premium Gallery (6 cols) */}
         <div className="lg:col-span-6 space-y-4">
           <div 
             className="relative h-96 sm:h-[480px] w-full rounded-3xl overflow-hidden flex items-center justify-center border border-white/20 cursor-zoom-in group shadow-md bg-white p-3 sm:p-5"
-            onMouseEnter={() => setIsHoveringGallery(true)}
-            onMouseLeave={() => {
-              setIsHoveringGallery(false);
-              handleMouseLeave();
-            }}
             onMouseMove={handleMouseMove}
+            onMouseLeave={() => { handleMouseLeave(); setIsAutoSliding(true); }}
+            onMouseEnter={() => setIsAutoSliding(false)}
           >
-            {/* Smooth Animated Image Slide */}
+            {/* Main Product Image with Smooth Transition Animation */}
             <img
               key={activeImageIndex}
               src={displayImages[activeImageIndex]}
               alt={product.name}
               style={zoomStyle}
-              className="w-full h-full object-contain z-10 transition-all duration-500 ease-out animate-in fade-in zoom-in-95 rounded-2xl"
+              className="w-full h-full object-contain z-10 transition-all duration-500 ease-in-out rounded-2xl animate-in fade-in zoom-in-95"
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }}
             />
             
-            {/* Previous Slide Arrow */}
+            {/* Left & Right Arrow Navigation Controls */}
             {displayImages.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveImageIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1));
-                }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-black/70 hover:bg-black text-white backdrop-blur-md shadow-lg transition-all opacity-80 group-hover:opacity-100 hover:scale-110"
-                aria-label="Previous Image"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 z-20 h-9 w-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md"
+                  aria-label="Previous Image"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIndex((prev) => (prev + 1) % displayImages.length);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 z-20 h-9 w-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-md"
+                  aria-label="Next Image"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
             )}
 
-            {/* Next Slide Arrow */}
+            {/* Slide Pagination Indicator Dots */}
             {displayImages.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveImageIndex((prev) => (prev + 1) % displayImages.length);
-                }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 p-2.5 rounded-full bg-black/70 hover:bg-black text-white backdrop-blur-md shadow-lg transition-all opacity-80 group-hover:opacity-100 hover:scale-110"
-                aria-label="Next Image"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            )}
-
-            {/* Auto-Slide Play/Pause Toggle Indicator */}
-            {displayImages.length > 1 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsAutoPlaying(!isAutoPlaying);
-                }}
-                className="absolute top-4 right-4 z-30 px-2.5 py-1 rounded-full bg-black/75 hover:bg-black backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-md border border-white/20 transition-all"
-                title={isAutoPlaying ? "Pause Auto-Slide" : "Play Auto-Slide"}
-              >
-                {isAutoPlaying ? (
-                  <>
-                    <Pause className="h-2.5 w-2.5 fill-white text-white" />
-                    Auto-Sliding
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-2.5 w-2.5 fill-white text-white" />
-                    Paused
-                  </>
-                )}
-              </button>
-            )}
-
-            {/* Bottom Animated Slide Dots Indicator */}
-            {displayImages.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/70 backdrop-blur-md shadow-md border border-white/10">
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md">
                 {displayImages.map((_, idx) => (
                   <button
                     key={idx}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveImageIndex(idx);
-                    }}
+                    onClick={() => setActiveImageIndex(idx)}
                     className={cn(
-                      "h-2 rounded-full transition-all duration-300",
-                      activeImageIndex === idx ? "w-6 bg-cyan-400" : "w-2 bg-white/50 hover:bg-white"
+                      "h-1.5 rounded-full transition-all duration-300",
+                      activeImageIndex === idx ? "w-5 bg-cyan-400" : "w-1.5 bg-white/60 hover:bg-white"
                     )}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
@@ -472,7 +434,7 @@ export default function ProductDetailPage({ params }: PageProps) {
             )}
 
             {/* Hover to zoom badge */}
-            <span className="absolute bottom-4 left-4 z-20 hidden sm:inline-block px-2.5 py-1 rounded-xl bg-black/70 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider">
+            <span className="absolute bottom-4 left-4 z-20 px-2.5 py-1 rounded-xl bg-black/70 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider hidden sm:inline-block">
               Hover to Zoom
             </span>
 
@@ -482,7 +444,7 @@ export default function ProductDetailPage({ params }: PageProps) {
             </span>
           </div>
 
-          {/* Thumbnails row with active slide glow */}
+          {/* Thumbnails row */}
           {displayImages.length > 1 && (
             <div className="flex gap-2.5 overflow-x-auto py-1 no-scrollbar">
               {displayImages.map((img, idx) => (
@@ -490,14 +452,11 @@ export default function ProductDetailPage({ params }: PageProps) {
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={cn(
-                    "h-16 w-16 rounded-xl border-2 overflow-hidden bg-white flex items-center justify-center flex-shrink-0 transition-all relative",
-                    activeImageIndex === idx ? "border-cyan-500 scale-105 shadow-md ring-2 ring-cyan-500/50" : "border-white/20 hover:border-cyan-500/30 opacity-70 hover:opacity-100"
+                    "h-16 w-16 rounded-xl border-2 overflow-hidden bg-white flex items-center justify-center flex-shrink-0 transition-all",
+                    activeImageIndex === idx ? "border-cyan-500 scale-102 shadow-sm" : "border-white/20 hover:border-cyan-500/30"
                   )}
                 >
                   <img src={img} alt="" className="w-full h-full object-contain p-1 rounded-lg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }} />
-                  {activeImageIndex === idx && (
-                    <span className="absolute inset-0 border-2 border-cyan-500 rounded-xl pointer-events-none animate-pulse" />
-                  )}
                 </button>
               ))}
             </div>
