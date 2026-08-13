@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://www.smartcaremobile.in";
+  const baseUrl = "https://smartcaremobile.in";
   const currentDate = new Date().toISOString();
 
   // Core Static Pages
@@ -12,11 +12,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/samsung-repair-gurugram",
     "/screen-replacement-gurugram",
     "/pickup",
-    "/repair",
-    "/mobile-assistant",
     "/accessories",
-    "/corporate-bulk-orders",
+    "/corporate-orders",
     "/blog",
+    "/mobile-assistant",
     "/privacy",
     "/terms",
     "/sitemap",

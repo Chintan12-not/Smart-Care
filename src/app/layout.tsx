@@ -92,16 +92,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Structured JSON-LD Schema for Google LocalBusiness & Organization Indexing
+  // Structured JSON-LD Schema for Google LocalBusiness, RepairShop & Organization Indexing
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
-    "@type": "MobilePhoneStore",
+    "@type": ["MobilePhoneStore", "RepairShop"],
     "@id": "https://smartcaremobile.in/#localbusiness",
     "name": "Smart Care & Mobile Point",
     "url": "https://smartcaremobile.in",
     "logo": "https://smartcaremobile.in/logo.png",
-    "image": "https://smartcaremobile.in/hero_background.png",
-    "description": "Gurugram's premier doorstep mobile repair center, genuine phone accessories store, document printing & photocopy hub.",
+    "image": [
+      "https://smartcaremobile.in/hero_background.png",
+      "https://smartcaremobile.in/shop_front.png",
+      "https://smartcaremobile.in/shop_shelf.png"
+    ],
+    "description": "Gurugram's premier certified doorstep mobile repair center, genuine phone accessories store, and document printing & photocopy hub.",
     "telephone": "+919289942313",
     "priceRange": "₹₹",
     "address": {
@@ -127,7 +131,8 @@ export default function RootLayout({
     },
     "sameAs": [
       "https://smartcaremobile.in",
-      "https://wa.me/919289942313"
+      "https://wa.me/919289942313",
+      "https://www.instagram.com/smart.care313"
     ],
     "areaServed": [
       "Gurugram",
@@ -136,7 +141,9 @@ export default function RootLayout({
       "DLF Phase 1-5 Gurugram",
       "Sohna Road Gurugram",
       "Golf Course Road Gurugram",
-      "Delhi NCR"
+      "Palam Vihar Gurugram",
+      "Cyber City Gurugram",
+      "Haryana"
     ]
   };
 
