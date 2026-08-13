@@ -30,7 +30,10 @@ import {
   Eye,
   Pencil,
   Save,
-  FileText
+  FileText,
+  Check,
+  Smartphone,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { formatINR, cn } from "@/lib/utils";
@@ -70,8 +73,35 @@ export default function AdminPage() {
   const [category, setCategory] = useState("case");
   const [brand, setBrand] = useState("Apple");
   const [customBrand, setCustomBrand] = useState("");
-  const [targetModel, setTargetModel] = useState("");
   const [compatibleModels, setCompatibleModels] = useState(""); // e.g. "iPhone 13, iPhone 15, iPhone 15 Plus"
+  const [modelSearchQuery, setModelSearchQuery] = useState("");
+
+  // Model Selector helper logic
+  const selectedModelsList = compatibleModels ? compatibleModels.split(",").map(s => s.trim()).filter(Boolean) : [];
+  const availableBrandModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[brand] || [];
+  const filteredBrandModels = availableBrandModels.filter(m =>
+    m.name.toLowerCase().includes(modelSearchQuery.toLowerCase())
+  );
+
+  const toggleModelSelection = (modelName: string) => {
+    if (selectedModelsList.includes(modelName)) {
+      const nextList = selectedModelsList.filter(m => m !== modelName);
+      setCompatibleModels(nextList.join(", "));
+    } else {
+      const nextList = [...selectedModelsList, modelName];
+      setCompatibleModels(nextList.join(", "));
+    }
+  };
+
+  const selectAllBrandModels = () => {
+    const allNames = availableBrandModels.map(m => m.name);
+    const combined = Array.from(new Set([...selectedModelsList, ...allNames]));
+    setCompatibleModels(combined.join(", "));
+  };
+
+  const clearSelectedModels = () => {
+    setCompatibleModels("");
+  };
   const [colorInput, setColorInput] = useState(""); // e.g. "Teal Blue, Matte Black, Clear"
   const [material, setMaterial] = useState("Thermoplastic Polyurethane"); // e.g. TPU, Tempered Glass, Nylon
   const [warranty, setWarranty] = useState(""); // e.g. "6 Months Smart Care Replacement Warranty"
@@ -959,19 +989,124 @@ export default function AdminPage() {
                   </div>
                 )}
 
-                {/* Compatible Phone Models (Multi-Model Support) */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-                    <FileText className="h-3.5 w-3.5 text-cyan-500" />
-                    Compatible Phone Models (Separate multiple with commas)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. iPhone 13, iPhone 15, iPhone 15 Plus, iPhone 14"
-                    value={compatibleModels}
-                    onChange={(e) => setCompatibleModels(e.target.value)}
-                    className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
-                  />
+                {/* Dynamic Compatible Phone Models Selector Bar */}
+                <div className="space-y-3 p-4 bg-muted/40 border border-border/80 rounded-2xl">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+                    <div>
+                      <label className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
+                        <Smartphone className="h-4 w-4 text-cyan-500" />
+                        <span>Compatible Models for <span className="text-cyan-500 font-black">{brand === "other" ? (customBrand || "Custom Brand") : brand}</span></span>
+                      </label>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Click models below to add/remove them from this accessory</p>
+                    </div>
+
+                    {/* Quick Action Buttons */}
+                    <div className="flex items-center gap-2">
+                      {availableBrandModels.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={selectAllBrandModels}
+                          className="px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-500 text-[10px] font-bold hover:bg-cyan-500/20 transition-all"
+                        >
+                          Select All {brand} ({availableBrandModels.length})
+                        </button>
+                      )}
+                      {selectedModelsList.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={clearSelectedModels}
+                          className="px-2.5 py-1 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-bold hover:bg-red-500/20 transition-all"
+                        >
+                          Clear ({selectedModelsList.length})
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Active Selected Badges Bar */}
+                  {selectedModelsList.length > 0 && (
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Selected Compatible Models ({selectedModelsList.length}):</span>
+                      <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 bg-card border border-border rounded-xl">
+                        {selectedModelsList.map((m) => (
+                          <span
+                            key={m}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30"
+                          >
+                            <span>{m}</span>
+                            <button
+                              type="button"
+                              onClick={() => toggleModelSelection(m)}
+                              className="hover:text-red-400 p-0.5 rounded-full"
+                              title="Remove model"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Model Search Bar */}
+                  {availableBrandModels.length > 0 && (
+                    <div className="relative">
+                      <Search className="h-3.5 w-3.5 text-muted-foreground absolute left-3 top-2.5" />
+                      <input
+                        type="text"
+                        placeholder={`Search ${brand} models (e.g. S24, A55, iPhone 15)...`}
+                        value={modelSearchQuery}
+                        onChange={(e) => setModelSearchQuery(e.target.value)}
+                        className="w-full bg-card border border-border rounded-xl pl-9 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Model Select Chips Grid */}
+                  {availableBrandModels.length > 0 && (
+                    <div className="max-h-48 overflow-y-auto pr-1 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+                      {filteredBrandModels.length === 0 ? (
+                        <div className="col-span-full py-4 text-center text-xs text-muted-foreground">
+                          No {brand} model matching "{modelSearchQuery}"
+                        </div>
+                      ) : (
+                        filteredBrandModels.map((m) => {
+                          const isSelected = selectedModelsList.includes(m.name);
+                          return (
+                            <button
+                              key={m.id + m.name}
+                              type="button"
+                              onClick={() => toggleModelSelection(m.name)}
+                              className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-medium transition-all text-left truncate flex items-center justify-between ${
+                                isSelected
+                                  ? "bg-emerald-500/15 border-emerald-500 text-emerald-400 font-bold"
+                                  : "bg-card border-border/70 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                              }`}
+                              title={m.name}
+                            >
+                              <span className="truncate">{m.name}</span>
+                              {isSelected && <Check className="h-3 w-3 shrink-0 stroke-[3] text-emerald-500 ml-1" />}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
+
+                  {/* Manual Raw String Field */}
+                  <div className="pt-2 border-t border-border/40 space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+                      <FileText className="h-3 w-3 text-cyan-500" />
+                      Comma Separated Compatible Devices String
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Galaxy S24 Ultra, Galaxy S24+, Universal / All Models"
+                      value={compatibleModels}
+                      onChange={(e) => setCompatibleModels(e.target.value)}
+                      className="w-full bg-card border border-border rounded-xl px-3.5 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                    />
+                  </div>
                 </div>
 
                 {/* Color Options & Material */}
