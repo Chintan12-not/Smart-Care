@@ -356,7 +356,7 @@ function AccessoriesContent() {
                 </div>
 
                 {/* Product Image & Badges */}
-                <div className="aspect-square rounded-2xl bg-muted/40 overflow-hidden relative border border-border/50 group-hover:border-cyan-500/20 transition-all flex items-center justify-center p-4 mb-4">
+                <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 mb-4 shadow-sm">
                   
                   {/* Badges: On Sale, Discount %, Out of Stock */}
                   <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
@@ -379,19 +379,11 @@ function AccessoriesContent() {
                       </span>
                     )}
                   </div>
-                  
-                  {/* Ambient Soft Backdrop Fill */}
-                  <img
-                    src={prod.image || (prod.images && prod.images[0]) || "/shop_accessories.png"}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-15 scale-110 pointer-events-none"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                  />
 
                   <img
                     src={prod.image || (prod.images && prod.images[0]) || "/shop_accessories.png"}
                     alt={prod.name}
-                    className="w-full h-full object-contain p-1.5 z-10 group-hover:scale-[1.03] transition-transform duration-300 drop-shadow-sm"
+                    className="w-full h-full object-contain p-1 z-10 group-hover:scale-[1.04] transition-transform duration-300 rounded-xl"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = "/shop_accessories.png";

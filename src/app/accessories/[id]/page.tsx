@@ -324,28 +324,20 @@ export default function ProductDetailPage({ params }: PageProps) {
         {/* Left Column: Premium Gallery (6 cols) */}
         <div className="lg:col-span-6 space-y-4">
           <div 
-            className="relative h-96 sm:h-[480px] w-full rounded-3xl overflow-hidden flex items-center justify-center border border-border/80 cursor-zoom-in group shadow-md bg-card/60 backdrop-blur-sm"
+            className="relative h-96 sm:h-[480px] w-full rounded-3xl overflow-hidden flex items-center justify-center border border-white/20 cursor-zoom-in group shadow-md bg-white p-3 sm:p-5"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            {/* Ambient Soft Backdrop Fill */}
-            <img
-              src={displayImages[activeImageIndex]}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 scale-110 pointer-events-none"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
-            />
-
             <img
               src={displayImages[activeImageIndex]}
               alt={product.name}
               style={zoomStyle}
-              className="w-full h-full object-contain p-2 sm:p-4 z-10 transition-transform duration-100 drop-shadow-sm"
+              className="w-full h-full object-contain z-10 transition-transform duration-100 rounded-2xl"
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }}
             />
             
             {/* Hover to zoom badge */}
-            <span className="absolute bottom-4 left-4 z-20 px-2.5 py-1 rounded-xl bg-black/60 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider">
+            <span className="absolute bottom-4 left-4 z-20 px-2.5 py-1 rounded-xl bg-black/70 backdrop-blur-sm text-white text-[9px] font-bold uppercase tracking-wider">
               Hover to Zoom
             </span>
 
@@ -363,11 +355,11 @@ export default function ProductDetailPage({ params }: PageProps) {
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
                   className={cn(
-                    "h-16 w-16 rounded-xl border-2 overflow-hidden bg-card flex items-center justify-center flex-shrink-0 transition-all",
-                    activeImageIndex === idx ? "border-cyan-500 scale-102 shadow-sm" : "border-border hover:border-muted-foreground/30"
+                    "h-16 w-16 rounded-xl border-2 overflow-hidden bg-white flex items-center justify-center flex-shrink-0 transition-all",
+                    activeImageIndex === idx ? "border-cyan-500 scale-102 shadow-sm" : "border-white/20 hover:border-cyan-500/30"
                   )}
                 >
-                  <img src={img} alt="" className="w-full h-full object-contain p-1" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }} />
+                  <img src={img} alt="" className="w-full h-full object-contain p-1 rounded-lg" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/shop_accessories.png'; }} />
                 </button>
               ))}
             </div>
