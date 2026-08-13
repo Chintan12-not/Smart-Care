@@ -17,123 +17,69 @@ export interface AccessoryProduct {
 
 export const MOCK_ACCESSORIES: AccessoryProduct[] = [
   {
-    id: "acc-1",
-    name: "UltraCharge 30W Dual Port Fast Charger",
+    id: "acc-7",
+    name: "Samsung 25W Power Adapter – Super Fast Charging",
     category: "Chargers",
-    brand: "Anker",
-    price: 1499,
-    rating: 4.8,
-    reviewsCount: 142,
+    brand: "Samsung",
+    price: 899,
+    originalPrice: 1999,
+    inStock: true,
+    isOnSale: true,
+    rating: 4.9,
+    reviewsCount: 56,
     image: "/shop_accessories.png",
     specifications: {
-      "Output Wattage": "30W Max",
-      "Ports": "1 x USB-C, 1 x USB-A",
-      "Technology": "PowerIQ 3.0, GaN tech",
-      "Safety Certification": "CE, FCC, RoHS"
+      "Brand": "Samsung",
+      "Compatible Phone Models": "S24+, S24 Ultra, S23, S23+, S23 Ultra, S22, A55, M34",
+      "Colour": "White",
+      "Material": "Fire-Retardant ABS Plastic & Polycarbonate",
+      "Output Power": "25W Super Fast Charge (PD 3.0)",
+      "Warranty": "6 Months Smart Care Replacement Warranty"
     },
-    description: "Compact wall charger with GaN technology to charge smartphones and tablets at maximum speed safely."
+    description: "Official 25W USB-C Super Fast Charging Adapter engineered for Samsung Galaxy S-series, A-series, and Note devices with multi-layer safety protection."
   },
   {
-    id: "acc-2",
-    name: "DuraThread Type-C to Type-C Braided Cable (2m)",
-    category: "Cables",
-    brand: "boAt",
-    price: 499,
-    rating: 4.6,
-    reviewsCount: 84,
-    image: "/shop_counter.png",
-    specifications: {
-      "Length": "2 Meters (6.6 ft)",
-      "Material": "Double-Braided Nylon",
-      "Data Transfer Rate": "480 Mbps",
-      "Power Delivery": "Up to 60W"
-    },
-    description: "Extra long, rugged charging cable tested to withstand 10,000+ bends. Supports power delivery fast charging."
-  },
-  {
-    id: "acc-3",
-    name: "ArmorGlass Tempered Glass Screen Protector",
-    category: "Tempered Glass",
-    brand: "Spigen",
-    price: 799,
-    rating: 4.7,
-    reviewsCount: 210,
+    id: "acc-8",
+    name: "Magnetic Case for iPhone 15 Plus, Transparent",
+    category: "Cases",
+    brand: "Apple",
+    price: 399,
+    originalPrice: 799,
+    inStock: true,
+    isOnSale: true,
+    rating: 4.8,
+    reviewsCount: 38,
     image: "/shop_shelf.png",
     specifications: {
-      "Hardness": "9H Tempered Glass",
-      "Coating": "Oleophobic anti-fingerprint",
-      "Thickness": "0.33mm",
-      "Clarity": "99.9% HD Clear"
+      "Brand": "Apple",
+      "Compatible Phone Models": "iPhone 15 Plus",
+      "Colour": "Teal / Clear",
+      "Material": "Hybrid TPU & Hard Polycarbonate Back",
+      "MagSafe Alignment": "Strong N52 Magnetic Ring Built-in",
+      "Warranty": "Smart Care Certified Quality Standard"
     },
-    description: "Case-friendly premium tempered glass protector with alignment frame. Maximum impact absorption and scratch resistance."
+    description: "Ultra-clear crystal back case tailored for iPhone 15 Plus featuring built-in N52 MagSafe magnets, raised camera lip armor, and anti-yellowing coating."
   },
   {
-    id: "acc-4",
-    name: "AeroShield Clear Case with MagSafe",
-    category: "Cases",
-    brand: "SmartCare Elite",
-    price: 1199,
-    rating: 4.5,
-    reviewsCount: 65,
-    image: "/s25_case.jpg",
-    specifications: {
-      "Material": "TPU + Polycarbonate",
-      "MagSafe Compatibility": "Yes (Built-in N52 Magnets)",
-      "Drop Protection": "Up to 8 Feet (Military Grade)",
-      "Anti-Yellowing": "UV-resistant coating"
-    },
-    description: "Slim, transparent hybrid case that showcases your phone's color while offering strong magnetic connection and shockproof bumpers."
-  },
-  {
-    id: "acc-5",
-    name: "BassBuds Pro Active Noise Cancelling Earbuds",
-    category: "Earbuds",
-    brand: "Realme",
-    price: 2999,
-    rating: 4.4,
-    reviewsCount: 198,
-    image: "/shop_front.png",
-    specifications: {
-      "Noise Cancellation": "Up to 42dB Active Noise Cancellation",
-      "Battery Life": "Up to 30 Hours (With case)",
-      "Water Resistance": "IPX5 Sweatproof",
-      "Bluetooth Version": "5.3"
-    },
-    description: "Wireless earbuds with deep bass, high-fidelity sound quality, and active background noise cancellation for crystal clear calls."
-  },
-  {
-    id: "acc-6",
-    name: "PowerVolt 20000mAh Power Bank (22.5W)",
-    category: "Power Banks",
-    brand: "Mi",
-    price: 1999,
-    rating: 4.7,
-    reviewsCount: 312,
-    image: "/shop_accessories.png",
-    specifications: {
-      "Capacity": "20000mAh 74Wh",
-      "Max Power Output": "22.5W Fast Charge",
-      "Input Ports": "Type-C, Micro-USB",
-      "Output Ports": "2 x USB-A, 1 x Type-C"
-    },
-    description: "High-capacity external battery pack with triple port output, supporting fast charging for iPhones, Samsung, and OnePlus devices."
-  },
-  {
-    id: "acc-7",
+    id: "acc-9",
     name: "Samsung Galaxy S25 Magnetic MagSafe Case",
     category: "Cases",
-    brand: "Generic",
+    brand: "Samsung",
     price: 199,
-    rating: 4.6,
+    originalPrice: 400,
+    inStock: true,
+    isOnSale: true,
+    rating: 4.7,
     reviewsCount: 42,
     image: "/s25_case.jpg",
-    images: ["/s25_case.jpg", "/s25_case_back.jpg", "/s25_case_side.jpg"],
+    images: ["/s25_case.jpg"],
     specifications: {
-      "Compatible Model": "Samsung Galaxy S25",
-      "Color": "Grey/Black",
-      "Material": "Polycarbonate, TPU, PET",
-      "Special Feature": "Built-in Magnetic MagSafe Ring"
+      "Brand": "Samsung",
+      "Compatible Phone Models": "Samsung Galaxy S25, Galaxy S25 Ultra, Galaxy S25+",
+      "Colour": "Matte Grey / Black",
+      "Material": "Polycarbonate, Flexible TPU, Metallic Magnet",
+      "Warranty": "Smart Care Certified Quality Standard"
     },
-    description: "Sleek and transparent back cover designed for Samsung Galaxy S25, featuring elevated camera lens protectors and a robust magnetic core."
+    description: "Sleek magnetic back cover custom-fit for Samsung Galaxy S25 with elevated camera ring shield, reinforced corner air-cushions, and magnetic accessory support."
   }
 ];
