@@ -30,7 +30,6 @@ import { useCart } from "@/hooks/useCart";
 import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import confetti from "canvas-confetti";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -50,6 +49,8 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params?: Promise<{ id: string }>;
 }
@@ -57,7 +58,7 @@ interface PageProps {
 export default function ProductDetailPage() {
   const router = useRouter();
   const routeParams = useParams();
-  const productId = (routeParams?.id as string) || "";
+  const targetId = typeof routeParams?.id === "string" ? routeParams.id : "";
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<AccessoryProduct | null>(null);
@@ -74,20 +75,24 @@ export default function ProductDetailPage() {
 
   // Load wishlist status
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (targetId && typeof window !== "undefined") {
       const savedWishlist = localStorage.getItem("sc_wishlist");
       if (savedWishlist) {
         try {
           const parsed = JSON.parse(savedWishlist);
-          setIsWishlisted(parsed.includes(productId));
+          setIsWishlisted(parsed.includes(targetId));
         } catch (e) {}
       }
     }
-  }, [productId]);
+  }, [targetId]);
 
   // Fetch product details
   useEffect(() => {
     async function fetchProduct() {
+      if (!targetId) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(true);
       
       let localCustomItems: AccessoryProduct[] = [];
@@ -99,7 +104,7 @@ export default function ProductDetailPage() {
       }
 
       const allLocal = [...localCustomItems, ...MOCK_ACCESSORIES];
-      const localFound = allLocal.find(p => p.id === productId);
+      const localFound = allLocal.find(p => String(p.id).toLowerCase() === String(targetId).toLowerCase());
       if (localFound) {
         setProduct(localFound);
       }
@@ -107,6 +112,34 @@ export default function ProductDetailPage() {
 
       if (isSupabaseConfigured()) {
         try {
+          // Query single item directly by ID
+          const { data: dbData } = await supabase
+            .from("accessories")
+            .select("*")
+            .eq("id", targetId)
+            .maybeSingle();
+
+          if (dbData) {
+            const mappedProduct: AccessoryProduct = {
+              id: dbData.id,
+              name: dbData.name,
+              category: dbData.category,
+              brand: dbData.brand,
+              price: Number(dbData.price),
+              originalPrice: dbData.original_price ?? (dbData.specifications?.original_price ? parseFloat(dbData.specifications.original_price) : null),
+              inStock: dbData.in_stock ?? (dbData.specifications?.in_stock !== undefined ? dbData.specifications.in_stock === "true" : true),
+              isOnSale: dbData.is_on_sale ?? (dbData.specifications?.is_on_sale !== undefined ? dbData.specifications.is_on_sale === "true" : false),
+              rating: Number(dbData.rating_avg || 4.7),
+              reviewsCount: Number(dbData.reviews_count || 24),
+              image: (dbData.images && dbData.images.length > 0) ? dbData.images[0] : "/shop_accessories.png",
+              images: dbData.images || [],
+              specifications: dbData.specifications || {},
+              description: dbData.description || ""
+            };
+            setProduct(mappedProduct);
+          }
+
+          // Fetch all items for related products list
           const { data: allData } = await supabase.from("accessories").select("*").eq("is_active", true);
           if (allData && allData.length > 0) {
             const mappedAll = allData.map(item => ({
@@ -129,19 +162,19 @@ export default function ProductDetailPage() {
             const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
             setProductsList(unique);
             
-            const dbFound = unique.find(p => p.id === productId);
-            if (dbFound) {
-              setProduct(dbFound);
+            if (!dbData) {
+              const fallbackFound = unique.find(p => String(p.id).toLowerCase() === String(targetId).toLowerCase());
+              if (fallbackFound) setProduct(fallbackFound);
             }
           }
         } catch (err) {
-          console.error("Error loading products from Supabase:", err);
+          console.error("Error loading product from Supabase:", err);
         }
       }
       setIsLoading(false);
     }
     fetchProduct();
-  }, [productId]);
+  }, [targetId]);
 
   if (isLoading) {
     return (
@@ -179,12 +212,12 @@ export default function ProductDetailPage() {
       let list = saved ? JSON.parse(saved) : [];
       
       if (isWishlisted) {
-        list = list.filter((id: string) => id !== productId);
+        list = list.filter((id: string) => id !== targetId);
         setIsWishlisted(false);
       } else {
-        list.push(productId);
+        list.push(targetId);
         setIsWishlisted(true);
-        confetti({ particleCount: 40, spread: 30, origin: { y: 0.8 } });
+        import("canvas-confetti").then((m) => m.default({ particleCount: 40, spread: 30, origin: { y: 0.8 } })).catch(() => {});
       }
       localStorage.setItem("sc_wishlist", JSON.stringify(list));
     }
@@ -200,7 +233,9 @@ export default function ProductDetailPage() {
       image: product.image
     }, quantity);
     setAddedMessage(true);
-    confetti({ particleCount: 80, spread: 60 });
+    if (typeof window !== "undefined") {
+      import("canvas-confetti").then((m) => m.default({ particleCount: 80, spread: 60 })).catch(() => {});
+    }
     setTimeout(() => setAddedMessage(false), 3000);
     
     // Slide open Cart Drawer
