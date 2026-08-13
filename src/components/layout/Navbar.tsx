@@ -140,6 +140,29 @@ export default function Navbar() {
           <nav className="hidden md:flex space-x-1 lg:space-x-2 items-center">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+              
+              if (link.name === "Accessories") {
+                return (
+                  <Link
+                    key={link.name}
+                    href="/accessories"
+                    className={cn(
+                      "px-3.5 py-1.5 rounded-full text-xs font-extrabold transition-all duration-300 flex items-center gap-1.5 shadow-sm border relative group",
+                      isActive
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400 shadow-cyan-500/25 scale-105"
+                        : "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500 hover:text-black hover:border-cyan-400 shadow-sm"
+                    )}
+                  >
+                    <Smartphone className="h-3.5 w-3.5 text-cyan-400 group-hover:text-black" />
+                    <span>Accessories</span>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                  </Link>
+                );
+              }
+
               return (
                 <Link
                   key={link.name}
@@ -147,7 +170,7 @@ export default function Navbar() {
                   className={cn(
                     "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5",
                     isActive 
-                      ? "bg-muted text-foreground" 
+                      ? "bg-muted text-foreground font-bold" 
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                   )}
                 >
@@ -233,20 +256,31 @@ export default function Navbar() {
             <div className="p-4 space-y-2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+                const isAccessories = link.name === "Accessories";
+
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-extrabold transition-all min-h-[44px]",
-                      isActive 
-                        ? "bg-cyan-500/10 text-cyan-500 border border-cyan-500/20" 
-                        : "text-foreground hover:bg-muted/60"
+                      "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-extrabold transition-all min-h-[44px]",
+                      isAccessories
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                        : isActive 
+                          ? "bg-cyan-500/10 text-cyan-500 border border-cyan-500/20" 
+                          : "text-foreground hover:bg-muted/60"
                     )}
                   >
-                    {link.icon && <link.icon className={cn("h-5 w-5", link.accent || "text-foreground")} />}
-                    <span>{link.name}</span>
+                    <div className="flex items-center gap-3">
+                      {link.icon && <link.icon className={cn("h-5 w-5", isAccessories ? "text-white" : link.accent || "text-foreground")} />}
+                      <span>{link.name}</span>
+                    </div>
+                    {isAccessories && (
+                      <span className="px-2 py-0.5 rounded-full bg-white text-black text-[9px] font-black uppercase tracking-wider shadow-sm">
+                        Direct Store
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -265,6 +299,19 @@ export default function Navbar() {
           </div>
         </>
       )}
+      {/* Floating Accessories Direct Store Button (Mobile & Desktop) */}
+      {!pathname.startsWith("/accessories") && (
+        <Link
+          href="/accessories"
+          className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white font-extrabold text-xs shadow-2xl flex items-center gap-2 border border-cyan-400/50 hover:scale-105 active:scale-95 transition-all duration-300 group backdrop-blur-md animate-bounce"
+          title="Open Accessories Store"
+        >
+          <Smartphone className="h-4 w-4 text-white animate-pulse" />
+          <span className="tracking-tight">Accessories Store</span>
+          <span className="px-1.5 py-0.5 rounded-md bg-white/25 text-[9px] font-black uppercase text-white shadow-sm">STORE</span>
+        </Link>
+      )}
+
       <CartDrawer isOpen={isCartDrawerOpen} onClose={() => setIsCartDrawerOpen(false)} />
     </header>
   );

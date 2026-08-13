@@ -282,19 +282,37 @@ export default function Home() {
             Book Doorstep Pickup & Repair
           </Link>
           <Link
-            href="/repair"
-            className="px-6 py-3.5 rounded-2xl bg-card border border-border text-foreground font-extrabold text-xs flex items-center gap-2 hover:bg-muted transition-all"
-          >
-            <Wrench className="h-4 w-4 text-emerald-500" />
-            <span>Book Express Repair</span>
-          </Link>
-          <Link
             href="/corporate-orders"
             className="px-6 py-3.5 rounded-2xl bg-muted/80 border border-border/80 text-foreground font-extrabold text-xs flex items-center gap-2 hover:bg-muted transition-all"
           >
             <Building2 className="h-4 w-4 text-purple-400" />
             <span>Corporate & Bulk Repair</span>
           </Link>
+        </div>
+
+        {/* Highlighted Accessories Quick Store Banner Card */}
+        <div className="max-w-2xl mx-auto pt-4">
+          <div className="p-4 rounded-3xl bg-gradient-to-r from-cyan-500/20 via-blue-500/15 to-purple-500/20 border border-cyan-500/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl backdrop-blur-md group hover:border-cyan-400 transition-all">
+            <div className="flex items-center gap-3.5 text-left">
+              <div className="h-11 w-11 rounded-2xl bg-cyan-500 text-black flex items-center justify-center font-black shadow-md shrink-0 group-hover:scale-110 transition-transform">
+                <Smartphone className="h-5 w-5 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded-md bg-cyan-500 text-black text-[9px] font-black uppercase tracking-wider">Direct Accessories Hub</span>
+                  <span className="text-[10px] text-cyan-400 font-bold">100% Genuine</span>
+                </div>
+                <p className="text-xs sm:text-sm font-extrabold text-foreground mt-0.5">Looking for Phone Cases, Chargers & Accessories?</p>
+              </div>
+            </div>
+            <Link
+              href="/accessories"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shrink-0 transition-all group-hover:scale-105 active:scale-95"
+            >
+              <span>Explore Accessories Store</span>
+              <ArrowRight className="h-4 w-4 stroke-[3]" />
+            </Link>
+          </div>
         </div>
       </section>
 
