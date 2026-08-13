@@ -162,16 +162,20 @@ function AccessoriesContent() {
         }
       }
 
-      // Combine priority: Custom Admin Items > DB Items > Mock Catalog
-      const combinedRaw = [...customMapped, ...dbMapped, ...MOCK_ACCESSORIES];
+      // Combine priority: Custom Admin Items > DB Items
+      const combinedRaw = [...customMapped, ...dbMapped];
       
-      // Deduplicate strictly by product name key
+      // Deduplicate strictly by product name key & filter out unwanted legacy test items
       const seenNames = new Set<string>();
       const finalUnique: AccessoryProduct[] = [];
 
       for (const item of combinedRaw) {
         const normKey = item.name.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 18);
-        if (!seenNames.has(normKey)) {
+        const isLegacyTest = item.image?.includes("shop_shelf") || 
+                             item.image?.includes("shop_counter") || 
+                             item.name.toLowerCase().includes("transparent teal");
+                             
+        if (!seenNames.has(normKey) && !isLegacyTest) {
           seenNames.add(normKey);
           finalUnique.push(item);
         }
