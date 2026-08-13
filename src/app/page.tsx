@@ -34,15 +34,186 @@ import {
   Phone,
   Lock,
   Building2,
-  Printer
+  Printer,
+  Share2,
+  Eye
 } from "lucide-react";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
-
+import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
+import { useCart } from "@/hooks/useCart";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 import { formatINR } from "@/lib/utils";
 import confetti from "canvas-confetti";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence } from "framer-motion";
+
+function AutoSlideProductCard({ product }: { product: AccessoryProduct }) {
+  const { addToCart } = useCart();
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  const [copiedToast, setCopiedToast] = useState(false);
+  const imagesList = product.images && product.images.length > 0 ? product.images : [product.image];
+
+  // Auto slide images animation timer (rotates every 3s)
+  useEffect(() => {
+    if (imagesList.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentImgIndex((prev) => (prev + 1) % imagesList.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [imagesList]);
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = typeof window !== "undefined" ? `${window.location.origin}/accessories/${product.id}` : `https://smartcaremobile.in/accessories/${product.id}`;
+    const shareData = {
+      title: product.name,
+      text: `${product.name} - Smart Care & Mobile Point Gurugram`,
+      url: url,
+    };
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {}
+    } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(url);
+        setCopiedToast(true);
+        setTimeout(() => setCopiedToast(false), 2000);
+      } catch (err) {}
+    }
+  };
+
+  const handleCartAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      id: product.id,
+      type: "accessory",
+      name: product.name,
+      price: product.price,
+      image: product.image,
+    });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("open-cart-drawer"));
+    }
+  };
+
+  return (
+    <div className="glass-card rounded-2xl p-4 border border-border flex flex-col justify-between hover:shadow-xl hover:border-cyan-500/30 transition-all duration-300 relative group bg-card">
+      
+      {/* Toast Notification */}
+      {copiedToast && (
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-40 px-3 py-1.5 rounded-xl bg-cyan-500 text-black text-[10px] font-extrabold shadow-lg animate-in fade-in zoom-in duration-200 whitespace-nowrap">
+          ✓ Link Copied to Clipboard!
+        </div>
+      )}
+
+      {/* Image Container with Auto-Sliding Animation */}
+      <Link href={`/accessories/${product.id}`} className="block relative">
+        <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 flex items-center justify-center p-3 pt-10 shadow-sm group-hover:shadow-md transition-all">
+          
+          {/* Top Badges */}
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-30 pointer-events-none">
+            {product.isOnSale && (
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
+                <Zap className="h-2.5 w-2.5 fill-black" />
+                ON SALE
+              </span>
+            )}
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-black shadow-md">
+                {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+              </span>
+            )}
+          </div>
+
+          {/* Top Right Float Share Button */}
+          <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
+            <button
+              onClick={handleShare}
+              className="p-1.5 rounded-lg bg-zinc-950/90 border border-zinc-800 text-white hover:text-cyan-400 hover:bg-black transition-colors shadow-md backdrop-blur-md"
+              title="Share product link"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {/* Animated Auto-Sliding Image */}
+          <motion.img
+            key={currentImgIndex}
+            initial={{ opacity: 0.4, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            src={imagesList[currentImgIndex]}
+            alt={product.name}
+            className="w-full h-full object-contain p-1 z-10 rounded-xl"
+            onError={(e: any) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/shop_accessories.png";
+            }}
+          />
+
+          {/* Auto-Slide Progress Dots */}
+          {imagesList.length > 1 && (
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1 bg-black/40 backdrop-blur-sm px-2 py-1 rounded-full">
+              {imagesList.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    currentImgIndex === idx ? "w-3.5 bg-cyan-400" : "w-1.5 bg-white/50"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Product Details */}
+        <div className="space-y-1.5 mt-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{product.brand}</span>
+            <div className="flex items-center text-amber-500 text-[10px] font-bold">
+              <Star className="h-3 w-3 fill-amber-500 text-amber-500 mr-0.5" />
+              {product.rating || 4.8}
+            </div>
+          </div>
+          
+          <h3 className="text-xs font-bold text-foreground group-hover:text-cyan-500 transition-colors line-clamp-1">
+            {product.name}
+          </h3>
+          <p className="text-[10px] text-muted-foreground line-clamp-2 leading-relaxed h-7">
+            {product.description}
+          </p>
+        </div>
+      </Link>
+
+      {/* Pricing & Add to Cart */}
+      <div className="flex items-center justify-between mt-4 border-t border-border/40 pt-3 gap-2">
+        <div className="flex flex-col">
+          <div className="flex items-baseline gap-1">
+            <span className="text-xs font-extrabold text-foreground">{formatINR(product.price)}</span>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-[9px] text-muted-foreground line-through font-semibold">
+                {formatINR(product.originalPrice)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <button
+          onClick={handleCartAdd}
+          className="px-3 py-2 rounded-xl bg-foreground text-background font-extrabold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity shadow-sm"
+        >
+          <ShoppingBag className="h-3 w-3" />
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const router = useRouter();
@@ -65,6 +236,38 @@ export default function Home() {
   // Search query
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  // Homepage Accessories
+  const [homepageAccessories, setHomepageAccessories] = useState<AccessoryProduct[]>(MOCK_ACCESSORIES);
+
+  useEffect(() => {
+    async function fetchHomeAccessories() {
+      if (!isSupabaseConfigured()) return;
+      try {
+        const { data } = await supabase.from("accessories").select("*").eq("is_active", true).limit(6);
+        if (data && data.length > 0) {
+          const mapped: AccessoryProduct[] = data.map((item) => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            brand: item.brand,
+            price: Number(item.price),
+            originalPrice: item.original_price,
+            inStock: item.in_stock ?? true,
+            isOnSale: item.is_on_sale ?? false,
+            rating: Number(item.rating_avg || 4.8),
+            reviewsCount: Number(item.reviews_count || 12),
+            image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
+            images: item.images || [],
+            specifications: item.specifications || {},
+            description: item.description || ""
+          }));
+          setHomepageAccessories(mapped);
+        }
+      } catch (err) {}
+    }
+    fetchHomeAccessories();
+  }, []);
 
   // Review Slider State
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -339,6 +542,39 @@ export default function Home() {
               </span>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* FEATURED MOBILE ACCESSORIES SHOWCASE */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 relative z-10 w-full border-t border-border/40">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div>
+            <span className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 inline-flex items-center gap-1.5 mb-2">
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Certified Hardware Accessories Store
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+              Featured Mobile Accessories
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Fast chargers, MagSafe covers, tempered glass, and cables compatible with 600+ phone models.
+            </p>
+          </div>
+
+          <Link
+            href="/accessories"
+            className="px-5 py-2.5 rounded-xl bg-foreground text-background font-extrabold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5 shadow-md shrink-0"
+          >
+            <span>Browse Full Store Catalog</span>
+            <ChevronRight className="h-4 w-4 stroke-[3]" />
+          </Link>
+        </div>
+
+        {/* Accessories Grid with Auto-Sliding Images */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {homepageAccessories.slice(0, 6).map((product) => (
+            <AutoSlideProductCard key={product.id} product={product} />
+          ))}
         </div>
       </section>
 

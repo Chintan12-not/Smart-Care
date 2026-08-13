@@ -203,6 +203,27 @@ function AccessoriesContent() {
     }
   };
 
+  const handleShareProduct = async (product: AccessoryProduct) => {
+    const url = `${window.location.origin}/accessories/${product.id}`;
+    const shareData = {
+      title: product.name,
+      text: `${product.name} at Smart Care & Mobile Point Gurugram`,
+      url: url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(url);
+        setAddedItemName(`Link copied for ${product.name}`);
+        setTimeout(() => setAddedItemName(""), 2000);
+      } catch (err) {}
+    }
+  };
+
   // 8. Filters & Search matching
   const filteredProducts = products.filter((prod) => {
     const matchesSearch = 
@@ -357,8 +378,20 @@ function AccessoriesContent() {
                     )}
                   </div>
 
-                  {/* Wishlist & Compare float buttons (Top Right z-30) */}
+                  {/* Wishlist, Share & Compare float buttons (Top Right z-30) */}
                   <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleShareProduct(prod);
+                      }}
+                      className="p-1.5 rounded-lg bg-zinc-950/90 border border-zinc-800 text-white hover:text-cyan-400 hover:bg-black transition-colors shadow-md backdrop-blur-md"
+                      title="Share product link"
+                      aria-label="Share product"
+                    >
+                      <Share2 className="h-3.5 w-3.5" />
+                    </button>
                     <button
                       onClick={() => toggleCompare(prod.id)}
                       className={cn(

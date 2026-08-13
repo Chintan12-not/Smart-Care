@@ -266,6 +266,38 @@ export default function ProductDetailPage({ params }: PageProps) {
     ? product.images 
     : [product.image];
 
+  // Auto slideshow timer for product gallery images
+  useEffect(() => {
+    if (displayImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % displayImages.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [displayImages]);
+
+  const [shareSuccessToast, setShareSuccessToast] = useState(false);
+
+  const handleShareProduct = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : `https://smartcaremobile.in/accessories/${product.id}`;
+    const shareData = {
+      title: product.name,
+      text: `${product.name} at Smart Care & Mobile Point Gurugram`,
+      url: url,
+    };
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {}
+    } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareSuccessToast(true);
+        setTimeout(() => setShareSuccessToast(false), 2500);
+      } catch (err) {}
+    }
+  };
+
   // Mock Reviews data
   const mockReviews = [
     { name: "Rahul Verma", rating: 5, date: "12 May 2026", text: "Amazing quality case! Completely transparent and does not turn yellow quickly like other cheap covers. Worth every rupee." },
@@ -372,9 +404,19 @@ export default function ProductDetailPage({ params }: PageProps) {
           {/* Header Details */}
           <div className="space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-500 text-[10px] font-extrabold uppercase tracking-wider">
-                {product.brand} • {product.category}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-500 text-[10px] font-extrabold uppercase tracking-wider">
+                  {product.brand} • {product.category}
+                </span>
+                <button
+                  onClick={handleShareProduct}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-card border border-border text-muted-foreground hover:text-cyan-400 hover:border-cyan-500/40 text-[11px] font-bold transition-all shadow-sm"
+                  title="Share product link"
+                >
+                  <Share2 className="h-3.5 w-3.5 text-cyan-500" />
+                  <span>Share</span>
+                </button>
+              </div>
               
               <div className="flex items-center gap-1.5 text-xs">
                 <div className="flex text-amber-400">
@@ -388,6 +430,14 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <span className="text-muted-foreground text-[10px] font-medium">({product.reviewsCount} reviews)</span>
               </div>
             </div>
+
+            {/* Share Toast */}
+            {shareSuccessToast && (
+              <div className="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200">
+                <Check className="h-4 w-4 text-cyan-500" />
+                <span>Product link copied to clipboard!</span>
+              </div>
+            )}
 
             <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight">{product.name}</h1>
             
