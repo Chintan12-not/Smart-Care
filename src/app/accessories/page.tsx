@@ -95,14 +95,26 @@ function AccessoriesContent() {
     }
   }, []);
 
-  // 2. Fetch products from Supabase
+  // 2. Fetch products from Supabase + LocalStorage custom items
   useEffect(() => {
     async function loadProducts() {
+      setIsLoading(true);
+      let localCustomItems: AccessoryProduct[] = [];
+      if (typeof window !== "undefined") {
+        const local = localStorage.getItem("sc_custom_accessories");
+        if (local) {
+          try { localCustomItems = JSON.parse(local); } catch (e) {}
+        }
+      }
+
       if (!isSupabaseConfigured()) {
-        console.log("Supabase not configured, using mock accessories.");
+        const combined = [...localCustomItems, ...MOCK_ACCESSORIES];
+        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        setProducts(unique);
+        setIsLoading(false);
         return;
       }
-      setIsLoading(true);
+
       try {
         const { data, error } = await supabase
           .from("accessories")
@@ -111,8 +123,9 @@ function AccessoriesContent() {
 
         if (error) throw error;
         
+        let loadedItems: AccessoryProduct[] = [];
         if (data && data.length > 0) {
-          const mapped: AccessoryProduct[] = data.map((item) => ({
+          loadedItems = data.map((item) => ({
             id: item.id,
             name: item.name,
             category: item.category,
@@ -123,21 +136,23 @@ function AccessoriesContent() {
             isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
             rating: Number(item.rating_avg || 4.5),
             reviewsCount: Number(item.reviews_count || 10),
-            image: (item.images && item.images.length > 0) ? item.images[0] : "/placeholder_acc.png",
+            image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
             images: item.images || [],
             specifications: item.specifications || {},
             description: item.description || ""
           }));
-          setProducts(mapped);
         } else {
-          // Supabase table is empty - use mock accessories as fallback
-          console.log("Accessories table is empty, using mock products.");
-          setProducts(MOCK_ACCESSORIES);
+          loadedItems = MOCK_ACCESSORIES;
         }
+
+        const combined = [...localCustomItems, ...loadedItems];
+        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        setProducts(unique);
       } catch (err) {
         console.error("Error loading products from Supabase:", err);
-        // Fallback to mock accessories on any error
-        setProducts(MOCK_ACCESSORIES);
+        const combined = [...localCustomItems, ...MOCK_ACCESSORIES];
+        const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+        setProducts(unique);
       } finally {
         setIsLoading(false);
       }
@@ -224,12 +239,31 @@ function AccessoriesContent() {
     }
   };
 
-  // 8. Filters & Search matching
+  // 8. Filters & Search matching (Enhanced for Brand & Model Selection)
   const filteredProducts = products.filter((prod) => {
+    const searchLower = search.toLowerCase().trim();
+    
+    const compatStr = (
+      prod.specifications?.["Compatible Phone Models"] || 
+      prod.specifications?.["Compatible Devices"] || 
+      prod.specifications?.["Compatible Model"] || 
+      ""
+    ).toLowerCase();
+
+    const isUniversal = compatStr.includes("universal") || compatStr.includes("all model") || compatStr.includes("all compatible");
+
     const matchesSearch = 
-      prod.name.toLowerCase().includes(search.toLowerCase()) ||
-      prod.brand.toLowerCase().includes(search.toLowerCase()) ||
-      prod.category.toLowerCase().includes(search.toLowerCase());
+      !searchLower ||
+      prod.name.toLowerCase().includes(searchLower) ||
+      prod.brand.toLowerCase().includes(searchLower) ||
+      prod.category.toLowerCase().includes(searchLower) ||
+      compatStr.includes(searchLower) ||
+      isUniversal ||
+      searchLower.split(/\s+/).some(term => term.length > 1 && (
+        prod.name.toLowerCase().includes(term) ||
+        prod.brand.toLowerCase().includes(term) ||
+        compatStr.includes(term)
+      ));
 
     const matchesCategory = 
       category === "all" || 

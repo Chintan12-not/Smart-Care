@@ -92,10 +92,20 @@ export default function ProductDetailPage({ params }: PageProps) {
     async function fetchProduct() {
       setIsLoading(true);
       
-      const localFound = MOCK_ACCESSORIES.find(p => p.id === productId);
+      let localCustomItems: AccessoryProduct[] = [];
+      if (typeof window !== "undefined") {
+        const local = localStorage.getItem("sc_custom_accessories");
+        if (local) {
+          try { localCustomItems = JSON.parse(local); } catch (e) {}
+        }
+      }
+
+      const allLocal = [...localCustomItems, ...MOCK_ACCESSORIES];
+      const localFound = allLocal.find(p => p.id === productId);
       if (localFound) {
         setProduct(localFound);
       }
+      setProductsList(allLocal);
 
       if (isSupabaseConfigured()) {
         try {
@@ -112,14 +122,16 @@ export default function ProductDetailPage({ params }: PageProps) {
               isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
               rating: Number(item.rating_avg || 4.7),
               reviewsCount: Number(item.reviews_count || 24),
-              image: (item.images && item.images.length > 0) ? item.images[0] : "/placeholder_acc.png",
+              image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
               images: item.images || [],
               specifications: item.specifications || {},
               description: item.description || ""
             }));
-            setProductsList(mappedAll);
+            const combined = [...localCustomItems, ...mappedAll];
+            const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+            setProductsList(unique);
             
-            const dbFound = mappedAll.find(p => p.id === productId);
+            const dbFound = unique.find(p => p.id === productId);
             if (dbFound) {
               setProduct(dbFound);
             }
