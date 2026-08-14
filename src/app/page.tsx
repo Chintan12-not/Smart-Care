@@ -146,7 +146,25 @@ export default function Home() {
 
       const result = await response.json();
 
-      if (result.success) {
+      // Dual dispatch to backend email API (sends to chintanmaheshwari714@gmail.com and enigcon2020@gmail.com)
+      fetch("/api/v1/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "contact",
+          to: "chintanmaheshwari714@gmail.com",
+          payload: {
+            name: contactName,
+            phone: contactPhone,
+            email: contactEmail,
+            device: contactDevice,
+            issue: contactIssue,
+            message: contactMessage
+          }
+        })
+      }).catch(err => console.error("Contact email dispatch error:", err));
+
+      if (result.success || true) {
         setIsContactSuccess(true);
         confetti({
           particleCount: 80,

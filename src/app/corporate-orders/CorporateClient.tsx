@@ -139,6 +139,27 @@ export default function CorporateClient() {
         console.warn("Web3Forms submission response:", web3Data);
       }
 
+      // Dual dispatch to backend email API (sends to chintanmaheshwari714@gmail.com and enigcon2020@gmail.com)
+      fetch("/api/v1/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "b2b_quote",
+          to: "chintanmaheshwari714@gmail.com",
+          payload: {
+            name: name.trim(),
+            companyName: companyName.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            product: productCategory,
+            quantity: Number(quantity),
+            deliveryLocation: deliveryLocation.trim(),
+            expectedPurchaseDate,
+            requirements
+          }
+        })
+      }).catch(err => console.error("B2B Quote email dispatch error:", err));
+
       setSubmittedInquiry(result || {
         $id: `b2b_${Date.now()}`,
         name: name.trim(),

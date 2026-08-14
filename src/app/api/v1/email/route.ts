@@ -165,16 +165,62 @@ export async function POST(req: NextRequest) {
           <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">Smart Care & Mobile Point | Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001</p>
         </div>
       `;
+    } else if (type === "contact") {
+      subject = `[NEW CONTACT INQUIRY] ${payload.name} - ${payload.device || "Mobile Repair"}`;
+      htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #10b981;">
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 160px; height: auto;" />
+          </div>
+          <h2 style="color: #0f172a; margin-top: 0; font-size: 20px;">New Website Contact Inquiry 📩</h2>
+          <div style="background-color: #f8fafc; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #cbd5e1; font-size: 14px;">
+            <p style="margin: 0 0 8px 0;"><strong>Customer Name:</strong> ${payload.name}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Phone Number:</strong> <a href="tel:${payload.phone}" style="color: #10b981; font-weight: bold;">${payload.phone}</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Email:</strong> ${payload.email || "Not provided"}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Device Model:</strong> ${payload.device || "N/A"}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Selected Issue:</strong> ${payload.issue || "General Inquiry"}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Customer Message:</strong> ${payload.message || "No additional notes"}</p>
+          </div>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 11px; color: #94a3b8; text-align: center;">Smart Care & Mobile Point Store Admin Notification</p>
+        </div>
+      `;
+    } else if (type === "b2b_quote") {
+      subject = `[BULK QUOTE REQUEST] ${payload.companyName} - ${payload.product} (${payload.quantity} units)`;
+      htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #8b5cf6;">
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 160px; height: auto;" />
+          </div>
+          <h2 style="color: #6d28d9; margin-top: 0; font-size: 20px;">New B2B Corporate Bulk Quote Request 💼</h2>
+          <div style="background-color: #f5f3ff; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #ddd6fe; font-size: 14px;">
+            <p style="margin: 0 0 8px 0;"><strong>Full Name:</strong> ${payload.name}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Company Name:</strong> ${payload.companyName}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Work Email:</strong> <a href="mailto:${payload.email}" style="color: #7c3aed; font-weight: bold;">${payload.email}</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Phone Number:</strong> <a href="tel:${payload.phone}" style="color: #7c3aed; font-weight: bold;">${payload.phone}</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Product Category:</strong> ${payload.product}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Required Quantity:</strong> ${payload.quantity} units</p>
+            <p style="margin: 0 0 8px 0;"><strong>Delivery Location:</strong> ${payload.deliveryLocation}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Expected Purchase Date:</strong> ${payload.expectedPurchaseDate || "Flexible"}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Custom Requirements:</strong> ${payload.requirements || "None"}</p>
+          </div>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 11px; color: #94a3b8; text-align: center;">Smart Care & Mobile Point B2B Corporate Inquiry Notification</p>
+        </div>
+      `;
     } else {
       return NextResponse.json({ success: false, error: "Invalid email type" }, { status: 400 });
     }
 
     // Build recipient targets based on email type:
     // - "welcome": ONLY send to the customer email [to]
+    // - "contact" or "b2b_quote": send directly to admin emails [enigcon2020@gmail.com, chintanmaheshwari714@gmail.com]
     // - "accessory" or "pickup": send to customer email [to] AND store owners [enigcon2020@gmail.com, chintanmaheshwari714@gmail.com]
-    const recipientTargets = (type === "welcome" || type === "delivered") 
-      ? [to] 
-      : Array.from(new Set([to, ...adminRecipients]));
+    const recipientTargets = (type === "contact" || type === "b2b_quote")
+      ? adminRecipients
+      : (type === "welcome" || type === "delivered")
+        ? [to] 
+        : Array.from(new Set([to, ...adminRecipients]));
 
     if (isMock) {
       console.log(`[Resend Mock Email] Simulating ${type} email to: ${recipientTargets.join(", ")}`);
