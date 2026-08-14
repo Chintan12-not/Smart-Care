@@ -7,7 +7,6 @@ import {
   getDocs, 
   query, 
   where, 
-  orderBy, 
   serverTimestamp,
   Timestamp 
 } from "firebase/firestore";
@@ -28,10 +27,33 @@ export interface ProductReview {
   status: "approved" | "pending";
 }
 
-// Fallback LocalStorage Key for offline / demo mode
+// Fallback LocalStorage Key for offline / instant UI response
 const LOCAL_STORAGE_REVIEWS_KEY = "sc_product_reviews";
 
-// Helper: Get local fallback reviews
+/**
+ * Timeout Wrapper: Ensures async promises reject cleanly if they exceed timeoutMs
+ */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number = 3500): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`Operation timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    promise
+      .then(res => {
+        clearTimeout(timer);
+        resolve(res);
+      })
+      .catch(err => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
+/**
+ * Helper: Read reviews saved in LocalStorage
+ */
 function getLocalReviews(productId: string): ProductReview[] {
   if (typeof window === "undefined") return [];
   try {
@@ -44,21 +66,18 @@ function getLocalReviews(productId: string): ProductReview[] {
   }
 }
 
-// Helper: Save review locally
+/**
+ * Helper: Save review to LocalStorage
+ */
 function saveLocalReview(review: ProductReview) {
   if (typeof window === "undefined") return;
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_REVIEWS_KEY);
     const list: ProductReview[] = raw ? JSON.parse(raw) : [];
-    if (review.id) {
-      const idx = list.findIndex(r => r.id === review.id);
-      if (idx >= 0) {
-        list[idx] = review;
-      } else {
-        list.unshift(review);
-      }
+    const idx = list.findIndex(r => r.id === review.id);
+    if (idx >= 0) {
+      list[idx] = review;
     } else {
-      review.id = `rev_local_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
       list.unshift(review);
     }
     localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(list));
@@ -67,7 +86,26 @@ function saveLocalReview(review: ProductReview) {
   }
 }
 
-// Helper: Delete review locally
+/**
+ * Helper: Update review in LocalStorage
+ */
+function updateLocalReview(reviewId: string, updates: Partial<ProductReview>) {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_REVIEWS_KEY);
+    if (!raw) return;
+    const list: ProductReview[] = JSON.parse(raw);
+    const idx = list.findIndex(r => r.id === reviewId);
+    if (idx >= 0) {
+      list[idx] = { ...list[idx], ...updates, updatedAt: new Date().toISOString() };
+      localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(list));
+    }
+  } catch (e) {}
+}
+
+/**
+ * Helper: Delete review from LocalStorage
+ */
 function deleteLocalReview(reviewId: string) {
   if (typeof window === "undefined") return;
   try {
@@ -80,7 +118,7 @@ function deleteLocalReview(reviewId: string) {
 }
 
 /**
- * Fetch approved reviews for a specific product ID from Firestore
+ * Fetch approved reviews for a specific product ID
  */
 export async function fetchProductReviews(productId: string): Promise<ProductReview[]> {
   const localList = getLocalReviews(productId);
@@ -97,7 +135,7 @@ export async function fetchProductReviews(productId: string): Promise<ProductRev
       where("status", "==", "approved")
     );
 
-    const snapshot = await getDocs(q);
+    const snapshot = await withTimeout(getDocs(q), 3500);
     const firestoreReviews: ProductReview[] = snapshot.docs.map(docSnap => {
       const data = docSnap.data();
       return {
@@ -135,40 +173,48 @@ export async function fetchProductReviews(productId: string): Promise<ProductRev
 }
 
 /**
- * Submit a new product review
+ * Submit a new product review (Instantly saves locally + syncs to Firestore)
  */
 export async function createProductReview(reviewData: Omit<ProductReview, "id" | "createdAt" | "updatedAt" | "status">): Promise<ProductReview> {
+  const generatedId = `rev_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
   const newReview: ProductReview = {
     ...reviewData,
+    id: generatedId,
     productId: String(reviewData.productId),
-    status: "approved", // Automatically approve for instant feedback
+    status: "approved",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
 
+  // Instant local save so UI never hangs
+  saveLocalReview(newReview);
+
   if (isFirebaseConfigured()) {
     try {
       const reviewsRef = collection(db, "reviews");
-      const docRef = await addDoc(reviewsRef, {
-        productId: String(reviewData.productId),
-        userId: reviewData.userId,
-        userName: reviewData.userName,
-        userEmail: reviewData.userEmail,
-        rating: Number(reviewData.rating),
-        reviewText: reviewData.reviewText,
-        imageUrls: reviewData.imageUrls || [],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        status: "approved"
-      });
+      const docRef = await withTimeout(
+        addDoc(reviewsRef, {
+          productId: String(reviewData.productId),
+          userId: reviewData.userId,
+          userName: reviewData.userName,
+          userEmail: reviewData.userEmail,
+          rating: Number(reviewData.rating),
+          reviewText: reviewData.reviewText,
+          imageUrls: reviewData.imageUrls || [],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          status: "approved"
+        }),
+        3500
+      );
 
-      newReview.id = docRef.id;
+      if (docRef && docRef.id) {
+        newReview.id = docRef.id;
+        saveLocalReview(newReview);
+      }
     } catch (error) {
-      console.warn("Firestore addDoc failed, saving to local fallback:", error);
-      saveLocalReview(newReview);
+      console.warn("Firestore addDoc timeout or error, saved locally:", error);
     }
-  } else {
-    saveLocalReview(newReview);
   }
 
   return newReview;
@@ -178,31 +224,21 @@ export async function createProductReview(reviewData: Omit<ProductReview, "id" |
  * Update an existing review
  */
 export async function updateProductReview(reviewId: string, updates: Partial<ProductReview>): Promise<void> {
-  if (isFirebaseConfigured() && !reviewId.startsWith("rev_local_")) {
+  updateLocalReview(reviewId, updates);
+
+  if (isFirebaseConfigured() && !reviewId.startsWith("rev_local_") && !reviewId.startsWith("rev_")) {
     try {
       const reviewDocRef = doc(db, "reviews", reviewId);
-      await updateDoc(reviewDocRef, {
-        ...updates,
-        updatedAt: serverTimestamp()
-      });
+      await withTimeout(
+        updateDoc(reviewDocRef, {
+          ...updates,
+          updatedAt: serverTimestamp()
+        }),
+        3500
+      );
     } catch (error) {
-      console.warn("Firestore updateDoc error:", error);
+      console.warn("Firestore updateDoc timeout or error:", error);
     }
-  }
-
-  // Update local fallback copy as well
-  if (typeof window !== "undefined") {
-    try {
-      const raw = localStorage.getItem(LOCAL_STORAGE_REVIEWS_KEY);
-      if (raw) {
-        const list: ProductReview[] = JSON.parse(raw);
-        const idx = list.findIndex(r => r.id === reviewId);
-        if (idx >= 0) {
-          list[idx] = { ...list[idx], ...updates, updatedAt: new Date().toISOString() };
-          localStorage.setItem(LOCAL_STORAGE_REVIEWS_KEY, JSON.stringify(list));
-        }
-      }
-    } catch (e) {}
   }
 }
 
@@ -210,37 +246,22 @@ export async function updateProductReview(reviewId: string, updates: Partial<Pro
  * Delete an existing review
  */
 export async function deleteProductReview(reviewId: string): Promise<void> {
-  if (isFirebaseConfigured() && !reviewId.startsWith("rev_local_")) {
+  deleteLocalReview(reviewId);
+
+  if (isFirebaseConfigured() && !reviewId.startsWith("rev_local_") && !reviewId.startsWith("rev_")) {
     try {
       const reviewDocRef = doc(db, "reviews", reviewId);
-      await deleteDoc(reviewDocRef);
+      await withTimeout(deleteDoc(reviewDocRef), 3500);
     } catch (error) {
-      console.warn("Firestore deleteDoc error:", error);
+      console.warn("Firestore deleteDoc timeout or error:", error);
     }
   }
-
-  deleteLocalReview(reviewId);
 }
 
 /**
- * Upload review image file (Tries Firebase Storage first; falls back to compressed Base64)
+ * Convert Image file to compressed Base64 Data URL
  */
-export async function uploadReviewImage(file: File, productId: string, userId: string): Promise<string> {
-  // Try Firebase Storage upload if configured
-  if (isFirebaseConfigured()) {
-    try {
-      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-      const storagePath = `reviews/${productId}/${userId}_${Date.now()}_${cleanFileName}`;
-      const imageRef = ref(storage, storagePath);
-      await uploadBytes(imageRef, file);
-      const downloadUrl = await getDownloadURL(imageRef);
-      return downloadUrl;
-    } catch (err) {
-      console.warn("Firebase Storage upload fallback (using Base64 data URL):", err);
-    }
-  }
-
-  // Fallback: Convert image file to compressed Base64 Data URL
+function convertFileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -278,4 +299,25 @@ export async function uploadReviewImage(file: File, productId: string, userId: s
     reader.onerror = (e) => reject(e);
     reader.readAsDataURL(file);
   });
+}
+
+/**
+ * Upload review image file (Firebase Storage with 3s timeout + instant Base64 fallback)
+ */
+export async function uploadReviewImage(file: File, productId: string, userId: string): Promise<string> {
+  if (isFirebaseConfigured()) {
+    try {
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+      const storagePath = `reviews/${productId}/${userId}_${Date.now()}_${cleanFileName}`;
+      const imageRef = ref(storage, storagePath);
+
+      await withTimeout(uploadBytes(imageRef, file), 3000);
+      const downloadUrl = await withTimeout(getDownloadURL(imageRef), 2000);
+      if (downloadUrl) return downloadUrl;
+    } catch (err) {
+      console.warn("Firebase Storage upload timeout or error (using Base64 data URL):", err);
+    }
+  }
+
+  return convertFileToBase64(file);
 }
