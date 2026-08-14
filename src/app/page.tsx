@@ -112,7 +112,7 @@ export default function Home() {
     setActiveFaq(activeFaq === index ? null : index);
   };
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!contactName || !contactPhone || !contactDevice || !contactIssue) {
       alert("Please fill in all required fields.");
@@ -120,24 +120,54 @@ export default function Home() {
     }
     
     setIsSubmittingContact(true);
-    setTimeout(() => {
-      setIsSubmittingContact(false);
-      setIsContactSuccess(true);
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        colors: ["#10b981", "#06b6d4"]
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          access_key: "c30177c2-2365-458f-a261-474f35fdc4d5",
+          subject: `New Mobile Repair Inquiry: ${contactName} (${contactDevice})`,
+          from_name: "Smart Care Mobile Point",
+          name: contactName,
+          phone: contactPhone,
+          email: contactEmail || "Not provided",
+          device_model: contactDevice,
+          issue: contactIssue,
+          message: contactMessage || "No additional details provided"
+        })
       });
-      setTimeout(() => {
-        setIsContactSuccess(false);
-        setContactName("");
-        setContactPhone("");
-        setContactEmail("");
-        setContactDevice("");
-        setContactIssue("");
-        setContactMessage("");
-      }, 5000);
-    }, 1500);
+
+      const result = await response.json();
+
+      if (result.success) {
+        setIsContactSuccess(true);
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          colors: ["#10b981", "#06b6d4"]
+        });
+        setTimeout(() => {
+          setIsContactSuccess(false);
+          setContactName("");
+          setContactPhone("");
+          setContactEmail("");
+          setContactDevice("");
+          setContactIssue("");
+          setContactMessage("");
+        }, 5000);
+      } else {
+        alert(result.message || "Failed to submit message. Please try again or WhatsApp us at +91 9289942313.");
+      }
+    } catch (err) {
+      console.error("Web3Forms submit error:", err);
+      alert("Network error occurred while sending your message. Please WhatsApp us directly at +91 9289942313.");
+    } finally {
+      setIsSubmittingContact(false);
+    }
   };
 
   // Static trust numbers
