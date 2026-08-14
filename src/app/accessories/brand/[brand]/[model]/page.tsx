@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { Smartphone, ChevronRight, Check, ShoppingBag, PhoneCall } from "lucide-react";
 import phoneData from "@/data/phoneModels.json";
 import { MOCK_ACCESSORIES } from "@/lib/accessories";
+import { formatINR } from "@/lib/utils";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
 
 interface ModelPageProps {
