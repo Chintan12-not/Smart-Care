@@ -65,7 +65,10 @@ export async function POST(req: NextRequest) {
             <p style="margin: 0 0 8px 0;"><strong>Preferred Schedule:</strong> ${payload.preferredDate} (${payload.preferredTime})</p>
             <p style="margin: 0 0 8px 0;"><strong>Pickup Address:</strong> ${payload.pickupAddress}</p>
             <p style="margin: 0 0 8px 0;"><strong>Estimated Distance:</strong> ${payload.distanceKm} km</p>
-            <p style="margin: 0;"><strong>Pickup & Drop Fee:</strong> ${payload.pickupCharge === 0 ? "FREE" : `₹${payload.pickupCharge}`}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Pickup & Drop Fee:</strong> ${payload.pickupCharge === 0 ? "FREE" : `₹${payload.pickupCharge}`}</p>
+            <div style="margin-top: 10px; padding: 8px 12px; background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; color: #047857; font-weight: bold; font-size: 13px;">
+              🎁 FREE PHONE COVER INCLUDED
+            </div>
           </div>
 
           <p>Our dispatch team is processing your request, and a service agent will contact you shortly to coordinate the pickup.</p>

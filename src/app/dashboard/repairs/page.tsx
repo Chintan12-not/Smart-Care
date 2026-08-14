@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { Wrench, Calendar, DollarSign, Clock, HelpCircle, ArrowRight, ShieldCheck } from "lucide-react";
+import { Wrench, Calendar, DollarSign, Clock, HelpCircle, ArrowRight, ShieldCheck, Gift } from "lucide-react";
 import Link from "next/link";
 import { formatINR } from "@/lib/utils";
 
@@ -23,6 +23,8 @@ interface Repair {
   estimate_time: string | null;
   warranty_months: number;
   warranty_expiry: string | null;
+  freePhoneCover?: boolean;
+  free_phone_cover?: boolean;
   tracking_history?: TrackingEvent[];
 }
 
@@ -189,6 +191,12 @@ export default function RepairsPage() {
                     <span className="text-[10px] uppercase font-bold text-muted-foreground block">Device Model</span>
                     <h3 className="text-lg font-bold text-foreground mt-0.5">{repair.device_model}</h3>
                     <p className="text-xs text-muted-foreground mt-1 max-w-lg">{repair.issue_description}</p>
+                    
+                    {(repair.freePhoneCover || repair.free_phone_cover || repair.issue_description?.includes("FREE PHONE COVER")) && (
+                      <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider">
+                        <Gift className="h-3 w-3 text-emerald-400" /> FREE PHONE COVER: Included
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusBadge(repair.status)}`}>

@@ -14,7 +14,9 @@ import {
   AlertCircle,
   HelpCircle,
   Check,
-  Lock
+  Lock,
+  Gift,
+  Sparkles
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
@@ -343,7 +345,7 @@ export default function PickupClient() {
     setIsSubmitting(true);
 
     const cost = pickupCharge !== null ? pickupCharge : calculatePickupCharge(distanceKm || 6.0);
-    const detailNotes = `${problemDescription || "Diagnostics requested"}. Landmark: ${landmark || "None"}. Address: ${pickupAddress}. Distance: ${distanceKm || 0}km. Slot: ${preferredDate} ${preferredTime}`;
+    const detailNotes = `${problemDescription || "Diagnostics requested"}. Landmark: ${landmark || "None"}. Address: ${pickupAddress}. Distance: ${distanceKm || 0}km. Slot: ${preferredDate} ${preferredTime} | FREE PHONE COVER: Included`;
 
     if (isSupabaseConfigured()) {
       try {
@@ -353,6 +355,7 @@ export default function PickupClient() {
             user_id: user.id,
             device_model: `${deviceBrand} ${deviceModel}`,
             issue_description: detailNotes,
+            free_phone_cover: true,
             status: "booked",
             estimate_cost: cost,
             estimate_time: "1-2 Business Days",
@@ -373,6 +376,7 @@ export default function PickupClient() {
         created_at: new Date().toISOString(),
         device_model: `${deviceBrand} ${deviceModel}`,
         issue_description: detailNotes,
+        freePhoneCover: true,
         status: "booked",
         estimate_cost: cost,
         estimate_time: "1-2 Business Days",
@@ -381,7 +385,7 @@ export default function PickupClient() {
         tracking_history: [
           {
             status: "booked",
-            notes: "Doorstep pickup scheduled.",
+            notes: "Doorstep pickup scheduled. FREE PHONE COVER included.",
             timestamp: new Date().toISOString()
           }
         ]
@@ -407,6 +411,7 @@ export default function PickupClient() {
         landmark,
         distanceKm: distanceKm || "TBD",
         pickupCharge: cost,
+        freePhoneCover: true,
         submittedAt: new Date().toISOString()
       };
 
@@ -431,7 +436,8 @@ export default function PickupClient() {
               preferredTime,
               pickupAddress,
               distanceKm: distanceKm || "TBD",
-              pickupCharge: cost
+              pickupCharge: cost,
+              freePhoneCover: true
             }
           })
         }).catch(err => console.error("Pickup email trigger failed:", err));
@@ -465,6 +471,8 @@ export default function PickupClient() {
 ${landmark ? `• Landmark: ${landmark}` : ""}
 • Distance: ${distanceKm || "TBD"} km
 • Pickup & Drop Fee: ${cost === 0 ? "FREE" : formatINR(cost)}
+
+🎁 *FREE GIFT*: FREE PHONE COVER Included!
 
 Please confirm my doorstep pickup schedule. Thank you!`;
 
@@ -545,6 +553,31 @@ Please confirm my doorstep pickup schedule. Thank you!`;
         {/* Left Column: Pricing & Process (5 cols) - shown below form on mobile */}
         <div className="lg:col-span-5 space-y-6 order-2 lg:order-1">
           
+          {/* FREE PHONE COVER PROMO CARD */}
+          <div className="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-cyan-500/5 to-indigo-500/10 relative overflow-hidden shadow-xl">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <span className="px-3 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                <Gift className="h-3.5 w-3.5" /> FREE GIFT
+              </span>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Smart Care Exclusive</span>
+            </div>
+
+            <h3 className="text-xl font-extrabold text-foreground tracking-tight">FREE PHONE COVER</h3>
+            
+            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+              Book our Pickup &amp; Drop repair service and get a phone cover <span className="font-extrabold text-emerald-400 uppercase">FREE</span> from Smart Care.
+            </p>
+
+            <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-[11px]">
+              <span className="text-muted-foreground font-medium flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Offer available on eligible repair bookings.
+              </span>
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold text-[9px]">
+                INCLUDED
+              </span>
+            </div>
+          </div>
+
           {/* Pickup & Drop Pricing Card */}
           <div className="glass-card rounded-3xl p-6 border border-emerald-500/20 bg-emerald-500/[0.01] relative overflow-hidden shadow-lg">
             <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
@@ -986,9 +1019,15 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                   <Check className="h-8 w-8 stroke-[3]" />
                 </div>
                 
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-extrabold text-foreground">Pickup Booked Successfully!</h2>
-                  <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                <div className="space-y-3">
+                  <h2 className="text-2xl font-extrabold text-foreground">Booking Confirmed!</h2>
+                  
+                  <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-xs max-w-md mx-auto flex items-center justify-center gap-2 shadow-sm">
+                    <Gift className="h-4 w-4 shrink-0 text-emerald-400" />
+                    <span>Your FREE PHONE COVER is included with this Pickup &amp; Drop repair booking.</span>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground max-w-md mx-auto pt-1">
                     We have received your pickup booking request. Details have been logged for our Sector 37C dispatch center, and a copy has been sent to <span className="font-semibold text-foreground">enigcon2020@gmail.com</span>.
                   </p>
                 </div>
@@ -1015,6 +1054,12 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                       <span className="text-muted-foreground">Distance / Cost</span>
                       <span className="text-foreground font-semibold">
                         {submissionData.distanceKm} km ({submissionData.pickupCharge === 0 ? "FREE" : formatINR(submissionData.pickupCharge)})
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-b border-border/40 pb-2">
+                      <span className="text-muted-foreground font-bold">FREE PHONE COVER</span>
+                      <span className="text-emerald-400 font-extrabold flex items-center gap-1">
+                        <Gift className="h-3.5 w-3.5" /> YES (Included Free)
                       </span>
                     </div>
                   </div>

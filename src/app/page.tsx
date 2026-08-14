@@ -34,7 +34,8 @@ import {
   Phone,
   Lock,
   Building2,
-  Printer
+  Printer,
+  Gift
 } from "lucide-react";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 
@@ -386,38 +387,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. PICKUP & DROP PROMOTION CARD */}
+      {/* 3. PICKUP & DROP PROMOTION CARD WITH FREE PHONE COVER OFFER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 w-full border-t border-border/40">
-        <div className="glass-card rounded-3xl p-8 border border-emerald-500/20 bg-emerald-500/[0.01] grid grid-cols-1 md:grid-cols-12 gap-8 items-center max-w-5xl mx-auto shadow-md">
+        <div className="glass-card rounded-3xl p-8 border border-emerald-500/30 bg-gradient-to-r from-emerald-500/[0.04] via-cyan-500/[0.03] to-indigo-500/[0.04] grid grid-cols-1 md:grid-cols-12 gap-8 items-center max-w-5xl mx-auto shadow-lg relative overflow-hidden">
+          
           <div className="md:col-span-8 space-y-4 text-left">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-[10px] font-bold uppercase tracking-wider">Convenient Logistics</span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Free Doorstep Pickup & Delivery</h2>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
-              Don&apos;t let a cracked screen ruin your day. Book doorstep pickup. We will fetch your mobile, diagnose and swap components, package it securely, and deliver it back to you. Same-day repair service available.
-            </p>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-foreground">
-              <span className="flex items-center gap-1.5">✓ Safe Anti-Static Pack</span>
-              <span className="flex items-center gap-1.5">✓ Cash/UPI/Card at Doorstep</span>
-              <span className="flex items-center gap-1.5">✓ Live SMS Diagnostics Status</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                <Gift className="h-3.5 w-3.5" /> FREE GIFT OFFER
+              </span>
+              <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Smart Care Exclusive</span>
             </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+              FREE PHONE COVER
+            </h2>
+
+            <p className="text-xs sm:text-sm font-bold text-emerald-400">
+              Book our Pickup &amp; Drop repair service and get a phone cover FREE from Smart Care.
+            </p>
+
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+              Don&apos;t let a cracked screen ruin your day. Book doorstep pickup. We will fetch your mobile, diagnose and swap components, package it securely, and deliver it back to you with your free gift.
+            </p>
+
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-foreground pt-1">
+              <span className="flex items-center gap-1.5 text-emerald-400">✓ FREE Phone Cover Included</span>
+              <span className="flex items-center gap-1.5">✓ Safe Anti-Static Pack</span>
+              <span className="flex items-center gap-1.5">✓ Cash/UPI at Doorstep</span>
+            </div>
+
+            <p className="text-[10px] text-muted-foreground/80 italic pt-1">
+              * Offer available on eligible repair bookings.
+            </p>
           </div>
+
           <div className="md:col-span-4 text-center md:text-right space-y-4">
-            <div className="bg-background/80 border border-border rounded-2xl p-4 text-left shadow-sm inline-block mx-auto md:ml-auto w-full sm:max-w-[240px]">
+            <div className="bg-card/90 border border-border rounded-2xl p-4 text-left shadow-sm inline-block mx-auto md:ml-auto w-full sm:max-w-[240px]">
               <span className="text-[9px] uppercase font-bold text-muted-foreground block">Pickup Charges</span>
               <p className="text-xs font-bold text-foreground mt-1">• Till 5 km: <span className="text-emerald-500">FREE</span></p>
               <p className="text-xs font-bold text-foreground mt-0.5">• 5 - 10 km: <span className="text-amber-500">₹120</span></p>
               <p className="text-xs font-bold text-foreground mt-0.5">• 10 - 15 km: <span className="text-amber-500">₹200</span></p>
               <p className="text-xs font-bold text-foreground mt-0.5">• Beyond 15 km: <span className="text-amber-500">₹300</span></p>
-              <span className="text-[9px] text-muted-foreground block mt-2 leading-tight">*Repair charges separate.*</span>
+              <div className="mt-2 pt-2 border-t border-border/40 flex items-center justify-between text-[10px]">
+                <span className="text-muted-foreground font-bold">Free Gift:</span>
+                <span className="text-emerald-400 font-black">COVER INCLUDED</span>
+              </div>
             </div>
+            
             <Link
               href="/pickup"
-              className="w-full px-6 py-3.5 rounded-xl bg-foreground text-background font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
+              className="w-full px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-extrabold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95"
             >
-              <Truck className="h-4.5 w-4.5" />
-              Book Pickup Now
+              <Gift className="h-4 w-4" />
+              <span>BOOK PICKUP &amp; DROP</span>
             </Link>
           </div>
+
         </div>
       </section>
 

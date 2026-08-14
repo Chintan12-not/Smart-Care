@@ -33,7 +33,8 @@ import {
   FileText,
   Check,
   Smartphone,
-  X
+  X,
+  Gift
 } from "lucide-react";
 import Link from "next/link";
 import { formatINR, cn } from "@/lib/utils";
@@ -233,6 +234,7 @@ export default function AdminPage() {
 
   // Customer Orders States
   const [customerOrders, setCustomerOrders] = useState<any[]>([]);
+  const [repairBookings, setRepairBookings] = useState<any[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [sendingEmailId, setSendingEmailId] = useState<string | null>(null);
 
@@ -270,6 +272,30 @@ export default function AdminPage() {
     );
 
     setCustomerOrders(merged);
+    
+    // Also load pickup repair bookings
+    let dbRepairs: any[] = [];
+    if (isSupabaseConfigured()) {
+      try {
+        const { data } = await supabase
+          .from("repairs")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (data) dbRepairs = data;
+      } catch (e) {}
+    }
+
+    let localRepairs: any[] = [];
+    const storedRepairs = localStorage.getItem("sc_mock_repairs");
+    if (storedRepairs) {
+      try { localRepairs = JSON.parse(storedRepairs); } catch (e) {}
+    }
+
+    const repairsMap = new Map<string, any>();
+    localRepairs.forEach(r => repairsMap.set(r.id, r));
+    dbRepairs.forEach(r => repairsMap.set(r.id, r));
+
+    setRepairBookings(Array.from(repairsMap.values()));
     setOrdersLoading(false);
   };
 
@@ -2188,6 +2214,56 @@ CREATE POLICY "Allow authenticated insert" ON public.repair_estimator_config FOR
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* PICKUP & DROP REPAIR BOOKINGS ADMIN VIEW */}
+            {repairBookings.length > 0 && (
+              <div className="pt-8 border-t border-border/50 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-cyan-500" />
+                    Doorstep Pickup &amp; Drop Repair Bookings ({repairBookings.length})
+                  </h3>
+                  <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                    <Gift className="h-3.5 w-3.5" /> FREE PHONE COVER ELIGIBLE
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {repairBookings.map((rep) => {
+                    const isFreeCover = rep.freePhoneCover || rep.free_phone_cover || rep.issue_description?.includes("FREE PHONE COVER");
+                    
+                    return (
+                      <div key={rep.id} className="p-4 rounded-2xl bg-card border border-border space-y-3 shadow-sm">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold block">Service: Pickup &amp; Drop</span>
+                            <h4 className="font-extrabold text-sm text-foreground">{rep.device_model}</h4>
+                          </div>
+                          <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-bold uppercase border border-cyan-500/20">
+                            Status: {rep.status || "Booked"}
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground line-clamp-2">{rep.issue_description}</p>
+
+                        <div className="pt-2 border-t border-border/40 flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground font-mono">Job ID: {rep.id}</span>
+                          <span className={cn(
+                            "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1 border",
+                            isFreeCover
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                              : "bg-muted text-muted-foreground border-border"
+                          )}>
+                            <Gift className="h-3 w-3" />
+                            FREE PHONE COVER: {isFreeCover ? "YES (Included)" : "No"}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
