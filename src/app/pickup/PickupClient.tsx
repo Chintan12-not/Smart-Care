@@ -60,51 +60,53 @@ export default function PickupClient() {
   const markerRef = useRef<any>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Create link for leaflet CSS
+    if (typeof window === "undefined") return;
+
+    // Check if Leaflet is already loaded
+    if ((window as any).L) {
+      setLeafletLoaded(true);
+      return;
+    }
+
+    // Ensure Leaflet CSS exists persistently
+    if (!document.getElementById("leaflet-css")) {
       const cssLink = document.createElement("link");
+      cssLink.id = "leaflet-css";
       cssLink.rel = "stylesheet";
       cssLink.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
       document.head.appendChild(cssLink);
+    }
 
-      // Create script for leaflet JS
+    // Ensure Leaflet JS exists persistently
+    if (!document.getElementById("leaflet-js")) {
       const script = document.createElement("script");
+      script.id = "leaflet-js";
       script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
       script.async = true;
       script.onload = () => {
         setLeafletLoaded(true);
       };
       document.body.appendChild(script);
-
-      return () => {
-        try {
-          document.head.removeChild(cssLink);
-          document.body.removeChild(script);
-        } catch (e) {}
-      };
+    } else {
+      setLeafletLoaded(true);
     }
   }, []);
 
   // Initialize leaflet map
   useEffect(() => {
-    if (leafletLoaded && typeof window !== "undefined" && (window as any).L) {
+    if (!leafletLoaded || typeof window === "undefined") return;
+    const L = (window as any).L;
+    if (!L) return;
+
+    const timer = setTimeout(() => {
+      const mapContainer = document.getElementById("pickup-map");
+      if (!mapContainer) return;
+      if ((mapContainer as any)._leaflet_id) return;
+
+      const shopLat = 28.4526094;
+      const shopLng = 76.990898;
+
       try {
-        const L = (window as any).L;
-
-        // Guard: ensure the map container exists in the DOM before initializing
-        const mapContainer = document.getElementById("pickup-map");
-        if (!mapContainer) return;
-        
-        // Guard: prevent "Map container is already initialized" error on re-renders
-        if ((mapContainer as any)._leaflet_id) {
-          return;
-        }
-
-        // Center at Smart Care Shop (Ninex Residency, Sector 37C)
-        const shopLat = 28.4526094;
-        const shopLng = 76.990898;
-
-        // Fix leaflet default icon markers path error safely
         if (L.Icon && L.Icon.Default && L.Icon.Default.prototype) {
           try {
             delete L.Icon.Default.prototype._getIconUrl;
@@ -116,14 +118,19 @@ export default function PickupClient() {
           } catch (e) {}
         }
 
-        const map = L.map("pickup-map").setView([shopLat, shopLng], 14);
+        const map = L.map("pickup-map", {
+          center: [shopLat, shopLng],
+          zoom: 14,
+          zoomControl: true
+        });
         mapRef.current = map;
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution: '&copy; OpenStreetMap contributors',
+          maxZoom: 19
         }).addTo(map);
 
-        // Create a custom shop pin
+        // Shop Marker
         const shopIcon = L.divIcon({
           className: 'custom-shop-pin',
           html: `<div class="flex items-center justify-center h-8 w-8 rounded-full bg-cyan-500 text-black border-2 border-white shadow-lg"><span class="text-xs">🛠️</span></div>`,
@@ -131,15 +138,13 @@ export default function PickupClient() {
           iconAnchor: [16, 32]
         });
 
-        // Add static Shop Marker
         const shopMarker = L.marker([shopLat, shopLng], { icon: shopIcon }).addTo(map);
         shopMarker.bindPopup("<b>Smart Care Hub Store</b><br>Shop No. 28, Ninex Residency, Sector 37C").openPopup();
 
-        // Add Draggable Customer Marker (offset slightly so it is clearly visible next to the shop marker)
+        // Customer Draggable Marker
         const marker = L.marker([shopLat + 0.001, shopLng + 0.001], { draggable: true }).addTo(map);
         markerRef.current = marker;
-
-        marker.bindPopup("Drag this pin to your address").openPopup();
+        marker.bindPopup("Drag pin to your pickup address").openPopup();
 
         const reverseGeocode = async (lat: number, lng: number) => {
           setIsCalculating(true);
@@ -153,7 +158,7 @@ export default function PickupClient() {
             const distData = await res.json();
             if (distData.success) {
               setDistanceKm(distData.distanceKm);
-              setPickupCharge(distData.charge);
+              setPickupCharge(distData.charge !== undefined ? distData.charge : distData.pickupCharge);
               if (distData.address) {
                 setPickupAddress(distData.address);
               }
@@ -182,16 +187,16 @@ export default function PickupClient() {
           reverseGeocode(lat, lng);
         });
 
-        // Cleanup: destroy map on unmount
-        return () => {
-          try {
-            map.remove();
-          } catch (e) {}
-        };
+        setTimeout(() => {
+          if (map) map.invalidateSize();
+        }, 300);
+
       } catch (err) {
-        console.error("Leaflet initialization error handled:", err);
+        console.error("Map initialization error:", err);
       }
-    }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [leafletLoaded]);
 
   // Auto-calculate distance on address blur (or after typing delays)
@@ -857,8 +862,8 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                         </button>
                       </div>
 
-                      <div className="relative overflow-hidden rounded-2xl border border-border bg-muted h-60 w-full shadow-inner z-10">
-                        <div id="pickup-map" className="h-full w-full" />
+                      <div className="relative overflow-hidden rounded-2xl border border-border bg-card w-full shadow-inner z-10" style={{ minHeight: "280px" }}>
+                        <div id="pickup-map" style={{ height: "280px", width: "100%", zIndex: 1 }} />
                         {!leafletLoaded && (
                           <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20">
                             <div className="flex flex-col items-center gap-2">
