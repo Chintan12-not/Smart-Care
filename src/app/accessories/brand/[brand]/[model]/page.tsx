@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { Smartphone, ChevronRight, Check, ShoppingBag, PhoneCall } from "lucide-react";
 import phoneData from "@/data/phoneModels.json";
 import { MOCK_ACCESSORIES } from "@/lib/accessories";
-import { formatINR } from "@/lib/utils";
+import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
 
 interface ModelPageProps {
   params: Promise<{ brand: string; model: string }>;
@@ -102,12 +102,12 @@ export default async function ModelAccessoriesPage({ params }: ModelPageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {MOCK_ACCESSORIES.map((prod) => (
               <div key={prod.id} className="glass-card rounded-2xl p-5 border border-border flex flex-col justify-between hover:shadow-lg transition-all relative group">
-                <div className="h-44 w-full rounded-xl bg-muted/40 overflow-hidden flex items-center justify-center mb-4">
-                  {prod.image ? (
-                    <img src={prod.image} alt={`${matchedBrandKey} ${modelFormatted} ${prod.name}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  ) : (
-                    <ShoppingBag className="h-10 w-10 text-muted-foreground" />
-                  )}
+                <div className="h-44 w-full rounded-xl bg-white overflow-hidden flex items-center justify-center mb-4 p-2 relative border border-border/40">
+                  <ProductCardImageSlider
+                    image={prod.image}
+                    images={prod.images}
+                    name={prod.name}
+                  />
                 </div>
 
                 <div className="space-y-2">

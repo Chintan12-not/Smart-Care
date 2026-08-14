@@ -33,6 +33,7 @@ import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import confetti from "canvas-confetti";
 import ProductReviews from "@/components/accessories/ProductReviews";
+import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -1070,9 +1071,13 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             {otherProducts.map(p => (
               <div key={p.id} className="glass-card rounded-2xl p-3 border border-border flex flex-col justify-between hover:border-cyan-500/20 group transition-all bg-card shadow-sm text-xs">
                 <div>
-                  <div className="h-28 w-full rounded-xl bg-muted overflow-hidden flex items-center justify-center relative mb-2.5">
-                    <img src={p.image} alt="" className="w-full h-full object-contain p-1 group-hover:scale-102 transition-transform duration-300" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
-                    <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-red-500 text-white text-[8px] font-bold uppercase tracking-wider">Sale</span>
+                  <div className="h-28 w-full rounded-xl bg-white overflow-hidden flex items-center justify-center relative mb-2.5 p-1 border border-border/40">
+                    <ProductCardImageSlider
+                      image={p.image}
+                      images={p.images}
+                      name={p.name}
+                    />
+                    <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-red-500 text-white text-[8px] font-bold uppercase tracking-wider z-30 pointer-events-none">Sale</span>
                   </div>
                   <h4 className="font-bold text-[11px] text-foreground line-clamp-2 min-h-[32px] leading-tight mb-1">{p.name}</h4>
                   <div className="flex items-center gap-1.5 mb-2">
