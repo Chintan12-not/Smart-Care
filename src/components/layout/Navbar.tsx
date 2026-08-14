@@ -250,10 +250,10 @@ export default function Navbar() {
         <>
           <div 
             onClick={() => setIsOpen(false)} 
-            className="md:hidden fixed inset-0 top-16 bg-black/80 backdrop-blur-sm z-[80]"
+            className="md:hidden fixed inset-0 top-16 bg-black/60 backdrop-blur-sm z-[80]"
           />
-          <div className="md:hidden fixed top-16 left-0 w-full bg-card dark:bg-[#0a0d14] border-b border-border/80 shadow-2xl z-[90] animate-in slide-in-from-top duration-300 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="p-4 space-y-2.5">
+          <div className="md:hidden fixed top-16 left-0 w-full bg-white dark:bg-[#0c0e17] border-b border-border/80 shadow-2xl z-[90] animate-in slide-in-from-top duration-300">
+            <div className="p-4 space-y-2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                 const isAccessories = link.name === "Accessories";
@@ -264,26 +264,24 @@ export default function Navbar() {
                     href={link.href}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      "flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-extrabold transition-all border min-h-[48px]",
+                      "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-extrabold transition-all min-h-[44px]",
                       isAccessories
-                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400/40 shadow-lg shadow-cyan-500/20"
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
                         : isActive 
-                          ? "bg-cyan-500/15 text-cyan-400 border-cyan-500/40 shadow-sm" 
-                          : "bg-muted/60 dark:bg-zinc-900/80 border-border/60 text-foreground hover:bg-muted"
+                          ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30" 
+                          : "text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60"
                     )}
                   >
-                    <div className="flex items-center gap-3.5">
-                      {link.icon ? (
-                        <link.icon className={cn("h-5 w-5 shrink-0", isAccessories ? "text-white" : link.accent || "text-cyan-400")} />
-                      ) : (
-                        <Sparkles className="h-5 w-5 text-cyan-400 shrink-0" />
+                    <div className="flex items-center gap-3">
+                      {link.icon && (
+                        <link.icon className={cn("h-5 w-5", isAccessories ? "text-white" : link.accent || "text-slate-700 dark:text-slate-300")} />
                       )}
-                      <span className={cn("font-extrabold text-sm tracking-tight", isAccessories ? "text-white" : "text-foreground")}>
+                      <span className={cn(isAccessories ? "text-white" : isActive ? "text-cyan-600 dark:text-cyan-400" : "text-slate-900 dark:text-slate-100")}>
                         {link.name}
                       </span>
                     </div>
                     {isAccessories && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[9px] font-black uppercase tracking-wider shadow-sm">
+                      <span className="px-2 py-0.5 rounded-full bg-white text-black text-[9px] font-black uppercase tracking-wider shadow-sm">
                         Direct Store
                       </span>
                     )}
@@ -295,7 +293,7 @@ export default function Navbar() {
                 <Link
                   href="/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-foreground text-background font-extrabold text-xs uppercase tracking-wider shadow-md hover:opacity-90 transition-opacity"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-extrabold text-xs uppercase tracking-wider shadow-md hover:opacity-90 transition-opacity"
                 >
                   <User className="h-4 w-4" />
                   <span>User Dashboard</span>
@@ -306,7 +304,7 @@ export default function Navbar() {
         </>
       )}
       {/* Floating Accessories Direct Store Button (Mobile & Desktop) */}
-      {!isOpen && !pathname.startsWith("/accessories") && (
+      {!pathname.startsWith("/accessories") && (
         <Link
           href="/accessories"
           className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white font-extrabold text-xs shadow-2xl flex items-center gap-2 border border-cyan-400/50 hover:scale-105 active:scale-95 transition-all duration-300 group backdrop-blur-md animate-bounce"
