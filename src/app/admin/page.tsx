@@ -607,6 +607,8 @@ export default function AdminPage() {
       finalTitle = `${finalTitle} (${targetModel})`;
     }
 
+    let insertedDbId: string | null = null;
+
     try {
       if (isSupabaseConfigured()) {
         const fullPayload: any = {
@@ -657,7 +659,6 @@ export default function AdminPage() {
           }
         } else {
           // INSERT new product
-          let insertedDbId: string | null = null;
           const { data: insData, error: err1 } = await supabase.from("accessories").insert([fullPayload]).select();
 
           if (err1) {
