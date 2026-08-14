@@ -165,14 +165,18 @@ function AccessoriesContent() {
       // Combine priority: Custom Admin Items > DB Items
       const combinedRaw = [...customMapped, ...dbMapped];
       
-      // Deduplicate by ID and Name to ensure ALL Admin products display cleanly
-      const seenIds = new Set<string>();
+      // Deduplicate by both ID and normalized Name to ensure clean cards and valid URLs
+      const seenKeys = new Set<string>();
       const finalUnique: AccessoryProduct[] = [];
 
       for (const item of combinedRaw) {
-        const itemKey = item.id || item.name;
-        if (!seenIds.has(itemKey)) {
-          seenIds.add(itemKey);
+        if (!item) continue;
+        const idKey = String(item.id || "").trim();
+        const nameKey = String(item.name || "").toLowerCase().trim();
+        
+        if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
+          if (idKey) seenKeys.add(idKey);
+          if (nameKey) seenKeys.add(nameKey);
           finalUnique.push(item);
         }
       }

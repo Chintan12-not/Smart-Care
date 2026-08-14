@@ -657,12 +657,16 @@ export default function AdminPage() {
           }
         } else {
           // INSERT new product
-          const { error: err1 } = await supabase.from("accessories").insert([fullPayload]);
+          let insertedDbId: string | null = null;
+          const { data: insData, error: err1 } = await supabase.from("accessories").insert([fullPayload]).select();
 
           if (err1) {
             console.warn("Full payload insert failed, using base payload fallback:", err1.message);
-            const { error: err2 } = await supabase.from("accessories").insert([basePayload]);
+            const { data: insData2, error: err2 } = await supabase.from("accessories").insert([basePayload]).select();
             if (err2) throw err2;
+            if (insData2 && insData2[0]) insertedDbId = String(insData2[0].id);
+          } else if (insData && insData[0]) {
+            insertedDbId = String(insData[0].id);
           }
         }
       }
@@ -672,7 +676,7 @@ export default function AdminPage() {
       let list = local ? JSON.parse(local) : [];
 
       const newItem = {
-        id: editingProductId || `acc-custom-${Date.now()}`,
+        id: editingProductId || insertedDbId || `acc-custom-${Date.now()}`,
         name: finalTitle,
         category,
         brand: finalBrand,

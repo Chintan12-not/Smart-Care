@@ -104,13 +104,33 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   useEffect(() => {
     async function fetchProduct() {
       setIsLoading(true);
+      const decodedId = decodeURIComponent(productId || "").trim();
       let foundProd: AccessoryProduct | null = null;
-      
+      let allFoundProducts: AccessoryProduct[] = [];
+
+      const isMatch = (p: any): boolean => {
+        if (!p) return false;
+        const pId = String(p.id || "").trim();
+        const pName = String(p.name || "").trim();
+        const pSlug = pName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const decLower = decodedId.toLowerCase();
+
+        return (
+          pId === String(productId) ||
+          pId === decodedId ||
+          pId.toLowerCase() === decLower ||
+          pSlug === decLower ||
+          pName.toLowerCase() === decLower ||
+          (pId.replace(/^acc-custom-/, "") === decLower.replace(/^acc-custom-/, "") && decLower.length > 3)
+        );
+      };
+
       // 1. Search Mock Accessories
-      const mockMatch = MOCK_ACCESSORIES.find(p => String(p.id) === String(productId));
+      const mockMatch = MOCK_ACCESSORIES.find(isMatch);
       if (mockMatch) {
         foundProd = mockMatch;
       }
+      allFoundProducts = [...MOCK_ACCESSORIES];
 
       // 2. Search Custom LocalStorage Accessories (added via Admin panel)
       if (typeof window !== "undefined") {
@@ -118,24 +138,28 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         if (savedCustom) {
           try {
             const parsedCustom: any[] = JSON.parse(savedCustom);
-            const customMatch = parsedCustom.find((p: any) => String(p.id) === String(productId));
-            if (customMatch) {
-              foundProd = {
-                id: String(customMatch.id),
-                name: customMatch.name || "Accessory Product",
-                category: customMatch.category || "case",
-                brand: customMatch.brand || "Generic",
-                price: Number(customMatch.price || 0),
-                originalPrice: customMatch.originalPrice ? Number(customMatch.originalPrice) : null,
-                inStock: customMatch.inStock !== false,
-                isOnSale: customMatch.isOnSale || false,
-                rating: Number(customMatch.rating || 4.8),
-                reviewsCount: Number(customMatch.reviewsCount || 15),
-                image: customMatch.image || (customMatch.images && customMatch.images[0]) || "/shop_accessories.png",
-                images: customMatch.images || [customMatch.image || "/shop_accessories.png"],
-                specifications: customMatch.specifications || {},
-                description: customMatch.description || ""
-              };
+            const customMapped: AccessoryProduct[] = parsedCustom.map((item) => ({
+              id: String(item.id),
+              name: item.name || "Accessory Product",
+              category: item.category || "case",
+              brand: item.brand || "Generic",
+              price: Number(item.price || 0),
+              originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
+              inStock: item.inStock !== false,
+              isOnSale: item.isOnSale || false,
+              rating: Number(item.rating || 4.8),
+              reviewsCount: Number(item.reviewsCount || 15),
+              image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
+              images: item.images || [item.image || "/shop_accessories.png"],
+              specifications: item.specifications || {},
+              description: item.description || ""
+            }));
+
+            allFoundProducts = [...allFoundProducts, ...customMapped];
+
+            const customMatch = customMapped.find(isMatch);
+            if (customMatch && !foundProd) {
+              foundProd = customMatch;
             }
           } catch (e) {
             console.warn("Failed to parse custom accessories from localStorage:", e);
@@ -146,14 +170,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       // 3. Search Supabase database if configured
       if (isSupabaseConfigured()) {
         try {
-          const { data: allData } = await supabase.from("accessories").select("*").eq("is_active", true);
-          if (allData && allData.length > 0) {
-            const mappedAll = allData.map(item => ({
+          const { data: allData, error } = await supabase.from("accessories").select("*");
+          if (!error && allData && allData.length > 0) {
+            const mappedAll: AccessoryProduct[] = allData.map(item => ({
               id: String(item.id),
-              name: item.name,
-              category: item.category,
-              brand: item.brand,
-              price: Number(item.price),
+              name: item.name || "Accessory Product",
+              category: item.category || "case",
+              brand: item.brand || "Generic",
+              price: Number(item.price || 0),
               originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
               inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
               isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
@@ -164,9 +188,10 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               specifications: item.specifications || {},
               description: item.description || ""
             }));
-            setProductsList(mappedAll);
-            
-            const dbFound = mappedAll.find(p => String(p.id) === String(productId));
+
+            allFoundProducts = [...allFoundProducts, ...mappedAll];
+
+            const dbFound = mappedAll.find(isMatch);
             if (dbFound) {
               foundProd = dbFound;
             }
@@ -175,6 +200,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           console.error("Error loading products from Supabase:", err);
         }
       }
+
+      // Deduplicate productsList for related products
+      const seen = new Set();
+      const uniqueList: AccessoryProduct[] = [];
+      for (const p of allFoundProducts) {
+        if (p && p.id && !seen.has(p.id)) {
+          seen.add(p.id);
+          uniqueList.push(p);
+        }
+      }
+      setProductsList(uniqueList);
 
       setProduct(foundProd);
       setIsLoading(false);
@@ -291,10 +327,11 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
     if (!compatibilityModel.trim()) return;
 
     const query = compatibilityModel.toLowerCase();
+    const specsValues = product.specifications ? Object.values(product.specifications) : [];
     const isMatched = 
-      product.name.toLowerCase().includes(query) ||
-      product.description.toLowerCase().includes(query) ||
-      Object.values(product.specifications).some(val => String(val).toLowerCase().includes(query));
+      (product.name || "").toLowerCase().includes(query) ||
+      (product.description || "").toLowerCase().includes(query) ||
+      specsValues.some(val => String(val).toLowerCase().includes(query));
 
     setIsCompatible(isMatched);
   };
@@ -962,12 +999,12 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
               {/* Other Technical Specs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs max-w-3xl pt-2 border-t border-border/40">
-                {Object.entries(product.specifications)
+                {Object.entries(product.specifications || {})
                   .filter(([k]) => !["original_price", "in_stock", "is_on_sale", "Brand", "Colour", "Material", "Warranty", "Compatible Phone Models"].includes(k))
                   .map(([key, value]) => (
                     <div key={key} className="p-3.5 bg-card border border-border rounded-2xl flex items-center justify-between">
                       <span className="text-muted-foreground font-semibold uppercase text-[9px] tracking-wider">{key}</span>
-                      <span className="text-foreground font-bold truncate max-w-[150px]">{value}</span>
+                      <span className="text-foreground font-bold truncate max-w-[150px]">{String(value)}</span>
                     </div>
                   ))}
               </div>
