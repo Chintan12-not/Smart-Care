@@ -738,10 +738,10 @@ export default function Home() {
       </section>
 
       {/* 7. CONTACT FORM & GOOGLE MAPS INTEGRATION */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40 flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pb-24 sm:pb-16 relative z-10 w-full border-t border-border/40 flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
         
         {/* Contact details & Map Embed (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 w-full space-y-6">
           <div className="space-y-2">
             <span className="text-[10px] uppercase font-bold text-cyan-500 tracking-wider">Contact & Location</span>
             <h2 className="text-2xl font-bold text-foreground tracking-tight">Visit Our Workshop</h2>
@@ -812,7 +812,7 @@ export default function Home() {
         </div>
 
         {/* Contact Form (7 cols) */}
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-7 w-full">
           <div className="glass-card rounded-3xl p-5 sm:p-8 border border-border shadow-lg">
             <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-6">Drop Us a Message</h3>
             
@@ -835,7 +835,7 @@ export default function Home() {
                         placeholder="John Doe"
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -846,7 +846,7 @@ export default function Home() {
                         placeholder="Contact number"
                         value={contactPhone}
                         onChange={(e) => setContactPhone(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
                       />
                     </div>
                   </div>
@@ -859,7 +859,7 @@ export default function Home() {
                         placeholder="Email address"
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
                       />
                     </div>
                     <div className="space-y-1.5">
@@ -870,7 +870,7 @@ export default function Home() {
                         placeholder="e.g. iPhone 14, Galaxy S22"
                         value={contactDevice}
                         onChange={(e) => setContactDevice(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
                       />
                     </div>
                   </div>
@@ -881,15 +881,15 @@ export default function Home() {
                       required
                       value={contactIssue}
                       onChange={(e) => setContactIssue(e.target.value)}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
                     >
-                      <option value="">Choose issue...</option>
-                      <option value="broken_screen">Broken Screen Replacement</option>
-                      <option value="battery">Battery Drainage / Replacement</option>
-                      <option value="charging">Charging / Port Issue</option>
-                      <option value="sound">Speaker / Sound static</option>
-                      <option value="diagnostics">Unknown Hardware Fault</option>
-                      <option value="others">Others</option>
+                      <option value="" className="bg-card text-foreground">Choose issue...</option>
+                      <option value="broken_screen" className="bg-card text-foreground">Broken Screen Replacement</option>
+                      <option value="battery" className="bg-card text-foreground">Battery Drainage / Replacement</option>
+                      <option value="charging" className="bg-card text-foreground">Charging / Port Issue</option>
+                      <option value="sound" className="bg-card text-foreground">Speaker / Sound static</option>
+                      <option value="diagnostics" className="bg-card text-foreground">Unknown Hardware Fault</option>
+                      <option value="others" className="bg-card text-foreground">Others</option>
                     </select>
                   </div>
 
@@ -900,14 +900,14 @@ export default function Home() {
                       placeholder="Add details about your issue..."
                       value={contactMessage}
                       onChange={(e) => setContactMessage(e.target.value)}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-medium"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmittingContact}
-                    className="w-full py-3.5 bg-foreground text-background font-bold rounded-xl text-xs uppercase tracking-wider hover:opacity-90 transition-opacity"
+                    className="w-full py-3.5 bg-foreground text-background font-extrabold rounded-xl text-xs uppercase tracking-wider hover:opacity-90 transition-opacity shadow-md"
                   >
                     {isSubmittingContact ? (
                       <span className="h-4 w-4 border-2 border-background border-t-transparent rounded-full animate-spin" />

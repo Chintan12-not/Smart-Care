@@ -150,7 +150,7 @@ html {
   display: none;
 }
 
-/* Mobile Responsiveness Utilities */
+/* Mobile Form & Responsiveness Utilities */
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -164,8 +164,30 @@ html {
   overflow-wrap: break-word;
 }
 
+/* Ensure mobile inputs and select options are 100% visible across all devices */
+input, select, textarea {
+  color: var(--foreground) !important;
+}
+
+select option {
+  background-color: #11131a;
+  color: #f8fafc;
+}
+
+:root:not(.dark) select option,
+.light select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted-foreground) !important;
+  opacity: 0.7;
+}
+
 @media (max-width: 767px) {
   input, select, textarea {
-    font-size: 16px;
+    font-size: 16px !important;
   }
 }
+
