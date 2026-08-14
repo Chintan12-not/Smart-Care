@@ -24,7 +24,8 @@ import {
   X,
   Share2,
   PhoneCall,
-  Clock
+  Clock,
+  Sparkles
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
@@ -308,6 +309,131 @@ function AccessoriesContent() {
 
       {/* Interactive Phone Model Finder */}
       <PhoneModelFinder onSelectModel={handleSelectModelFromFinder} />
+
+      {/* FEATURED PRODUCTS AUTOMATIC SLOW MARQUEE SLIDER */}
+      {products.length > 0 && (
+        <div className="glass-card rounded-3xl p-5 border border-emerald-500/20 bg-gradient-to-r from-emerald-500/[0.03] via-cyan-500/[0.02] to-purple-500/[0.03] space-y-4 shadow-md overflow-hidden relative">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+              <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4 text-emerald-400" />
+                Featured Best Sellers &amp; Trending Products
+              </h2>
+            </div>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              ⚡ Hover to Pause • Auto-Sliding Showcase
+            </span>
+          </div>
+
+          <div className="relative w-full overflow-hidden py-1">
+            {/* Fade edge overlays for premium look */}
+            <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+
+            <div className="flex w-max gap-4 items-center animate-marquee">
+              {/* 1st copy */}
+              {products.slice(0, 8).map((prod) => (
+                <div
+                  key={`marq-1-${prod.id}`}
+                  className="w-56 shrink-0 bg-card/90 border border-border/80 rounded-2xl p-3 shadow-sm hover:border-emerald-500/50 hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div className="relative aspect-square rounded-xl bg-white p-2 overflow-hidden flex items-center justify-center mb-2.5">
+                    <img
+                      src={prod.image || "/shop_accessories.png"}
+                      alt={prod.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/shop_accessories.png"; }}
+                    />
+                    <span className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500 text-black uppercase tracking-wider shadow-sm">
+                      ★ {prod.rating}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-muted-foreground block truncate">{prod.brand}</span>
+                    <h4 className="text-xs font-bold text-foreground truncate group-hover:text-emerald-400 transition-colors">{prod.name}</h4>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs font-extrabold text-emerald-400">{formatINR(prod.price)}</span>
+                      <button
+                        onClick={() => handleAddToCart(prod)}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm"
+                      >
+                        <Plus className="h-3 w-3 stroke-[3]" /> Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* 2nd copy for seamless infinite loop */}
+              {products.slice(0, 8).map((prod) => (
+                <div
+                  key={`marq-2-${prod.id}`}
+                  className="w-56 shrink-0 bg-card/90 border border-border/80 rounded-2xl p-3 shadow-sm hover:border-emerald-500/50 hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div className="relative aspect-square rounded-xl bg-white p-2 overflow-hidden flex items-center justify-center mb-2.5">
+                    <img
+                      src={prod.image || "/shop_accessories.png"}
+                      alt={prod.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/shop_accessories.png"; }}
+                    />
+                    <span className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500 text-black uppercase tracking-wider shadow-sm">
+                      ★ {prod.rating}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-muted-foreground block truncate">{prod.brand}</span>
+                    <h4 className="text-xs font-bold text-foreground truncate group-hover:text-emerald-400 transition-colors">{prod.name}</h4>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs font-extrabold text-emerald-400">{formatINR(prod.price)}</span>
+                      <button
+                        onClick={() => handleAddToCart(prod)}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm"
+                      >
+                        <Plus className="h-3 w-3 stroke-[3]" /> Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* 3rd copy */}
+              {products.slice(0, 8).map((prod) => (
+                <div
+                  key={`marq-3-${prod.id}`}
+                  className="w-56 shrink-0 bg-card/90 border border-border/80 rounded-2xl p-3 shadow-sm hover:border-emerald-500/50 hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div className="relative aspect-square rounded-xl bg-white p-2 overflow-hidden flex items-center justify-center mb-2.5">
+                    <img
+                      src={prod.image || "/shop_accessories.png"}
+                      alt={prod.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/shop_accessories.png"; }}
+                    />
+                    <span className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500 text-black uppercase tracking-wider shadow-sm">
+                      ★ {prod.rating}
+                    </span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-muted-foreground block truncate">{prod.brand}</span>
+                    <h4 className="text-xs font-bold text-foreground truncate group-hover:text-emerald-400 transition-colors">{prod.name}</h4>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs font-extrabold text-emerald-400">{formatINR(prod.price)}</span>
+                      <button
+                        onClick={() => handleAddToCart(prod)}
+                        className="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-black uppercase tracking-wider transition-colors flex items-center gap-1 shadow-sm"
+                      >
+                        <Plus className="h-3 w-3 stroke-[3]" /> Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Catalog Search, Category Tabs, and Sorting Controls */}
       <div id="accessories-grid-section" className="glass-card rounded-2xl p-5 border border-border flex flex-col lg:flex-row gap-4 items-center justify-between">
