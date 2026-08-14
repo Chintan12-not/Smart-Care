@@ -297,8 +297,10 @@ export default function Home() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-transparent border-0 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none font-medium"
           />
-          <button type="submit" className="px-5 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-[11px] hover:bg-emerald-400 transition-all shrink-0">
-            Search Repairs
+          <button type="submit" className="px-3.5 sm:px-5 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-[11px] hover:bg-emerald-400 transition-all shrink-0 flex items-center gap-1.5 shadow-sm">
+            <Search className="h-3.5 w-3.5 sm:hidden fill-current" />
+            <span className="hidden sm:inline">Search Repairs</span>
+            <span className="sm:hidden">Search</span>
           </button>
         </form>
 

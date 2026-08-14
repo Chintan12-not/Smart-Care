@@ -252,8 +252,8 @@ export default function Navbar() {
             onClick={() => setIsOpen(false)} 
             className="md:hidden fixed inset-0 top-16 bg-black/80 backdrop-blur-sm z-[80]"
           />
-          <div className="md:hidden fixed top-16 left-0 w-full bg-background dark:bg-[#0a0d14] border-b border-border/80 shadow-2xl z-[90] animate-in slide-in-from-top duration-300">
-            <div className="p-4 space-y-2">
+          <div className="md:hidden fixed top-16 left-0 w-full bg-card dark:bg-[#0a0d14] border-b border-border/80 shadow-2xl z-[90] animate-in slide-in-from-top duration-300 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="p-4 space-y-2.5">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
                 const isAccessories = link.name === "Accessories";
@@ -264,20 +264,26 @@ export default function Navbar() {
                     href={link.href}
                     onClick={() => setIsOpen(false)}
                     className={cn(
-                      "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-extrabold transition-all min-h-[44px]",
+                      "flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-extrabold transition-all border min-h-[48px]",
                       isAccessories
-                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20"
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400/40 shadow-lg shadow-cyan-500/20"
                         : isActive 
-                          ? "bg-cyan-500/10 text-cyan-500 border border-cyan-500/20" 
-                          : "text-foreground hover:bg-muted/60"
+                          ? "bg-cyan-500/15 text-cyan-400 border-cyan-500/40 shadow-sm" 
+                          : "bg-muted/60 dark:bg-zinc-900/80 border-border/60 text-foreground hover:bg-muted"
                     )}
                   >
-                    <div className="flex items-center gap-3">
-                      {link.icon && <link.icon className={cn("h-5 w-5", isAccessories ? "text-white" : link.accent || "text-foreground")} />}
-                      <span>{link.name}</span>
+                    <div className="flex items-center gap-3.5">
+                      {link.icon ? (
+                        <link.icon className={cn("h-5 w-5 shrink-0", isAccessories ? "text-white" : link.accent || "text-cyan-400")} />
+                      ) : (
+                        <Sparkles className="h-5 w-5 text-cyan-400 shrink-0" />
+                      )}
+                      <span className={cn("font-extrabold text-sm tracking-tight", isAccessories ? "text-white" : "text-foreground")}>
+                        {link.name}
+                      </span>
                     </div>
                     {isAccessories && (
-                      <span className="px-2 py-0.5 rounded-full bg-white text-black text-[9px] font-black uppercase tracking-wider shadow-sm">
+                      <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[9px] font-black uppercase tracking-wider shadow-sm">
                         Direct Store
                       </span>
                     )}
@@ -300,7 +306,7 @@ export default function Navbar() {
         </>
       )}
       {/* Floating Accessories Direct Store Button (Mobile & Desktop) */}
-      {!pathname.startsWith("/accessories") && (
+      {!isOpen && !pathname.startsWith("/accessories") && (
         <Link
           href="/accessories"
           className="fixed bottom-24 right-4 sm:bottom-24 sm:right-6 z-40 px-4 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white font-extrabold text-xs shadow-2xl flex items-center gap-2 border border-cyan-400/50 hover:scale-105 active:scale-95 transition-all duration-300 group backdrop-blur-md animate-bounce"
