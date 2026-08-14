@@ -124,6 +124,8 @@ export default function CorporateClient() {
           company: companyName.trim(),
           email: email.trim(),
           phone: phone.trim(),
+          replyto: "chintanmaheshwari714@gmail.com",
+          admin_email: "chintanmaheshwari714@gmail.com",
           category: productCategory,
           quantity: quantity,
           delivery_location: deliveryLocation.trim(),

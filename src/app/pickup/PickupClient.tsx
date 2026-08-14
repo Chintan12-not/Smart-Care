@@ -425,28 +425,50 @@ export default function PickupClient() {
       setIsSubmitting(false);
       setIsSuccess(true);
       
-      // Trigger thanking email dispatch via Resend
-      if (user?.email) {
-        fetch("/api/v1/email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "pickup",
-            to: user.email,
-            payload: {
-              customerName,
-              deviceBrand,
-              deviceModel,
-              preferredDate,
-              preferredTime,
-              pickupAddress,
-              distanceKm: distanceKm || "TBD",
-              pickupCharge: cost,
-              freePhoneCover: true
-            }
-          })
-        }).catch(err => console.error("Pickup email trigger failed:", err));
-      }
+      // Trigger Web3Forms notification for pickup repair booking
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          access_key: "c30177c2-2365-458f-a261-474f35fdc4d5",
+          subject: `[DOORSTEP PICKUP BOOKING] ${customerName} - ${deviceBrand} ${deviceModel}`,
+          from_name: customerName,
+          name: customerName,
+          phone: customerPhone,
+          device: `${deviceBrand} ${deviceModel}`,
+          address: pickupAddress,
+          preferred_date: preferredDate,
+          preferred_time: preferredTime,
+          pickup_fee: cost === 0 ? "FREE" : `₹${cost}`,
+          free_gift: "FREE PHONE COVER INCLUDED",
+          replyto: "chintanmaheshwari714@gmail.com",
+          admin_email: "chintanmaheshwari714@gmail.com"
+        })
+      }).catch(err => console.error("Web3Forms pickup dispatch error:", err));
+
+      // Trigger email dispatch via Resend API
+      fetch("/api/v1/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "pickup",
+          to: user?.email || "chintanmaheshwari714@gmail.com",
+          payload: {
+            customerName,
+            deviceBrand,
+            deviceModel,
+            preferredDate,
+            preferredTime,
+            pickupAddress,
+            distanceKm: distanceKm || "TBD",
+            pickupCharge: cost,
+            freePhoneCover: true
+          }
+        })
+      }).catch(err => console.error("Pickup email trigger failed:", err));
       
       // Celebrate
       confetti({

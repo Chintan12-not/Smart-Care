@@ -136,6 +136,8 @@ export default function Home() {
           name: contactName,
           phone: contactPhone,
           email: contactEmail || "Not provided",
+          replyto: "chintanmaheshwari714@gmail.com",
+          admin_email: "chintanmaheshwari714@gmail.com",
           device_model: contactDevice,
           issue: contactIssue,
           message: contactMessage || "No additional details provided"
