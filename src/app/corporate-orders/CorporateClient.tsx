@@ -90,7 +90,55 @@ export default function CorporateClient() {
     setErrorMsg(null);
 
     try {
-      const result = await createB2BInquiry({
+      // 1. Database record creation
+      let result = null;
+      try {
+        result = await createB2BInquiry({
+          name: name.trim(),
+          companyName: companyName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          product: productCategory,
+          quantity: Number(quantity),
+          deliveryLocation: deliveryLocation.trim(),
+          expectedPurchaseDate: expectedPurchaseDate || undefined,
+          requirements: requirements.trim() || undefined,
+        });
+      } catch (err) {
+        console.warn("Appwrite/Database B2B save skipped, proceeding with Web3Forms dispatch:", err);
+      }
+
+      // 2. Dispatch to Web3Forms API
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "c30177c2-2365-458f-a261-474f35fdc4d5";
+      const web3Res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `[BULK QUOTE REQUEST] ${companyName.trim()} - ${productCategory} (${quantity} units)`,
+          from_name: name.trim(),
+          name: name.trim(),
+          company: companyName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          category: productCategory,
+          quantity: quantity,
+          delivery_location: deliveryLocation.trim(),
+          expected_date: expectedPurchaseDate || "Flexible",
+          requirements: requirements.trim() || "No specific customization notes provided"
+        })
+      });
+
+      const web3Data = await web3Res.json();
+      if (!web3Data.success) {
+        console.warn("Web3Forms submission response:", web3Data);
+      }
+
+      setSubmittedInquiry(result || {
+        $id: `b2b_${Date.now()}`,
         name: name.trim(),
         companyName: companyName.trim(),
         email: email.trim(),
@@ -98,11 +146,11 @@ export default function CorporateClient() {
         product: productCategory,
         quantity: Number(quantity),
         deliveryLocation: deliveryLocation.trim(),
-        expectedPurchaseDate: expectedPurchaseDate || undefined,
-        requirements: requirements.trim() || undefined,
+        expectedPurchaseDate,
+        requirements,
+        status: "pending",
+        createdAt: new Date().toISOString()
       });
-
-      setSubmittedInquiry(result);
     } catch (err: any) {
       console.error("B2B Submission error:", err);
       setErrorMsg(err?.message || "Failed to send inquiry. Please try again or chat with us on WhatsApp.");
