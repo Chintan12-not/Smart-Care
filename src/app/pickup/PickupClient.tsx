@@ -437,7 +437,7 @@ export default function PickupClient() {
           subject: `[DOORSTEP PICKUP BOOKING] ${customerName} - ${deviceBrand} ${deviceModel}`,
           from_name: customerName,
           name: customerName,
-          phone: customerPhone,
+          phone: mobileNumber,
           device: `${deviceBrand} ${deviceModel}`,
           address: pickupAddress,
           preferred_date: preferredDate,
