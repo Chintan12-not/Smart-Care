@@ -34,7 +34,8 @@ import {
   Check,
   Smartphone,
   X,
-  Gift
+  Gift,
+  Truck
 } from "lucide-react";
 import Link from "next/link";
 import { formatINR, cn } from "@/lib/utils";
