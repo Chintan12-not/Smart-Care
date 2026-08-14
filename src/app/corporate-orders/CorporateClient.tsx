@@ -148,7 +148,7 @@ export default function CorporateClient() {
         deliveryLocation: deliveryLocation.trim(),
         expectedPurchaseDate,
         requirements,
-        status: "pending",
+        status: "New",
         createdAt: new Date().toISOString()
       });
     } catch (err: any) {
