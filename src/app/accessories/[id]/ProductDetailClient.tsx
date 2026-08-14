@@ -32,6 +32,7 @@ import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import confetti from "canvas-confetti";
+import ProductReviews from "@/components/accessories/ProductReviews";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -71,6 +72,8 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   const [isCompatible, setIsCompatible] = useState<boolean | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"description" | "specifications" | "reviews" | "shipping">("description");
+  const [dynamicRating, setDynamicRating] = useState<number>(4.8);
+  const [dynamicReviewsCount, setDynamicReviewsCount] = useState<number>(15);
 
   const displayImages = product?.images && product.images.length > 0 
     ? product.images 
@@ -657,8 +660,8 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   <Star className="h-3.5 w-3.5 fill-current" />
                   <Star className="h-3.5 w-3.5 fill-current opacity-60" />
                 </div>
-                <span className="font-bold text-foreground">{product.rating}</span>
-                <span className="text-muted-foreground text-[10px] font-medium">({product.reviewsCount} reviews)</span>
+                <span className="font-bold text-foreground">{dynamicRating}</span>
+                <span className="text-muted-foreground text-[10px] font-medium">({dynamicReviewsCount} reviews)</span>
               </div>
             </div>
 
@@ -1014,29 +1017,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
           {/* Tab 3: Reviews */}
           {activeTab === "reviews" && (
-            <div className="space-y-4 max-w-3xl animate-in fade-in duration-200">
-              {mockReviews.map((rev, idx) => (
-                <div key={idx} className="p-5 bg-card border border-border rounded-2xl space-y-3 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-cyan-500/10 text-cyan-500 font-black text-xs flex items-center justify-center">
-                        {rev.name.split(" ")[0][0]}
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-foreground leading-none">{rev.name}</p>
-                        <span className="text-[10px] text-muted-foreground mt-1 block">{rev.date}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex text-amber-400">
-                      {Array.from({ length: rev.rating }).map((_, i) => (
-                        <Star key={i} className="h-3 w-3 fill-current" />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed pl-10">{rev.text}</p>
-                </div>
-              ))}
+            <div className="max-w-3xl">
+              <ProductReviews
+                productId={product.id}
+                productName={product.name}
+                initialRating={product.rating}
+                initialReviewsCount={product.reviewsCount}
+                onRatingUpdate={(newAvg, newCount) => {
+                  setDynamicRating(newAvg);
+                  setDynamicReviewsCount(newCount);
+                }}
+              />
             </div>
           )}
 
