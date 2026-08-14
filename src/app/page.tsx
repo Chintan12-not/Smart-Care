@@ -382,7 +382,7 @@ export default function Home() {
 
       {/* BRAND LOGOS SLIDER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10 w-full text-center border-t border-border/30 mt-6 overflow-hidden">
-        <span className="text-[9px] uppercase font-bold tracking-widest text-muted-foreground block mb-6">Expert Repairs & Spares Supported For</span>
+        <span className="text-[9px] uppercase font-bold tracking-widest text-muted-foreground block mb-6">Expert Repairs &amp; Spares Supported For</span>
         
         {/* Infinite scrolling marquee wrapper */}
         <div className="relative w-full overflow-hidden py-2">
@@ -390,16 +390,25 @@ export default function Home() {
           <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
           <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
           
-          <div className="flex w-max gap-6 items-center animate-marquee opacity-75 grayscale hover:grayscale-0 transition-all duration-300">
-            {/* First render of logos */}
+          <div className="flex w-max gap-4 sm:gap-6 items-center animate-marquee opacity-90 hover:opacity-100 transition-opacity">
+            {/* 1st copy */}
             {brandLogos.map((brand) => (
-              <span key={`first-${brand}`} className="inline-flex text-sm font-extrabold text-foreground tracking-tight px-6 py-2.5 bg-muted/45 border border-border/40 rounded-2xl hover:bg-muted/80 transition-colors select-none">
+              <span key={`first-${brand}`} className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-foreground tracking-tight px-5 py-2.5 bg-card border border-border/60 rounded-2xl hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all select-none shadow-sm shrink-0">
+                <span className="h-2 w-2 rounded-full bg-emerald-500/60" />
                 {brand}
               </span>
             ))}
-            {/* Duplicate logos for seamless infinite scrolling loop */}
+            {/* 2nd copy */}
             {brandLogos.map((brand) => (
-              <span key={`second-${brand}`} className="inline-flex text-sm font-extrabold text-foreground tracking-tight px-6 py-2.5 bg-muted/45 border border-border/40 rounded-2xl hover:bg-muted/80 transition-colors select-none">
+              <span key={`second-${brand}`} className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-foreground tracking-tight px-5 py-2.5 bg-card border border-border/60 rounded-2xl hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all select-none shadow-sm shrink-0">
+                <span className="h-2 w-2 rounded-full bg-emerald-500/60" />
+                {brand}
+              </span>
+            ))}
+            {/* 3rd copy for 100% seamless infinite loop */}
+            {brandLogos.map((brand) => (
+              <span key={`third-${brand}`} className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-foreground tracking-tight px-5 py-2.5 bg-card border border-border/60 rounded-2xl hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all select-none shadow-sm shrink-0">
+                <span className="h-2 w-2 rounded-full bg-emerald-500/60" />
                 {brand}
               </span>
             ))}
