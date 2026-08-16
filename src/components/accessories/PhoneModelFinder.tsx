@@ -82,7 +82,7 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
               <h3 className="font-bold text-foreground text-sm">Select Phone Brand</h3>
             </div>
             <span className="text-[11px] text-muted-foreground font-medium">
-              608 Models Supported Across {brands.length} Brands
+              {phoneData.allModels.length} Models Supported Across {brands.length} Brands
             </span>
           </div>
 
