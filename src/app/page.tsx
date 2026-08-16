@@ -140,14 +140,13 @@ export default function Home() {
           admin_email: "chintanmaheshwari714@gmail.com",
           device_model: contactDevice,
           issue: contactIssue,
-          message: contactMessage || "No additional details provided"
-          message: contactMessage,
+          message: contactMessage || "No additional details provided",
           formType: "General Contact Inquiry"
         })
       });
 
-      const result = await res.json();
-      if (res.ok && result.success) {
+      const result = await response.json();
+      if (response.ok && result.success) {
         setContactSuccess(true);
         setTimeout(() => {
           setContactSuccess(false);
