@@ -162,7 +162,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             allFoundProducts = [...allFoundProducts, ...customMapped];
 
             const customMatch = customMapped.find(isMatch);
-            if (customMatch && !foundProd) {
+            if (customMatch) {
               foundProd = customMatch;
             }
           } catch (e) {
@@ -171,7 +171,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         }
       }
 
-      // 3. Search Supabase database if configured
+      // If local match exists, render IMMEDIATELY (0ms delay)
+      if (foundProd) {
+        setProduct(foundProd);
+        setProductsList(allFoundProducts);
+        setIsLoading(false);
+      }
+
+      // 3. Background Async Supabase fetch (non-blocking)
       if (isSupabaseConfigured()) {
         try {
           const { data: allData, error } = await supabase.from("accessories").select("*");
@@ -201,7 +208,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             }
           }
         } catch (err) {
-          console.error("Error loading products from Supabase:", err);
+          console.error("Background error loading products from Supabase:", err);
         }
       }
 
@@ -216,7 +223,9 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
       }
       setProductsList(uniqueList);
 
-      setProduct(foundProd);
+      if (foundProd) {
+        setProduct(foundProd);
+      }
       setIsLoading(false);
     }
 

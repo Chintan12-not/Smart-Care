@@ -108,18 +108,11 @@ function AccessoriesContent() {
   }, []);
 
   // 2. Fetch products from Supabase & LocalStorage with strict name deduplication
+  // 2. Instant Load & Async Background Sync (0ms delay)
   useEffect(() => {
     async function loadProducts() {
-      if (cachedProductsList && cachedProductsList.length > 0) {
-        setProducts(cachedProductsList);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
+      // 1. Instant local hydration (0ms UI render)
       let customMapped: AccessoryProduct[] = [];
-
-      // Load custom products saved in LocalStorage via Admin
       if (typeof window !== "undefined") {
         const savedCustom = localStorage.getItem("sc_custom_accessories");
         if (savedCustom) {
@@ -147,17 +140,27 @@ function AccessoriesContent() {
         }
       }
 
-      let dbMapped: AccessoryProduct[] = [];
+      // Render local custom / cached products instantly
+      if (cachedProductsList && cachedProductsList.length > 0) {
+        setProducts(cachedProductsList);
+        setIsLoading(false);
+      } else if (customMapped.length > 0) {
+        setProducts(customMapped);
+        setIsLoading(false);
+      } else if (MOCK_ACCESSORIES.length > 0) {
+        setProducts(MOCK_ACCESSORIES);
+        setIsLoading(false);
+      }
+
+      // 2. Background async Supabase sync (non-blocking)
       if (isSupabaseConfigured()) {
         try {
           const { data, error } = await supabase
             .from("accessories")
             .select("*");
 
-          if (error) throw error;
-          
-          if (data && data.length > 0) {
-            dbMapped = data
+          if (!error && data && data.length > 0) {
+            const dbMapped: AccessoryProduct[] = data
               .filter((item) => item.is_active !== false)
               .map((item) => ({
                 id: String(item.id),
@@ -175,34 +178,38 @@ function AccessoriesContent() {
                 specifications: item.specifications || {},
                 description: item.description || ""
               }));
+
+            const combinedRaw = [...customMapped, ...dbMapped];
+            if (combinedRaw.length === 0 && MOCK_ACCESSORIES.length > 0) {
+              combinedRaw.push(...MOCK_ACCESSORIES);
+            }
+
+            const seenKeys = new Set<string>();
+            const finalUnique: AccessoryProduct[] = [];
+
+            for (const item of combinedRaw) {
+              if (!item) continue;
+              const idKey = String(item.id || "").trim();
+              const nameKey = String(item.name || "").toLowerCase().trim();
+              
+              if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
+                if (idKey) seenKeys.add(idKey);
+                if (nameKey) seenKeys.add(nameKey);
+                finalUnique.push(item);
+              }
+            }
+
+            cachedProductsList = finalUnique;
+            setProducts(finalUnique);
           }
         } catch (err) {
-          console.error("Error loading products from Supabase:", err);
+          console.error("Background error loading products from Supabase:", err);
+        } finally {
+          setIsLoading(false);
         }
+      } else {
+        setIsLoading(false);
       }
-
-      // Combine Admin Panel items (LocalStorage + Supabase)
-      const combinedRaw = [...customMapped, ...dbMapped];
-      
-      // Deduplicate by both ID and normalized Name to ensure clean cards and valid URLs
-      const seenKeys = new Set<string>();
-      const finalUnique: AccessoryProduct[] = [];
-
-      for (const item of combinedRaw) {
-        if (!item) continue;
-        const idKey = String(item.id || "").trim();
-        const nameKey = String(item.name || "").toLowerCase().trim();
-        
-        if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
-          if (idKey) seenKeys.add(idKey);
-          if (nameKey) seenKeys.add(nameKey);
-          finalUnique.push(item);
-        }
-      }
-
-      cachedProductsList = finalUnique;
-      setProducts(finalUnique);
-      setIsLoading(false);
     }
 
     loadProducts();
@@ -265,14 +272,55 @@ function AccessoriesContent() {
     }
   };
 
-  // 8. Filters & Search matching
+  // 8. Enhanced Intelligent Search & AirPods Matching
   const filteredProducts = products.filter((prod) => {
-    const matchesSearch = 
-      prod.name.toLowerCase().includes(search.toLowerCase()) ||
-      prod.brand.toLowerCase().includes(search.toLowerCase()) ||
-      prod.category.toLowerCase().includes(search.toLowerCase());
+    if (!search.trim() && category === "all") return true;
 
-    // Flexible category matching (handles singular/plural like Charger vs Chargers, Case vs Cases)
+    const sLower = search.toLowerCase().trim();
+    const sTokens = sLower.split(/\s+/).filter(Boolean);
+
+    // Build rich searchable text corpus for product
+    const prodCorpus = [
+      prod.name,
+      prod.brand,
+      prod.category,
+      prod.description || "",
+      prod.specifications ? JSON.stringify(prod.specifications) : ""
+    ].join(" ").toLowerCase();
+
+    let matchesSearch = !sLower;
+
+    if (sLower) {
+      // 1. Direct substring match
+      if (prodCorpus.includes(sLower)) {
+        matchesSearch = true;
+      }
+      // 2. Tokenized match (e.g. "AirPods 2" matches "AirPods", "Earbuds", "Apple AirPods", "AirPods Pro", etc.)
+      else if (sTokens.length > 0) {
+        const matchedCount = sTokens.filter(token => prodCorpus.includes(token)).length;
+        if (matchedCount >= 1 && (sLower.includes("airpods") || matchedCount >= Math.min(2, sTokens.length))) {
+          matchesSearch = true;
+        }
+      }
+
+      // 3. Special handling for AirPods & Earbuds queries
+      if (!matchesSearch && sLower.includes("airpods")) {
+        const isAudioCategory = prod.category.toLowerCase().includes("earbud") || 
+                                prod.category.toLowerCase().includes("case") ||
+                                prod.category.toLowerCase().includes("charger") ||
+                                prod.category.toLowerCase().includes("cable") ||
+                                prod.name.toLowerCase().includes("airpod") ||
+                                prod.name.toLowerCase().includes("earbud") ||
+                                prod.name.toLowerCase().includes("tws") ||
+                                prod.name.toLowerCase().includes("magsafe") ||
+                                prod.brand.toLowerCase() === "apple";
+        if (isAudioCategory) {
+          matchesSearch = true;
+        }
+      }
+    }
+
+    // Flexible category matching
     const prodCatNorm = prod.category.toLowerCase().trim();
     const selCatNorm = category.toLowerCase().trim();
     const prodStem = prodCatNorm.endsWith("s") ? prodCatNorm.slice(0, -1) : prodCatNorm;

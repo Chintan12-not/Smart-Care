@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Smartphone, ChevronRight, Search, Check, Sparkles } from "lucide-react";
+import { Smartphone, ChevronRight, Search, Check, Sparkles, RotateCcw, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import phoneData from "@/data/phoneModels.json";
 
@@ -51,6 +51,15 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
     }
   };
 
+  const handleClearSelection = () => {
+    setSelectedBrand("Apple");
+    setSelectedModel("");
+    setSearchQuery("");
+    if (onSelectModel) {
+      onSelectModel("", "");
+    }
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6 select-none">
       {/* Header Banner */}
@@ -65,7 +74,7 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
         </h2>
 
         <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Select your brand and model below to view custom-fit covers, drop-tested cases, tempered glass & chargers.
+          Select your brand and model below to view custom-fit covers, drop-tested cases, tempered glass &amp; chargers.
         </p>
       </div>
 
@@ -81,9 +90,20 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
               </span>
               <h3 className="font-bold text-foreground text-sm">Select Phone Brand</h3>
             </div>
-            <span className="text-[11px] text-muted-foreground font-medium">
-              {phoneData.allModels.length} Models Supported Across {brands.length} Brands
-            </span>
+            <div className="flex items-center gap-3">
+              {(selectedModel || searchQuery) && (
+                <button
+                  onClick={handleClearSelection}
+                  className="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 text-[11px] font-bold border border-red-500/20 flex items-center gap-1 transition-all"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  <span>Clear Selection</span>
+                </button>
+              )}
+              <span className="text-[11px] text-muted-foreground font-medium hidden sm:inline">
+                {phoneData.allModels.length} Models Supported Across {brands.length} Brands
+              </span>
+            </div>
           </div>
 
           {/* Brands Grid */}
@@ -137,8 +157,17 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={`Search ${selectedBrand} models...`}
-                className="w-full bg-muted/50 border border-border/80 rounded-xl pl-9 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                className="w-full bg-muted/50 border border-border/80 rounded-xl pl-9 pr-8 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
+                  title="Clear search text"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -173,9 +202,19 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
 
         {/* Step 3: Explore Button */}
         <div className="pt-4 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-muted-foreground text-center sm:text-left font-medium">
+          <div className="text-xs text-muted-foreground text-center sm:text-left font-medium flex items-center gap-2">
             {selectedModel ? (
-              <span>Selected: <strong className="text-emerald-500 font-bold">{selectedBrand} {selectedModel}</strong></span>
+              <>
+                <span>Selected: <strong className="text-emerald-500 font-bold">{selectedBrand} {selectedModel}</strong></span>
+                <button
+                  onClick={handleClearSelection}
+                  className="text-[10px] text-red-400 hover:text-red-300 font-bold underline flex items-center gap-0.5 ml-1"
+                  title="Clear selected model"
+                >
+                  <X className="h-3 w-3" />
+                  Clear
+                </button>
+              </>
             ) : (
               <span>Browse compatible accessories for <strong>{selectedBrand}</strong></span>
             )}
