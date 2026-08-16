@@ -84,9 +84,9 @@ function AccessoriesContent() {
   const [addedItemName, setAddedItemName] = useState("");
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
-  // Supabase items
+  // Admin Panel & Supabase items
   const [products, setProducts] = useState<AccessoryProduct[]>(
-    isSupabaseConfigured() ? [] : MOCK_ACCESSORIES
+    cachedProductsList && cachedProductsList.length > 0 ? cachedProductsList : []
   );
   const [isLoading, setIsLoading] = useState(false);
 
@@ -152,35 +152,36 @@ function AccessoriesContent() {
         try {
           const { data, error } = await supabase
             .from("accessories")
-            .select("id, name, category, brand, price, original_price, in_stock, is_on_sale, rating_avg, reviews_count, images, specifications, description")
-            .eq("is_active", true);
+            .select("*");
 
           if (error) throw error;
           
           if (data && data.length > 0) {
-            dbMapped = data.map((item) => ({
-              id: String(item.id),
-              name: item.name,
-              category: item.category,
-              brand: item.brand,
-              price: Number(item.price),
-              originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
-              inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
-              isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
-              rating: Number(item.rating_avg || 4.5),
-              reviewsCount: Number(item.reviews_count || 10),
-              image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
-              images: item.images || [],
-              specifications: item.specifications || {},
-              description: item.description || ""
-            }));
+            dbMapped = data
+              .filter((item) => item.is_active !== false)
+              .map((item) => ({
+                id: String(item.id),
+                name: item.name || "Accessory",
+                category: item.category || "General",
+                brand: item.brand || "Generic",
+                price: Number(item.price || 0),
+                originalPrice: item.original_price ? Number(item.original_price) : (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
+                inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
+                isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
+                rating: Number(item.rating_avg || item.rating || 4.8),
+                reviewsCount: Number(item.reviews_count || item.reviewsCount || 15),
+                image: (item.images && item.images.length > 0) ? item.images[0] : (item.image || "/shop_accessories.png"),
+                images: item.images || [item.image || "/shop_accessories.png"],
+                specifications: item.specifications || {},
+                description: item.description || ""
+              }));
           }
         } catch (err) {
           console.error("Error loading products from Supabase:", err);
         }
       }
 
-      // Combine priority: Custom Admin Items > DB Items
+      // Combine Admin Panel items (LocalStorage + Supabase)
       const combinedRaw = [...customMapped, ...dbMapped];
       
       // Deduplicate by both ID and normalized Name to ensure clean cards and valid URLs
