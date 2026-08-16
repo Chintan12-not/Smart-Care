@@ -32,6 +32,10 @@ import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
+import { trackCTAClick, trackEvent } from "@/lib/analytics";
+
+// Client-side in-memory cache to prevent redundant Supabase fetches
+let cachedProductsList: AccessoryProduct[] | null = null;
 
 function AccessoriesContent() {
   const { addToCart } = useCart();
@@ -43,6 +47,13 @@ function AccessoriesContent() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("default");
+  
+  // Progressive loading / batching state (initial 12 items)
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [search, category, sortBy]);
 
   useEffect(() => {
     if (queryModel) {
@@ -99,6 +110,12 @@ function AccessoriesContent() {
   // 2. Fetch products from Supabase & LocalStorage with strict name deduplication
   useEffect(() => {
     async function loadProducts() {
+      if (cachedProductsList && cachedProductsList.length > 0) {
+        setProducts(cachedProductsList);
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       let customMapped: AccessoryProduct[] = [];
 
@@ -135,7 +152,7 @@ function AccessoriesContent() {
         try {
           const { data, error } = await supabase
             .from("accessories")
-            .select("*")
+            .select("id, name, category, brand, price, original_price, in_stock, is_on_sale, rating_avg, reviews_count, images, specifications, description")
             .eq("is_active", true);
 
           if (error) throw error;
@@ -182,6 +199,7 @@ function AccessoriesContent() {
         }
       }
 
+      cachedProductsList = finalUnique;
       setProducts(finalUnique);
       setIsLoading(false);
     }
@@ -359,7 +377,7 @@ function AccessoriesContent() {
         </div>
       </div>
 
-      {/* Loading Skeletons */}
+      {/* Product Grid with Progressive Item Batching */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
@@ -372,133 +390,149 @@ function AccessoriesContent() {
           ))}
         </div>
       ) : (
-        /* Product Grid */
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {sortedProducts.map((prod) => {
-            const isWishlisted = wishlist.includes(prod.id);
-            const isCompared = compareIds.includes(prod.id);
-            const discountPercent = prod.id === "acc-7" ? "50% Off" : null;
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {sortedProducts.slice(0, visibleCount).map((prod, idx) => {
+              const isWishlisted = wishlist.includes(prod.id);
+              const isCompared = compareIds.includes(prod.id);
 
-            return (
-              <div key={prod.id} className="glass-card rounded-2xl p-5 border border-border flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group">
-                
-                {/* Product Image Container with Badges & Action Buttons */}
-                <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 pt-12 mb-4 shadow-sm">
+              return (
+                <div key={prod.id} className="glass-card rounded-2xl p-5 border border-border flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group">
                   
-                  {/* Badges: On Sale, Discount %, Out of Stock (Top Left z-30) */}
-                  <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-30 pointer-events-none">
-                    {prod.isOnSale && (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
-                        <Zap className="h-2.5 w-2.5 fill-black" />
-                        ON SALE
-                      </span>
-                    )}
-
-                    {prod.originalPrice && prod.originalPrice > prod.price && (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-black shadow-md">
-                        {Math.round(((prod.originalPrice - prod.price) / prod.originalPrice) * 100)}% OFF
-                      </span>
-                    )}
-
-                    {prod.inStock === false && (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-500 text-white shadow-md">
-                        OUT OF STOCK
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Wishlist & Compare float buttons (Top Right z-30) */}
-                  <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
-                    <button
-                      onClick={() => toggleCompare(prod.id)}
-                      className={cn(
-                        "px-2.5 py-1 rounded-lg border text-[10px] font-bold transition-all shadow-md backdrop-blur-md",
-                        isCompared 
-                          ? "bg-cyan-500 text-black border-cyan-400 font-extrabold"
-                          : "bg-zinc-950/90 text-white border-zinc-800 hover:bg-black"
+                  {/* Product Image Container with Badges & Action Buttons */}
+                  <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 pt-12 mb-4 shadow-sm">
+                    
+                    {/* Badges: On Sale, Discount %, Out of Stock (Top Left z-30) */}
+                    <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-30 pointer-events-none">
+                      {prod.isOnSale && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
+                          <Zap className="h-2.5 w-2.5 fill-black" />
+                          ON SALE
+                        </span>
                       )}
-                      title="Compare specifications"
-                    >
-                      Compare
-                    </button>
-                    <button
-                      onClick={() => toggleWishlist(prod.id)}
-                      className="p-1.5 rounded-lg bg-zinc-950/90 border border-zinc-800 text-white hover:text-red-400 transition-colors shadow-md backdrop-blur-md"
-                      aria-label="Add to Wishlist"
-                    >
-                      <Heart className={cn("h-3.5 w-3.5", isWishlisted && "fill-red-500 text-red-500")} />
-                    </button>
-                  </div>
 
-                  {/* Automatic Image Slider Container (z-10) */}
-                  <ProductCardImageSlider
-                    image={prod.image}
-                    images={prod.images}
-                    name={prod.name}
-                  />
-                </div>
-
-                {/* Product details */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{prod.brand}</span>
-                    <div className="flex items-center text-amber-500 text-[10px] font-bold">
-                      <Star className="h-3 w-3 fill-amber-500 text-amber-500 mr-0.5" />
-                      {prod.rating}
-                    </div>
-                  </div>
-                  
-                  {/* Title links to detailed dynamic product page */}
-                  <Link href={`/accessories/${prod.id}`} className="block">
-                    <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors line-clamp-1">{prod.name}</h3>
-                  </Link>
-                  <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed h-8">{prod.description}</p>
-                </div>
-
-                {/* Pricing & Checkout trigger */}
-                <div className="flex items-center justify-between mt-5 border-t border-border/40 pt-4 gap-2">
-                  <div className="flex flex-col">
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-sm font-extrabold text-foreground">{formatINR(prod.price)}</span>
                       {prod.originalPrice && prod.originalPrice > prod.price && (
-                        <span className="text-[10px] text-muted-foreground line-through font-semibold">
-                          {formatINR(prod.originalPrice)}
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500 text-black shadow-md">
+                          {Math.round(((prod.originalPrice - prod.price) / prod.originalPrice) * 100)}% OFF
+                        </span>
+                      )}
+
+                      {prod.inStock === false && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-red-500 text-white shadow-md">
+                          OUT OF STOCK
                         </span>
                       )}
                     </div>
+
+                    {/* Wishlist & Compare float buttons (Top Right z-30) */}
+                    <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
+                      <button
+                        onClick={() => toggleCompare(prod.id)}
+                        className={cn(
+                          "px-2.5 py-1 rounded-lg border text-[10px] font-bold transition-all shadow-md backdrop-blur-md",
+                          isCompared 
+                            ? "bg-cyan-500 text-black border-cyan-400 font-extrabold"
+                            : "bg-zinc-950/90 text-white border-zinc-800 hover:bg-black"
+                        )}
+                        title="Compare specifications"
+                      >
+                        Compare
+                      </button>
+                      <button
+                        onClick={() => toggleWishlist(prod.id)}
+                        className="p-1.5 rounded-lg bg-zinc-950/90 border border-zinc-800 text-white hover:text-red-400 transition-colors shadow-md backdrop-blur-md"
+                        aria-label="Add to Wishlist"
+                      >
+                        <Heart className={cn("h-3.5 w-3.5", isWishlisted && "fill-red-500 text-red-500")} />
+                      </button>
+                    </div>
+
+                    {/* Automatic Image Slider Container (z-10) */}
+                    <ProductCardImageSlider
+                      image={prod.image}
+                      images={prod.images}
+                      name={prod.name}
+                      priority={idx < 6}
+                    />
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handleOpenQuickView(prod)}
-                      className="p-2 rounded-xl bg-muted border border-border/80 text-muted-foreground hover:text-foreground"
-                      title="Quick View Specifications"
-                    >
-                      <Eye className="h-4.5 w-4.5" />
-                    </button>
-
-                    {prod.inStock === false ? (
-                      <button
-                        disabled
-                        className="px-3.5 py-2.5 rounded-xl bg-muted border border-border/60 text-muted-foreground font-bold text-[10px] cursor-not-allowed opacity-60"
-                      >
-                        Out of Stock
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleAddToCart(prod)}
-                        className="px-4 py-2.5 rounded-xl bg-foreground text-background font-bold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity"
-                      >
-                        <ShoppingBag className="h-3.5 w-3.5" />
-                        Add to Cart
-                      </button>
-                    )}
+                  {/* Product details */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{prod.brand}</span>
+                      <div className="flex items-center text-amber-500 text-[10px] font-bold">
+                        <Star className="h-3 w-3 fill-amber-500 text-amber-500 mr-0.5" />
+                        {prod.rating}
+                      </div>
+                    </div>
+                    
+                    {/* Title links to detailed dynamic product page */}
+                    <Link href={`/accessories/${prod.id}`} className="block">
+                      <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors line-clamp-1">{prod.name}</h3>
+                    </Link>
+                    <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed h-8">{prod.description}</p>
                   </div>
+
+                  {/* Pricing & Checkout trigger */}
+                  <div className="flex items-center justify-between mt-5 border-t border-border/40 pt-4 gap-2">
+                    <div className="flex flex-col">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-sm font-extrabold text-foreground">{formatINR(prod.price)}</span>
+                        {prod.originalPrice && prod.originalPrice > prod.price && (
+                          <span className="text-[10px] text-muted-foreground line-through font-semibold">
+                            {formatINR(prod.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleOpenQuickView(prod)}
+                        className="p-2 rounded-xl bg-muted border border-border/80 text-muted-foreground hover:text-foreground"
+                        title="Quick View Specifications"
+                      >
+                        <Eye className="h-4.5 w-4.5" />
+                      </button>
+
+                      {prod.inStock === false ? (
+                        <button
+                          disabled
+                          className="px-3.5 py-2.5 rounded-xl bg-muted border border-border/60 text-muted-foreground font-bold text-[10px] cursor-not-allowed opacity-60"
+                        >
+                          Out of Stock
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleAddToCart(prod)}
+                          className="px-4 py-2.5 rounded-xl bg-foreground text-background font-bold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity"
+                        >
+                          <ShoppingBag className="h-3.5 w-3.5" />
+                          Add to Cart
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
                 </div>
+              );
+            })}
+          </div>
 
-              </div>
-            );
-          })}
+          {/* Progressive Load More Controls */}
+          {visibleCount < sortedProducts.length && (
+            <div className="flex flex-col items-center justify-center pt-6 pb-2 space-y-3 border-t border-border/40">
+              <p className="text-xs text-muted-foreground font-medium">
+                Showing <span className="font-bold text-foreground">{Math.min(visibleCount, sortedProducts.length)}</span> of <span className="font-bold text-foreground">{sortedProducts.length}</span> accessories
+              </p>
+              <button
+                onClick={() => setVisibleCount((prev) => prev + 12)}
+                className="px-6 py-3 rounded-2xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all shadow-md active:scale-95"
+              >
+                Load More Accessories
+              </button>
+            </div>
+          )}
         </div>
       )}
 

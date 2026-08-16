@@ -97,15 +97,15 @@ export default function MobileRepairGurugramPage() {
         <section className="glass-card rounded-3xl p-8 sm:p-12 border border-border bg-gradient-to-r from-emerald-950/20 via-background to-sky-950/20 shadow-xl space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
             <ShieldCheck className="h-4 w-4" />
-            <span>Gurugram Doorstep & In-Store Repair</span>
+            <span>Gurugram Doorstep &amp; In-Store Repair</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-            Certified <span className="text-emerald-500">Mobile Repair</span> Services in Gurugram
+            Professional <span className="text-emerald-500">Mobile Repair</span> Services in Gurugram
           </h1>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-            Fast, transparent, and reliable smartphone repairs for iPhone, Samsung, OnePlus, Vivo, Oppo, Xiaomi & Realme. Free doorstep pickup across all Gurugram sectors.
+            Fast, transparent, and reliable smartphone repairs for iPhone, Samsung, OnePlus, Vivo, Oppo, Xiaomi &amp; Realme. Free doorstep pickup across all Gurugram sectors.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
@@ -132,7 +132,7 @@ export default function MobileRepairGurugramPage() {
         <section className="space-y-6">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold text-foreground">Common Repair Services We Perform</h2>
-            <p className="text-xs text-muted-foreground">Original AAA & OEM replacement parts installed by ESD-certified engineers.</p>
+            <p className="text-xs text-muted-foreground">High-grade tested AAA &amp; OEM-compatible replacement parts installed by experienced technicians.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

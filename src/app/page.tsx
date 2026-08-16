@@ -141,42 +141,20 @@ export default function Home() {
           device_model: contactDevice,
           issue: contactIssue,
           message: contactMessage || "No additional details provided"
+          message: contactMessage,
+          formType: "General Contact Inquiry"
         })
       });
 
-      const result = await response.json();
-
-      // Dual dispatch to backend email API (sends to chintanmaheshwari714@gmail.com and enigcon2020@gmail.com)
-      fetch("/api/v1/email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "contact",
-          to: "chintanmaheshwari714@gmail.com",
-          payload: {
-            name: contactName,
-            phone: contactPhone,
-            email: contactEmail,
-            device: contactDevice,
-            issue: contactIssue,
-            message: contactMessage
-          }
-        })
-      }).catch(err => console.error("Contact email dispatch error:", err));
-
-      if (result.success || true) {
-        setIsContactSuccess(true);
-        confetti({
-          particleCount: 80,
-          spread: 60,
-          colors: ["#10b981", "#06b6d4"]
-        });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setContactSuccess(true);
         setTimeout(() => {
-          setIsContactSuccess(false);
+          setContactSuccess(false);
           setContactName("");
           setContactPhone("");
           setContactEmail("");
-          setContactDevice("");
+          setContactModel("");
           setContactIssue("");
           setContactMessage("");
         }, 5000);
@@ -191,12 +169,12 @@ export default function Home() {
     }
   };
 
-  // Static trust numbers
+  // Static trust highlights (Policy Compliant)
   const stats = [
-    { value: "15,000+", label: "Devices Repaired" },
-    { value: "4.9★", label: "Google Rating (1.2k Reviews)" },
-    { value: "100%", label: "Genuine Parts" },
-    { value: "100%", label: "Satisfaction Guaranteed" }
+    { value: "Same-Day", label: "Doorstep Repair" },
+    { value: "600+", label: "Supported Models" },
+    { value: "Transparent", label: "Diagnostic Pricing" },
+    { value: "Sector 37C", label: "Gurugram Service Hub" }
   ];
 
   // Brand Logos
@@ -205,16 +183,16 @@ export default function Home() {
     "Xiaomi", "Realme", "Motorola", "Nothing", "Google Pixel"
   ];
 
-  // Why Choose Us feature cards
+  // Why Choose Us feature cards (Policy Compliant)
   const features = [
-    { title: "Certified Technicians", desc: "ESD-safe environment and certified expert engineers for all micro-soldering tasks.", icon: Award, color: "text-cyan-500" },
-    { title: "Genuine Parts", desc: "We use only AAA-grade or OEM original spare components ensuring maximum reliability.", icon: ShieldCheck, color: "text-emerald-500" },
-    { title: "Pickup & Drop", desc: "Free door-step pick and delivery across Gurugram. Smart distance charges apply.", icon: Truck, color: "text-amber-500" },
+    { title: "Expert Engineers", desc: "ESD-safe environment and experienced technicians for all micro-soldering and display repairs.", icon: Award, color: "text-cyan-500" },
+    { title: "Quality Tested Spares", desc: "We use only tested high-grade or OEM-compatible spare components ensuring maximum reliability.", icon: ShieldCheck, color: "text-emerald-500" },
+    { title: "Pickup & Drop", desc: "Door-step pickup and return delivery across Gurugram. Smart distance charges apply.", icon: Truck, color: "text-amber-500" },
     { title: "Same Day Repair", desc: "Screen replacements and battery swaps completed in under 45 minutes.", icon: Zap, color: "text-purple-500" },
     { title: "No Hidden Costs", desc: "Pay exactly what is quoted in the diagnostics estimate report. Absolutely transparent pricing.", icon: Clock, color: "text-cyan-500" },
     { title: "Affordable Pricing", desc: "Completely transparent price estimations. Pay only what is quoted, no hidden fees.", icon: Activity, color: "text-emerald-500" },
     { title: "Fast Delivery", desc: "Super fast return delivery of your device once final testing passes.", icon: Sliders, color: "text-amber-500" },
-    { title: "Customer Satisfaction", desc: "Rated 4.9★ on Google Maps. Over 1,200 Gurugram device owners trust us.", icon: ThumbsUp, color: "text-purple-500" }
+    { title: "Customer Satisfaction", desc: "Trusted by Gurugram smartphone owners for fast, reliable device repairs.", icon: ThumbsUp, color: "text-purple-500" }
   ];
 
   // Repair Timeline Steps
@@ -294,7 +272,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center space-y-8 relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-500 shadow-sm">
           <ShieldCheck className="h-4 w-4" />
-          <span>Gurugram&apos;s Rated #1 Doorstep Mobile Repair & Pickup Service</span>
+          <span>Trusted Doorstep Mobile Repair &amp; Pickup Service in Gurugram</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.12]">

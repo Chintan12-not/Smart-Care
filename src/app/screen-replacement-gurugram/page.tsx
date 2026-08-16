@@ -40,7 +40,7 @@ export default function ScreenReplacementGurugramPage() {
           </h1>
 
           <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-            Cracked screen or touch digitizer malfunction? Get original AAA and OEM display replacements backed by warranty and zero-loss data protection.
+            Cracked screen or touch digitizer malfunction? Get high-grade tested AAA and OEM-compatible display replacements backed by warranty protection.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">

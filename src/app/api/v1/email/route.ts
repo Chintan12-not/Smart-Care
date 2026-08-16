@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
             <img src="https://smartcaremobile.in/logo.png" alt="Smart Care & Mobile Point Logo" style="width: 180px; height: auto;" />
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 22px;">Thank You for Joining Us, ${payload.name || "Valued Customer"}! 🎉</h2>
-          <p style="font-size: 14px; color: #475569;">Welcome to <strong>Smart Care & Mobile Point</strong> — Gurugram's #1 Doorstep Mobile Repair & Genuine Accessories Store!</p>
+          <p style="font-size: 14px; color: #475569;">Welcome to <strong>Smart Care & Mobile Point</strong> — Gurugram's Trusted Doorstep Mobile Repair & Genuine Accessories Store!</p>
           <p style="font-size: 14px; color: #475569;">Your account is now fully active. You can now log into your dashboard anytime to access exclusive customer benefits:</p>
           
           <div style="background-color: #f8fafc; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #cbd5e1;">

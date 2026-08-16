@@ -14,6 +14,7 @@ import {
   Truck, 
   Send 
 } from "lucide-react";
+import { trackDirectionsClick, trackPhoneClick, trackWhatsAppClick } from "@/lib/analytics";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -150,6 +151,7 @@ export default function Footer() {
                     href="https://maps.app.goo.gl/vuN5QDzjVbjhKDVh7" 
                     target="_blank" 
                     rel="noopener noreferrer" 
+                    onClick={() => trackDirectionsClick("footer_address")}
                     className="hover:text-foreground transition-colors"
                   >
                     Shop No. 28, Ninex Residency, Sector 37C, Gurugram, Haryana 122001
@@ -158,7 +160,13 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-cyan-500 flex-shrink-0" />
-                <a href="tel:+919289942313" className="hover:text-foreground transition-colors">+91 92899 42313</a>
+                <a 
+                  href="tel:+919289942313" 
+                  onClick={() => trackPhoneClick("footer_link")}
+                  className="hover:text-foreground transition-colors"
+                >
+                  +91 92899 42313
+                </a>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-emerald-500 flex-shrink-0" />
@@ -233,6 +241,7 @@ export default function Footer() {
         {/* Phone Call */}
         <a
           href="tel:+919289942313"
+          onClick={() => trackPhoneClick("floating_button")}
           className="p-3 sm:p-3.5 rounded-full bg-cyan-500 text-black shadow-lg shadow-cyan-500/20 hover:scale-105 transition-transform flex items-center justify-center"
           title="Call Store"
         >
@@ -244,6 +253,7 @@ export default function Footer() {
           href="https://wa.me/919289942313?text=Hi%20Smart%20Care%20%26%20Mobile%20Point,%20I%20need%20mobile%20repair%20service."
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackWhatsAppClick("floating_button")}
           className="p-3 sm:p-3.5 rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 hover:scale-105 transition-transform flex items-center justify-center"
           title="WhatsApp Support"
         >

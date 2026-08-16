@@ -66,11 +66,11 @@ export default function IPhoneRepairGurugramPage() {
           </span>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-            Certified <span className="text-purple-400">iPhone Repair</span> in Gurugram
+            Specialist <span className="text-purple-400">iPhone Repair</span> in Gurugram
           </h1>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-            Professional display replacement, genuine battery installation, rear glass laser separation, and camera lens repair for all iPhone models.
+            Professional display replacement, tested high-capacity battery installation, rear glass laser separation, and camera lens repair for all iPhone models.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">

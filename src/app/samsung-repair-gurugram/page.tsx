@@ -40,7 +40,7 @@ export default function SamsungRepairGurugramPage() {
           </h1>
 
           <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-            Genuine Dynamic AMOLED 2X screen replacement, battery swap, charging connector repair, and motherboard diagnostics for all Samsung Galaxy models.
+            High-Quality Dynamic AMOLED &amp; OLED compatible screen replacement, battery swap, charging connector repair, and motherboard diagnostics for all Samsung Galaxy models.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">

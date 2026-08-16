@@ -24,6 +24,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { formatINR, calculatePickupCharge } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackBookingSubmit } from "@/lib/analytics";
 
 export default function PickupClient() {
   const { user, loading: authLoading } = useAuth();
@@ -348,6 +349,7 @@ export default function PickupClient() {
     }
 
     setIsSubmitting(true);
+    trackBookingSubmit(`${deviceBrand} ${deviceModel} Repair Pickup`, "pickup_booking_form");
 
     const cost = pickupCharge !== null ? pickupCharge : calculatePickupCharge(distanceKm || 6.0);
     const detailNotes = `${problemDescription || "Diagnostics requested"}. Landmark: ${landmark || "None"}. Address: ${pickupAddress}. Distance: ${distanceKm || 0}km. Slot: ${preferredDate} ${preferredTime} | FREE PHONE COVER: Included`;

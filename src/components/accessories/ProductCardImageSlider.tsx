@@ -7,13 +7,15 @@ interface ProductCardImageSliderProps {
   images?: string[];
   name: string;
   autoSlideInterval?: number;
+  priority?: boolean;
 }
 
 export default function ProductCardImageSlider({
   image,
   images = [],
   name,
-  autoSlideInterval = 3000
+  autoSlideInterval = 3200,
+  priority = false
 }: ProductCardImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -40,8 +42,9 @@ export default function ProductCardImageSlider({
   useEffect(() => {
     if (imageList.length <= 1) return;
 
-    // Cycle through images one by one automatically
+    // Cycle through images automatically when tab is active
     const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       setCurrentIndex((prev) => (prev + 1) % imageList.length);
     }, autoSlideInterval);
 
@@ -56,22 +59,32 @@ export default function ProductCardImageSlider({
     >
       {/* Sliding & Fading Product Images */}
       <div className="w-full h-full flex items-center justify-center relative">
-        {imageList.map((src, idx) => (
-          <img
-            key={`${src}-${idx}`}
-            src={src}
-            alt={`${name} - view ${idx + 1}`}
-            className={`absolute inset-0 w-full h-full object-contain p-1 rounded-xl transition-all duration-700 ease-in-out ${
-              idx === currentIndex
-                ? "opacity-100 scale-100 z-10"
-                : "opacity-0 scale-95 z-0 pointer-events-none"
-            } ${isHovered && idx === currentIndex ? "scale-[1.06]" : ""}`}
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "/shop_accessories.png";
-            }}
-          />
-        ))}
+        {imageList.map((src, idx) => {
+          // Render active image and adjacent next image to avoid memory overhead
+          const isVisible = idx === currentIndex;
+          if (imageList.length > 1 && !isVisible && Math.abs(idx - currentIndex) > 1) {
+            return null;
+          }
+
+          return (
+            <img
+              key={`${src}-${idx}`}
+              src={src}
+              alt={`${name} - view ${idx + 1}`}
+              loading={priority && idx === 0 ? "eager" : "lazy"}
+              decoding="async"
+              className={`absolute inset-0 w-full h-full object-contain p-1 rounded-xl transition-all duration-700 ease-in-out ${
+                isVisible
+                  ? "opacity-100 scale-100 z-10"
+                  : "opacity-0 scale-95 z-0 pointer-events-none"
+              } ${isHovered && isVisible ? "scale-[1.06]" : ""}`}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/shop_accessories.png";
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Pagination indicators when product has multiple images */}
