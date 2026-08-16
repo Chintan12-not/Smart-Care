@@ -730,6 +730,9 @@ export default function AdminPage() {
         list.unshift(newItem);
       }
       localStorage.setItem("sc_custom_accessories", JSON.stringify(list));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("sc-products-updated"));
+      }
 
       setActionSuccess(editingProductId ? `Product "${finalTitle}" updated successfully!` : `Product "${finalTitle}" added successfully!`);
       

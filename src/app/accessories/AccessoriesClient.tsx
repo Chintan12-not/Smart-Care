@@ -58,12 +58,15 @@ function AccessoriesContent() {
   useEffect(() => {
     if (queryModel) {
       setSearch(queryModel);
+      setCategory("all");
     } else if (queryBrand) {
       setSearch(queryBrand);
+      setCategory("all");
     }
   }, [queryBrand, queryModel]);
 
   const handleSelectModelFromFinder = (brand: string, model: string) => {
+    setCategory("all");
     if (model) {
       setSearch(model);
     } else {
@@ -90,7 +93,7 @@ function AccessoriesContent() {
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  // 1. Initial LocalStorage Hydration
+  // 1. Initial LocalStorage Hydration & Live Update Listener
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Wishlist
@@ -107,8 +110,7 @@ function AccessoriesContent() {
     }
   }, []);
 
-  // 2. Fetch products from Supabase & LocalStorage with strict name deduplication
-  // 2. Instant Load & Async Background Sync (0ms delay)
+  // 2. Fetch products from Supabase & LocalStorage (with live sync)
   useEffect(() => {
     async function loadProducts() {
       // 1. Instant local hydration (0ms UI render)
@@ -207,6 +209,22 @@ function AccessoriesContent() {
     }
 
     loadProducts();
+
+    // Re-fetch automatically when new products are uploaded in Admin
+    const handleUpdate = () => {
+      cachedProductsList = null;
+      loadProducts();
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("sc-products-updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("sc-products-updated", handleUpdate);
+        window.removeEventListener("storage", handleUpdate);
+      }
+    };
   }, []);
 
   // 3. Wishlist persistent toggle
@@ -266,7 +284,7 @@ function AccessoriesContent() {
     }
   };
 
-  // 8. Enhanced Intelligent Search & AirPods Matching
+  // 8. Enhanced Intelligent Search & AirPods Pro 2 Matching
   const filteredProducts = products.filter((prod) => {
     if (!search.trim() && category === "all") return true;
 
@@ -285,30 +303,30 @@ function AccessoriesContent() {
     let matchesSearch = !sLower;
 
     if (sLower) {
+      const cleanSearch = sLower.replace(/\b(usb-c|lightning|case|cover)\b/g, "").trim();
+
       // 1. Direct substring match
-      if (prodCorpus.includes(sLower)) {
+      if (prodCorpus.includes(sLower) || (cleanSearch && prodCorpus.includes(cleanSearch))) {
         matchesSearch = true;
       }
-      // 2. Tokenized match (e.g. "AirPods 2" matches "AirPods", "Earbuds", "Apple AirPods", "AirPods Pro", etc.)
+      // 2. Tokenized match (e.g. "AirPods Pro 2" matches "Premium Leather AirPods Pro 2 Case")
       else if (sTokens.length > 0) {
         const matchedCount = sTokens.filter(token => prodCorpus.includes(token)).length;
-        if (matchedCount >= 1 && (sLower.includes("airpods") || matchedCount >= Math.min(2, sTokens.length))) {
+        if (matchedCount >= 1 && (sLower.includes("airpods") || sLower.includes("pro") || matchedCount >= Math.min(2, sTokens.length))) {
           matchesSearch = true;
         }
       }
 
-      // 3. Special handling for AirPods & Earbuds queries
-      if (!matchesSearch && sLower.includes("airpods")) {
-        const isAudioCategory = prod.category.toLowerCase().includes("earbud") || 
-                                prod.category.toLowerCase().includes("case") ||
-                                prod.category.toLowerCase().includes("charger") ||
-                                prod.category.toLowerCase().includes("cable") ||
-                                prod.name.toLowerCase().includes("airpod") ||
-                                prod.name.toLowerCase().includes("earbud") ||
-                                prod.name.toLowerCase().includes("tws") ||
-                                prod.name.toLowerCase().includes("magsafe") ||
-                                prod.brand.toLowerCase() === "apple";
-        if (isAudioCategory) {
+      // 3. Special AirPods & Earbuds fallback matching
+      if (!matchesSearch && (sLower.includes("airpods") || sLower.includes("airpod"))) {
+        const isAirPodsRelated = prod.name.toLowerCase().includes("airpod") || 
+                                 prod.name.toLowerCase().includes("pro 2") ||
+                                 prod.name.toLowerCase().includes("tws") ||
+                                 prod.category.toLowerCase().includes("case") ||
+                                 prod.category.toLowerCase().includes("earbud") ||
+                                 prod.brand.toLowerCase() === "apple" ||
+                                 prod.brand.toLowerCase() === "airpods";
+        if (isAirPodsRelated) {
           matchesSearch = true;
         }
       }
