@@ -713,14 +713,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. GOOGLE REVIEWS TESTIMONIALS CAROUSEL */}
+      {/* 6. CUSTOMER FEEDBACK & REVIEWS CAROUSEL */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full border-t border-border/40">
         <div className="text-center space-y-3 mb-12">
           <div className="inline-flex items-center gap-1 text-amber-500">
             {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-amber-500 text-amber-500" />)}
           </div>
-          <h2 className="text-2xl font-bold text-foreground tracking-tight">Loved by Gurugram Device Owners</h2>
-          <p className="text-xs text-muted-foreground">Certified 4.9★ rating on Google Maps from over 1,200+ local customer reviews.</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">What Customers Say</h2>
+          <p className="text-xs text-muted-foreground font-semibold">5.0★ Google Rating — 27 Reviews</p>
         </div>
 
         <div className="relative max-w-2xl mx-auto">
@@ -734,7 +734,7 @@ export default function Home() {
                   ))}
                 </div>
                 <span className="text-[10px] text-emerald-500 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-xl flex items-center gap-0.5">
-                  <Check className="h-3 w-3 stroke-[2.5]" /> Verified Google Review
+                  <Check className="h-3 w-3 stroke-[2.5]" /> Customer Feedback
                 </span>
               </div>
               <p className="text-xs text-muted-foreground italic leading-relaxed">

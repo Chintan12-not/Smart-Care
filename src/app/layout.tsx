@@ -144,7 +144,14 @@ export default function RootLayout({
       "Palam Vihar Gurugram",
       "Cyber City Gurugram",
       "Haryana"
-    ]
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "27",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
   };
 
   const webSiteJsonLd = {
