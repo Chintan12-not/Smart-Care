@@ -99,45 +99,21 @@ export default async function ModelAccessoriesPage({ params }: ModelPageProps) {
         {/* Accessories Product Grid */}
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-foreground">Compatible Accessories List</h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {MOCK_ACCESSORIES.map((prod) => (
-              <div key={prod.id} className="glass-card rounded-2xl p-5 border border-border flex flex-col justify-between hover:shadow-lg transition-all relative group">
-                <div className="h-44 w-full rounded-xl bg-white overflow-hidden flex items-center justify-center mb-4 p-2 relative border border-border/40">
-                  <ProductCardImageSlider
-                    image={prod.image}
-                    images={prod.images}
-                    name={prod.name}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <span className="text-[10px] uppercase font-extrabold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    {prod.category}
-                  </span>
-                  <h3 className="font-bold text-sm text-foreground">{matchedBrandKey} {modelFormatted} {prod.name}</h3>
-                  <p className="text-xs font-extrabold text-foreground">{formatINR(prod.price)}</p>
-                </div>
-
-                <div className="pt-4 flex gap-2">
-                  <Link
-                    href={`/accessories/${prod.id}`}
-                    className="flex-1 py-2.5 rounded-xl bg-foreground text-background font-extrabold text-xs text-center hover:opacity-90 transition-opacity"
-                  >
-                    View Details
-                  </Link>
-                  <a
-                    href={`https://wa.me/919289942313?text=${encodeURIComponent(`Hi Smart Care! I would like to order ${prod.name} for ${matchedBrandKey} ${modelFormatted}.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-emerald-500 text-black hover:bg-emerald-400 transition-colors"
-                    title="Order via WhatsApp"
-                  >
-                    <PhoneCall className="h-4 w-4" />
-                  </a>
-                </div>
-              </div>
-            ))}
+          <div className="p-8 rounded-3xl bg-card border border-border text-center space-y-3">
+            <ShoppingBag className="h-10 w-10 text-emerald-500 mx-auto opacity-80" />
+            <h3 className="font-bold text-foreground text-sm">Custom Stock for {matchedBrandKey} {modelFormatted}</h3>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+              We stock custom protective cases, 9H tempered glass screen protectors, and fast chargers specifically for your {matchedBrandKey} {modelFormatted}.
+            </p>
+            <div className="pt-2">
+              <Link
+                href={`/accessories?brand=${encodeURIComponent(matchedBrandKey)}&model=${encodeURIComponent(modelFormatted)}`}
+                className="px-6 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-xs inline-flex items-center gap-2 hover:bg-emerald-400 transition-colors"
+              >
+                <span>Browse All Accessories</span>
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
 

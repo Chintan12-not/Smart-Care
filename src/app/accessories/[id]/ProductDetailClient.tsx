@@ -129,14 +129,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         );
       };
 
-      // 1. Search Mock Accessories
-      const mockMatch = MOCK_ACCESSORIES.find(isMatch);
-      if (mockMatch) {
-        foundProd = mockMatch;
-      }
-      allFoundProducts = [...MOCK_ACCESSORIES];
-
-      // 2. Search Custom LocalStorage Accessories (added via Admin panel)
+      // 1. Search Custom LocalStorage Accessories (added via Admin panel)
       if (typeof window !== "undefined") {
         const savedCustom = localStorage.getItem("sc_custom_accessories");
         if (savedCustom) {

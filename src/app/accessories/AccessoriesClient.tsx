@@ -147,9 +147,6 @@ function AccessoriesContent() {
       } else if (customMapped.length > 0) {
         setProducts(customMapped);
         setIsLoading(false);
-      } else if (MOCK_ACCESSORIES.length > 0) {
-        setProducts(MOCK_ACCESSORIES);
-        setIsLoading(false);
       }
 
       // 2. Background async Supabase sync (non-blocking)
@@ -180,9 +177,6 @@ function AccessoriesContent() {
               }));
 
             const combinedRaw = [...customMapped, ...dbMapped];
-            if (combinedRaw.length === 0 && MOCK_ACCESSORIES.length > 0) {
-              combinedRaw.push(...MOCK_ACCESSORIES);
-            }
 
             const seenKeys = new Set<string>();
             const finalUnique: AccessoryProduct[] = [];

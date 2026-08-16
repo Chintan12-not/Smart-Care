@@ -1,6 +1,7 @@
 {
   "brands": [
     "Apple",
+    "AirPods",
     "Google",
     "OPPO",
     "OnePlus",
@@ -12,6 +13,63 @@
     "Xiaomi"
   ],
   "brandModels": {
+    "AirPods": [
+      {
+        "id": "609",
+        "name": "AirPods 1",
+        "series": "AirPods"
+      },
+      {
+        "id": "610",
+        "name": "AirPods 2",
+        "series": "AirPods"
+      },
+      {
+        "id": "611",
+        "name": "AirPods 3",
+        "series": "AirPods"
+      },
+      {
+        "id": "612",
+        "name": "AirPods 4",
+        "series": "AirPods"
+      },
+      {
+        "id": "613",
+        "name": "AirPods 4 ANC",
+        "series": "AirPods"
+      },
+      {
+        "id": "614",
+        "name": "AirPods Pro 1",
+        "series": "AirPods Pro"
+      },
+      {
+        "id": "615",
+        "name": "AirPods Pro 2 Lightning",
+        "series": "AirPods Pro"
+      },
+      {
+        "id": "616",
+        "name": "AirPods Pro 2 USB-C",
+        "series": "AirPods Pro"
+      },
+      {
+        "id": "617",
+        "name": "AirPods Pro 3",
+        "series": "AirPods Pro"
+      },
+      {
+        "id": "618",
+        "name": "AirPods Max",
+        "series": "AirPods Max"
+      },
+      {
+        "id": "619",
+        "name": "AirPods Max USB-C",
+        "series": "AirPods Max"
+      }
+    ],
     "Apple": [
       {
         "id": "1",
