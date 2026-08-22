@@ -133,6 +133,21 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/battery-replacement-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Battery Replacement Gurugram
+                </Link>
+              </li>
+              <li>
+                <Link href="/charging-port-repair-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Charging Port Repair
+                </Link>
+              </li>
+              <li>
+                <Link href="/print-xerox-services-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Print & Xerox Services
+                </Link>
+              </li>
+              <li>
                 <Link href="/pickup" className="text-muted-foreground hover:text-emerald-500 transition-colors">
                   Doorstep Pickup & Repair
                 </Link>

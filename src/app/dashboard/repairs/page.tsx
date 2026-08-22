@@ -155,7 +155,7 @@ export default function RepairsPage() {
         </div>
         <div>
           <h2 className="text-xl font-bold text-foreground">Repair History</h2>
-          <p className="text-xs text-muted-foreground">Booked jobs, real-time tracking, and device warranty logs</p>
+          <p className="text-xs text-muted-foreground">Booked jobs, real-time tracking, and device service logs</p>
         </div>
       </div>
 
@@ -274,9 +274,9 @@ export default function RepairsPage() {
                   <div className="flex items-center gap-2.5">
                     <ShieldCheck className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                     <div>
-                      <span className="text-muted-foreground block font-medium">Repair Warranty</span>
+                      <span className="text-muted-foreground block font-medium">Quality Check</span>
                       <span className="font-semibold text-foreground">
-                        {repair.warranty_months} Months Warranty
+                        Quality Verified
                       </span>
                     </div>
                   </div>

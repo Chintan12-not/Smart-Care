@@ -86,7 +86,7 @@ function getInitialProducts(): AccessoryProduct[] {
   return unique;
 }
 
-function AccessoriesContent() {
+function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryProduct[] }) {
   const { addToCart } = useCart();
   const searchParams = useSearchParams();
   const queryBrand = searchParams.get("brand") || "";
@@ -897,14 +897,17 @@ function AccessoriesContent() {
   );
 }
 
-export default function AccessoriesClient() {
+export default function AccessoriesClient({ initialProducts }: { initialProducts?: AccessoryProduct[] }) {
+  if (initialProducts && initialProducts.length > 0 && !cachedProductsList) {
+    cachedProductsList = initialProducts;
+  }
   return (
     <Suspense fallback={
       <div className="min-h-[50vh] flex items-center justify-center">
         <div className="h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
       </div>
     }>
-      <AccessoriesContent />
+      <AccessoriesContent initialProducts={initialProducts} />
     </Suspense>
   );
 }

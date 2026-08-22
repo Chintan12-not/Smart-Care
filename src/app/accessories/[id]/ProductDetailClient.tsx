@@ -353,7 +353,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 *Product*: ${product.name}
 *Price*: ${formatINR(product.price)}
 *Quantity*: ${quantity}
-*URL*: https://smartcaremobile.in/accessories/${product.id}`;
+*URL*: https://www.smartcaremobile.in/accessories/${product.id}`;
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}`;
 
   // Mock Reviews data
@@ -491,8 +491,8 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-muted/30 border border-border/40">
                 <ShieldCheck className="h-4 w-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h5 className="font-bold text-[11px] text-foreground">Store Warranty</h5>
-                  <p className="text-[10px] text-muted-foreground">Smart Care direct replacement</p>
+                  <h5 className="font-bold text-[11px] text-foreground">Quality Verified</h5>
+                  <p className="text-[10px] text-muted-foreground">Tested for fit & durability</p>
                 </div>
               </div>
 

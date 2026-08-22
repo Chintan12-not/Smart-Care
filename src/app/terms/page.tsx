@@ -5,14 +5,14 @@ import { FileText, ShieldAlert, CheckCircle2, ArrowLeft, Mail, Phone, MapPin, Sc
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | Smart Care & Mobile Point Gurugram",
-  description: "Terms & Conditions for Smart Care & Mobile Point. Learn about our mobile repair warranty, doorstep service policies, genuine accessory guarantees, and customer terms.",
+  description: "Terms & Conditions for Smart Care & Mobile Point. Learn about our doorstep mobile repair policies, transparent pricing, quality assurance, and customer terms.",
   alternates: {
-    canonical: "https://smartcaremobile.in/terms",
+    canonical: "https://www.smartcaremobile.in/terms",
   },
 };
 
 export default function TermsAndConditionsPage() {
-  const lastUpdated = "August 12, 2026";
+  const lastUpdated = "August 22, 2026";
 
   return (
     <div className="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
@@ -39,7 +39,7 @@ export default function TermsAndConditionsPage() {
         <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 space-y-2">
           <div className="flex items-center gap-2 font-bold text-sm">
             <CheckCircle2 className="h-4 w-4" />
-            <span>Smart Care Customer Service Guarantee</span>
+            <span>Smart Care Transparent Service Terms</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
             By booking a doorstep repair, purchasing phone accessories, or utilizing in-store document printing services at <strong>Smart Care & Mobile Point</strong> (Shop No. 28, Ninex Residency, Sector 37C, Gurugram), you agree to the terms outlined below.
@@ -54,8 +54,8 @@ export default function TermsAndConditionsPage() {
           </h2>
           <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
             <li><strong>Service Coverage:</strong> Doorstep pickup and repair services are provided across all sectors in Gurugram (Sector 37C, Sector 45, DLF Phase 1-5, Sohna Road, Golf Course Road) and select NCR areas.</li>
-            <li><strong>Pickup Charges:</strong> Delivery and doorstep logistics charges are ₹50 for Gurugram pincodes starting with 122, and ₹120 for outer NCR locations.</li>
-            <li><strong>Diagnostic Approval:</strong> Our certified technician provides an upfront repair estimate after initial physical inspection. Repairs proceed only upon your explicit approval.</li>
+            <li><strong>Pickup Charges:</strong> Delivery and doorstep logistics charges are clear and communicated upfront based on location distance.</li>
+            <li><strong>Diagnostic Approval:</strong> Our experienced technician provides an upfront repair estimate after initial physical inspection. Repairs proceed only upon your explicit approval.</li>
           </ul>
         </section>
 
@@ -63,12 +63,12 @@ export default function TermsAndConditionsPage() {
         <section className="space-y-3">
           <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-cyan-500" />
-            2. Repair Warranty & Replacement Terms
+            2. Quality Assurance & Device Inspection Terms
           </h2>
           <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-            <li><strong>Screen & Battery Warranty:</strong> All replaced display assemblies and batteries carry a 6-month limited warranty covering manufacturing touch defects and battery health calibration issues.</li>
-            <li><strong>Warranty Exclusions:</strong> Warranty is immediately voided in cases of subsequent physical drops, display cracks, glass damage, liquid ingress, or unauthorized third-party tampering after repair completion.</li>
-            <li><strong>7-Day Fit Guarantee:</strong> Accessories purchased online carry a 7-day hassle-free replacement if the case or tempered glass does not fit your specific phone model.</li>
+            <li><strong>Pre & Post Repair Testing:</strong> All replacement components undergo pre-installation testing and post-repair quality checks before customer handoff.</li>
+            <li><strong>Physical Inspection & Verification:</strong> Customer devices are inspected for pre-existing liquid corrosion, camera clarity, display touch response, and audio functionality before and after service.</li>
+            <li><strong>7-Day Fit Exchange:</strong> Accessories purchased online carry a 7-day hassle-free fit exchange if the case or tempered glass does not match your specific phone model.</li>
           </ul>
         </section>
 

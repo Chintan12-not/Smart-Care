@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "charging port fix Gurgaon"
   ],
   alternates: {
-    canonical: "https://smartcaremobile.in/blog",
+    canonical: "https://www.smartcaremobile.in/blog",
   },
   openGraph: {
     title: "Mobile Repair & Maintenance Blog | Smart Care Gurugram",
     description: "Expert hardware guides & repair cost estimates for Gurugram smartphone owners.",
-    url: "https://smartcaremobile.in/blog",
+    url: "https://www.smartcaremobile.in/blog",
   },
 };
 
@@ -28,7 +28,7 @@ export default function BlogPage() {
     "@type": "Blog",
     "name": "Smart Care Mobile Repair & Maintenance Tech Blog",
     "description": "Guides and hardware maintenance tips for smartphones in Gurugram.",
-    "url": "https://smartcaremobile.in/blog",
+    "url": "https://www.smartcaremobile.in/blog",
     "blogPost": ARTICLES.map(art => ({
       "@type": "BlogPosting",
       "headline": art.title,
@@ -42,8 +42,8 @@ export default function BlogPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://smartcaremobile.in" },
-      { "@type": "ListItem", "position": 2, "name": "Blog & Tech Guides", "item": "https://smartcaremobile.in/blog" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.smartcaremobile.in" },
+      { "@type": "ListItem", "position": 2, "name": "Blog & Tech Guides", "item": "https://www.smartcaremobile.in/blog" }
     ]
   };
 

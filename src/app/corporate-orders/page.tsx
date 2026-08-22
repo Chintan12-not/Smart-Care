@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "corporate mobile gifting Gurgaon"
   ],
   alternates: {
-    canonical: "https://smartcaremobile.in/corporate-orders",
+    canonical: "https://www.smartcaremobile.in/corporate-orders",
   },
   openGraph: {
     title: "Corporate Mobile Accessories & Bulk Repair | Smart Care Gurugram",
     description: "B2B wholesale corporate mobile accessories & bulk device repair in Gurugram.",
-    url: "https://smartcaremobile.in/corporate-orders",
+    url: "https://www.smartcaremobile.in/corporate-orders",
   },
 };
 
@@ -31,7 +31,7 @@ export default function CorporateOrdersPage() {
       "@type": "MobilePhoneStore",
       "name": "Smart Care & Mobile Point",
       "telephone": "+919289942313",
-      "url": "https://smartcaremobile.in"
+      "url": "https://www.smartcaremobile.in"
     },
     "areaServed": "Gurugram",
     "serviceType": "B2B Corporate Mobile Procurement & Repair",

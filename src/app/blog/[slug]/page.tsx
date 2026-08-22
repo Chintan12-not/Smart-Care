@@ -24,12 +24,12 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     description: article.summary,
     keywords: article.tags,
     alternates: {
-      canonical: `https://smartcaremobile.in/blog/${article.slug}`,
+      canonical: `https://www.smartcaremobile.in/blog/${article.slug}`,
     },
     openGraph: {
       title: article.title,
       description: article.summary,
-      url: `https://smartcaremobile.in/blog/${article.slug}`,
+      url: `https://www.smartcaremobile.in/blog/${article.slug}`,
       type: "article",
       publishedTime: article.date,
       authors: [article.author],
@@ -58,11 +58,11 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
       "name": "Smart Care & Mobile Point",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://smartcaremobile.in/logo.png"
+        "url": "https://www.smartcaremobile.in/logo.png"
       }
     },
     "datePublished": article.date,
-    "mainEntityOfPage": `https://smartcaremobile.in/blog/${article.slug}`
+    "mainEntityOfPage": `https://www.smartcaremobile.in/blog/${article.slug}`
   };
 
   return (

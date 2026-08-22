@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy | Smart Care & Mobile Point Gurugram",
   description: "Privacy Policy for Smart Care & Mobile Point. Read how we protect your personal information, device data confidentiality, and payment security.",
   alternates: {
-    canonical: "https://smartcaremobile.in/privacy",
+    canonical: "https://www.smartcaremobile.in/privacy",
   },
 };
 

@@ -1217,11 +1217,11 @@ export default function AdminPage() {
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                     <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-                    Optional Warranty Details
+                    Optional Product Highlights
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. 6 Months Smart Care Replacement Warranty (Leave empty if no warranty)"
+                    placeholder="e.g. Premium Material, Tested Quality, Fast Charging Compatible"
                     value={warranty}
                     onChange={(e) => setWarranty(e.target.value)}
                     className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"

@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "mobile screen replacement Gurgaon"
   ],
   alternates: {
-    canonical: "https://smartcaremobile.in/mobile-repair-gurugram",
+    canonical: "https://www.smartcaremobile.in/mobile-repair-gurugram",
   },
   openGraph: {
     title: "Doorstep Mobile Repair Service in Gurugram | Smart Care",
     description: "Express mobile repair service in Gurugram. Free doorstep pickup & same-day delivery.",
-    url: "https://smartcaremobile.in/mobile-repair-gurugram",
+    url: "https://www.smartcaremobile.in/mobile-repair-gurugram",
   },
 };
 
@@ -38,8 +38,8 @@ export default function MobileRepairGurugramPage() {
       a: "Pickup and delivery is 100% FREE for all addresses within 5 km of our shop (Sector 37C, Residency). Nominal distance charges apply beyond 5 km."
     },
     {
-      q: "Do you provide warranty on repaired parts?",
-      a: "Yes! All OEM and AAA-grade screen, battery, and charging port replacements come with genuine warranty protection against manufacturing defects."
+      q: "What quality testing do you perform on repaired devices?",
+      a: "Every replacement screen, battery, or charging port undergoes thorough pre-installation testing and post-repair quality verification for touch response, display calibration, and charging speed."
     }
   ];
 
@@ -142,7 +142,7 @@ export default function MobileRepairGurugramPage() {
               </div>
               <h3 className="font-bold text-base text-foreground">Express Screen & Glass Replacement</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Cracked or unresponsive touch screen? We fit genuine Super AMOLED & IPS LCD displays in under 45 minutes with touch warranty.
+                Cracked or unresponsive touch screen? We fit genuine Super AMOLED & IPS LCD displays in under 45 minutes with full touch calibration and testing.
               </p>
             </div>
 

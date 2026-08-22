@@ -366,7 +366,7 @@ export default function PickupClient() {
             status: "booked",
             estimate_cost: cost,
             estimate_time: "1-2 Business Days",
-            warranty_months: 6
+            warranty_months: 0
           });
         if (error) throw error;
       } catch (err) {
@@ -387,7 +387,7 @@ export default function PickupClient() {
         status: "booked",
         estimate_cost: cost,
         estimate_time: "1-2 Business Days",
-        warranty_months: 6,
+        warranty_months: 0,
         warranty_expiry: null,
         tracking_history: [
           {

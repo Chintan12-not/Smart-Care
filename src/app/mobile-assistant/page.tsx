@@ -7,6 +7,9 @@ import Link from "next/link";
 export default function MobileAssistantPage() {
   return (
     <div className="flex-grow flex items-center justify-center min-h-[85vh] px-4 relative overflow-hidden bg-background">
+      <head>
+        <meta name="robots" content="noindex, nofollow" />
+      </head>
       {/* Background Glowing Ambient Orbs */}
       <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />

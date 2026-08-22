@@ -261,7 +261,7 @@ export default function CorporateClient() {
     { title: "100% GST Compliant Invoices", desc: "Input tax credit (ITC) claims with complete business GST billing.", icon: FileText },
     { title: "Flexible Order Quantities", desc: "No rigid minimums—order from 25 units up to 10,000+ units.", icon: PackageCheck },
     { title: "Express Regional Delivery", desc: "Same-day doorstep delivery inside Gurugram & fast shipping across India.", icon: Truck },
-    { title: "Tested & Certified Quality", desc: "Tested accessories with manufacturer warranty & instant replacement support.", icon: ShieldCheck },
+    { title: "Tested & Certified Quality", desc: "Multi-tier tested accessories with quality inspection & instant replacement support.", icon: ShieldCheck },
     { title: "Dedicated B2B Account Manager", desc: "Direct single-point support for custom quotes & purchase orders.", icon: PhoneCall },
   ];
 

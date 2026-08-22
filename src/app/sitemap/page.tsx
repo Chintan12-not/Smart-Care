@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "HTML Sitemap | Smart Care & Mobile Point Gurugram",
   description: "Complete sitemap directory of Smart Care & Mobile Point. Explore doorstep mobile repair services in Gurugram, genuine accessories by phone model, blog guides, and corporate services.",
   alternates: {
-    canonical: "https://smartcaremobile.in/sitemap",
+    canonical: "https://www.smartcaremobile.in/sitemap",
   },
 };
 

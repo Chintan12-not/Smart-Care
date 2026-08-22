@@ -3,21 +3,23 @@ import phoneData from "@/data/phoneModels.json";
 import { ARTICLES } from "@/lib/articles";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://smartcaremobile.in";
+  const baseUrl = "https://www.smartcaremobile.in";
   const currentDate = new Date().toISOString();
 
-  // Core Static Pages
+  // Core Static & Service Landing Pages
   const routes = [
     "",
     "/mobile-repair-gurugram",
     "/iphone-repair-gurugram",
     "/samsung-repair-gurugram",
     "/screen-replacement-gurugram",
+    "/battery-replacement-gurugram",
+    "/charging-port-repair-gurugram",
+    "/print-xerox-services-gurugram",
     "/pickup",
     "/accessories",
     "/corporate-orders",
     "/blog",
-    "/mobile-assistant",
     "/privacy",
     "/terms",
     "/sitemap",
@@ -46,7 +48,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}${route}`,
       lastModified: currentDate,
       changeFrequency: (route === "" ? "daily" : "weekly") as "daily" | "weekly",
-      priority: route === "" ? 1.0 : route.includes("repair") ? 0.9 : 0.8,
+      priority: route === "" ? 1.0 : route.includes("repair") || route.includes("replacement") ? 0.9 : 0.8,
     })),
     ...brandRoutes.map((route) => ({
       url: `${baseUrl}${route}`,

@@ -12,12 +12,12 @@ export const metadata: Metadata = {
     "phone repair home delivery Sector 37C"
   ],
   alternates: {
-    canonical: "https://smartcaremobile.in/pickup",
+    canonical: "https://www.smartcaremobile.in/pickup",
   },
   openGraph: {
     title: "Doorstep Mobile Repair Pickup & Delivery in Gurugram | Smart Care",
     description: "Free doorstep mobile repair pickup within 5 km in Gurugram. Same-day screen & battery service.",
-    url: "https://smartcaremobile.in/pickup",
+    url: "https://www.smartcaremobile.in/pickup",
   },
 };
 
@@ -30,7 +30,7 @@ export default function PickupPage() {
       "@type": "MobilePhoneStore",
       "name": "Smart Care & Mobile Point",
       "telephone": "+919289942313",
-      "url": "https://smartcaremobile.in"
+      "url": "https://www.smartcaremobile.in"
     },
     "areaServed": "Gurugram",
     "serviceType": "Doorstep Smartphone Logistics & Repair",

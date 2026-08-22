@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: "Mobile Accessory Product | Smart Care Gurugram",
     description: "Buy genuine smartphone accessories, fast chargers, cases, and tempered glass in Gurugram.",
     alternates: {
-      canonical: `https://smartcaremobile.in/accessories/${id}`,
+      canonical: `https://www.smartcaremobile.in/accessories/${id}`,
     }
   };
 }
