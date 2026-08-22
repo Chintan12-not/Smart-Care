@@ -119,7 +119,7 @@ export default function TermsAndConditionsPage() {
             </p>
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-cyan-500" />
-              <span>enigcon2020@gmail.com / chintanmaheshwari714@gmail.com</span>
+              <span>enigcononline@gmail.com / chintanmaheshwari714@gmail.com</span>
             </p>
             <p className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-amber-500" />

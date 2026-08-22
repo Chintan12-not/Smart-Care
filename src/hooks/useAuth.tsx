@@ -49,6 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const clean = email.toLowerCase().trim();
     return clean === "admin@example.com" || 
            clean === "chintanmaheshwari12@gmail.com" || 
+           clean === "chintanmaheshwari714@gmail.com" ||
+           clean === "enigcononline@gmail.com" ||
            clean === "enigcon2020@gmail.com" ||
            clean === "smart.care313@gmail.com" ||
            clean === "maheshwari.shailesh74@gmail.com" ||

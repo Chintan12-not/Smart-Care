@@ -174,7 +174,7 @@ export default function BillingPage() {
     list.unshift(newMockOrder);
     localStorage.setItem("sc_mock_orders", JSON.stringify(list));
 
-    // 3. Dispatch Thanking Email Confirmation to Customer + Admin copies (enigcon2020@gmail.com & chintanmaheshwari714@gmail.com)
+    // 3. Dispatch Thanking Email Confirmation to Customer + Admin copies (enigcononline@gmail.com & chintanmaheshwari714@gmail.com)
     fetch("/api/v1/email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

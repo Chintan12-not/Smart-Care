@@ -170,7 +170,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                <a href="mailto:enigcon2020@gmail.com" className="hover:text-foreground transition-colors">enigcon2020@gmail.com</a>
+                <a href="mailto:enigcononline@gmail.com" className="hover:text-foreground transition-colors">enigcononline@gmail.com</a>
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="h-4 w-4 text-cyan-500 flex-shrink-0 mt-0.5" />

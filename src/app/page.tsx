@@ -136,14 +136,32 @@ export default function Home() {
           name: contactName,
           phone: contactPhone,
           email: contactEmail || "Not provided",
-          replyto: "chintanmaheshwari714@gmail.com",
-          admin_email: "chintanmaheshwari714@gmail.com",
+          replyto: "enigcononline@gmail.com, chintanmaheshwari714@gmail.com",
+          admin_email: "enigcononline@gmail.com, chintanmaheshwari714@gmail.com",
           device_model: contactDevice,
           issue: contactIssue,
           message: contactMessage || "No additional details provided",
           formType: "General Contact Inquiry"
         })
       });
+
+      // Dual dispatch to backend email API (sends to enigcononline@gmail.com & chintanmaheshwari714@gmail.com)
+      fetch("/api/v1/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "contact",
+          to: contactEmail || "enigcononline@gmail.com",
+          payload: {
+            name: contactName,
+            phone: contactPhone,
+            email: contactEmail || "Not provided",
+            device: contactDevice,
+            issue: contactIssue,
+            message: contactMessage
+          }
+        })
+      }).catch(err => console.error("Contact email dispatch error:", err));
 
       const result = await response.json();
       if (response.ok && result.success) {
@@ -832,7 +850,7 @@ export default function Home() {
               <Mail className="h-5 w-5 text-emerald-500 flex-shrink-0" />
               <div>
                 <p className="font-bold text-foreground">Email</p>
-                <a href="mailto:enigcon2020@gmail.com" className="hover:text-foreground transition-colors mt-0.5 block">enigcon2020@gmail.com</a>
+                <a href="mailto:enigcononline@gmail.com" className="hover:text-foreground transition-colors mt-0.5 block">enigcononline@gmail.com</a>
               </div>
             </div>
 

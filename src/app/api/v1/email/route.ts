@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     let subject = "";
     let htmlContent = "";
 
-    const adminRecipients = ["enigcon2020@gmail.com", "chintanmaheshwari714@gmail.com"];
+    const adminRecipients = ["enigcononline@gmail.com", "chintanmaheshwari714@gmail.com"];
 
     if (type === "welcome") {
       subject = "Thank You for Joining Smart Care & Mobile Point!";
@@ -214,8 +214,8 @@ export async function POST(req: NextRequest) {
 
     // Build recipient targets based on email type:
     // - "welcome": ONLY send to the customer email [to]
-    // - "contact" or "b2b_quote": send directly to admin emails [enigcon2020@gmail.com, chintanmaheshwari714@gmail.com]
-    // - "accessory" or "pickup": send to customer email [to] AND store owners [enigcon2020@gmail.com, chintanmaheshwari714@gmail.com]
+    // - "contact" or "b2b_quote": send directly to admin emails [enigcononline@gmail.com, chintanmaheshwari714@gmail.com]
+    // - "accessory" or "pickup": send to customer email [to] AND store owners [enigcononline@gmail.com, chintanmaheshwari714@gmail.com]
     const recipientTargets = (type === "contact" || type === "b2b_quote")
       ? adminRecipients
       : (type === "welcome" || type === "delivered")

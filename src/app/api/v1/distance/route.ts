@@ -102,7 +102,7 @@ export async function POST(request: Request) {
         const osmUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
         const response = await fetch(osmUrl, {
           headers: {
-            "User-Agent": "SmartCareMobilePointRepairPortal/1.0 (enigcon2020@gmail.com)"
+            "User-Agent": "SmartCareMobilePointRepairPortal/1.0 (enigcononline@gmail.com)"
           }
         });
         const data = await response.json();
@@ -222,7 +222,7 @@ export async function POST(request: Request) {
       
       const response = await fetch(osmUrl, {
         headers: {
-          "User-Agent": "SmartCareMobilePointRepairPortal/1.0 (enigcon2020@gmail.com)"
+          "User-Agent": "SmartCareMobilePointRepairPortal/1.0 (enigcononline@gmail.com)"
         }
       });
       

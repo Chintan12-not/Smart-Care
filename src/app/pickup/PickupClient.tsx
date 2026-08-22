@@ -422,7 +422,7 @@ export default function PickupClient() {
         submittedAt: new Date().toISOString()
       };
 
-      console.log("Submitting booking request to enigcon2020@gmail.com:", payload);
+      console.log("Submitting booking request to enigcononline@gmail.com & chintanmaheshwari714@gmail.com:", payload);
       setSubmissionData(payload);
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -446,8 +446,8 @@ export default function PickupClient() {
           preferred_time: preferredTime,
           pickup_fee: cost === 0 ? "FREE" : `₹${cost}`,
           free_gift: "FREE PHONE COVER INCLUDED",
-          replyto: "chintanmaheshwari714@gmail.com",
-          admin_email: "chintanmaheshwari714@gmail.com"
+          replyto: "enigcononline@gmail.com, chintanmaheshwari714@gmail.com",
+          admin_email: "enigcononline@gmail.com, chintanmaheshwari714@gmail.com"
         })
       }).catch(err => console.error("Web3Forms pickup dispatch error:", err));
 
@@ -1057,7 +1057,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                   </div>
 
                   <p className="text-xs text-muted-foreground max-w-md mx-auto pt-1">
-                    We have received your pickup booking request. Details have been logged for our Sector 37C dispatch center, and a copy has been sent to <span className="font-semibold text-foreground">enigcon2020@gmail.com</span>.
+                    We have received your pickup booking request. Details have been logged for our Sector 37C dispatch center, and a copy has been sent to <span className="font-semibold text-foreground">enigcononline@gmail.com &amp; chintanmaheshwari714@gmail.com</span>.
                   </p>
                 </div>
 

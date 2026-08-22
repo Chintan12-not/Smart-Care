@@ -124,8 +124,8 @@ export default function CorporateClient() {
           company: companyName.trim(),
           email: email.trim(),
           phone: phone.trim(),
-          replyto: "chintanmaheshwari714@gmail.com",
-          admin_email: "chintanmaheshwari714@gmail.com",
+          replyto: "enigcononline@gmail.com, chintanmaheshwari714@gmail.com",
+          admin_email: "enigcononline@gmail.com, chintanmaheshwari714@gmail.com",
           category: productCategory,
           quantity: quantity,
           delivery_location: deliveryLocation.trim(),
@@ -139,13 +139,13 @@ export default function CorporateClient() {
         console.warn("Web3Forms submission response:", web3Data);
       }
 
-      // Dual dispatch to backend email API (sends to chintanmaheshwari714@gmail.com and enigcon2020@gmail.com)
+      // Dual dispatch to backend email API (sends to enigcononline@gmail.com and chintanmaheshwari714@gmail.com)
       fetch("/api/v1/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "b2b_quote",
-          to: "chintanmaheshwari714@gmail.com",
+          to: "enigcononline@gmail.com",
           payload: {
             name: name.trim(),
             companyName: companyName.trim(),
