@@ -57,7 +57,7 @@ export default function MobileRepairGurugramPage() {
       "@type": "MobilePhoneStore",
       "name": "Smart Care & Mobile Point",
       "telephone": "+919289942313",
-      "url": "https://www.smartcaremobile.in"
+      "url": "https://smartcaremobile.in"
     },
     "areaServed": "Gurugram",
     "serviceType": "Smartphone Repair Services",
@@ -88,7 +88,7 @@ export default function MobileRepairGurugramPage() {
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <Link href="/repair" className="hover:text-foreground transition-colors">Repair Services</Link>
+          <Link href="/pickup" className="hover:text-foreground transition-colors">Doorstep Repair Pickup</Link>
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-foreground font-semibold">Mobile Repair Gurugram</span>
         </nav>

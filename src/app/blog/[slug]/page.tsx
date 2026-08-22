@@ -11,9 +11,13 @@ interface ArticlePageProps {
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = ARTICLES.find((a) => a.slug === slug)
-    || ARTICLES.find((a) => a.slug.includes(slug) || slug.includes(a.slug))
-    || ARTICLES[0];
+  const article = ARTICLES.find((a) => a.slug === slug.toLowerCase().trim());
+  if (!article) {
+    return {
+      title: "Article Not Found | Smart Care Gurugram",
+      description: "Read mobile repair guides and maintenance tips on Smart Care blog.",
+    };
+  }
 
   return {
     title: article.title,
@@ -35,9 +39,10 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = ARTICLES.find((a) => a.slug === slug)
-    || ARTICLES.find((a) => a.slug.includes(slug) || slug.includes(a.slug))
-    || ARTICLES[0];
+  const article = ARTICLES.find((a) => a.slug === slug.toLowerCase().trim());
+  if (!article) {
+    notFound();
+  }
 
   const articleSchema = {
     "@context": "https://schema.org",

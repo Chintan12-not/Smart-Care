@@ -11,35 +11,62 @@ interface ModelPageProps {
   params: Promise<{ brand: string; model: string }>;
 }
 
-export async function generateMetadata({ params }: ModelPageProps): Promise<Metadata> {
-  const { brand: rawBrand, model: rawModel } = await params;
-  const brandName = rawBrand.charAt(0).toUpperCase() + rawBrand.slice(1);
-  const modelName = rawModel.split("-").map(w => w.toUpperCase() === "PRO" || w.toUpperCase() === "MAX" ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+function getValidBrandAndModel(rawBrand: string, rawModel: string) {
+  const normalizedBrand = rawBrand.toLowerCase().trim();
+  const matchedBrandKey = phoneData.brands.find(b => b.toLowerCase() === normalizedBrand) || (normalizedBrand === "iphone" ? "Apple" : null);
+  if (!matchedBrandKey) return null;
+
+  const brandModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[matchedBrandKey] || [];
+  const normalizedModel = rawModel.toLowerCase().trim();
+  const matchedModel = brandModels.find(m => {
+    const slug = m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return slug === normalizedModel || m.name.toLowerCase() === normalizedModel;
+  });
+
+  if (!matchedModel) return null;
 
   return {
-    title: `${brandName} ${modelName} Accessories, Covers & Screen Protectors`,
-    description: `Shop drop-tested shockproof cases, 9H tempered glass screen protectors, fast chargers, and Type-C cables custom engineered for ${brandName} ${modelName} at smartcaremobile.in.`,
+    brandKey: matchedBrandKey,
+    modelName: matchedModel.name,
+    modelSlug: matchedModel.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+  };
+}
+
+export async function generateMetadata({ params }: ModelPageProps): Promise<Metadata> {
+  const { brand: rawBrand, model: rawModel } = await params;
+  const valid = getValidBrandAndModel(rawBrand, rawModel);
+  if (!valid) {
+    return {
+      title: "Phone Model Accessories | Smart Care Gurugram",
+      description: "Buy genuine smartphone accessories at Smart Care Gurugram.",
+    };
+  }
+
+  return {
+    title: `${valid.brandKey} ${valid.modelName} Accessories, Covers & Screen Protectors`,
+    description: `Shop drop-tested shockproof cases, 9H tempered glass screen protectors, fast chargers, and Type-C cables custom engineered for ${valid.brandKey} ${valid.modelName} at smartcaremobile.in.`,
     keywords: [
-      `${brandName} ${modelName} cases`,
-      `${brandName} ${modelName} tempered glass`,
-      `${brandName} ${modelName} charger`,
-      `${brandName} ${modelName} accessories Gurugram`
+      `${valid.brandKey} ${valid.modelName} cases`,
+      `${valid.brandKey} ${valid.modelName} tempered glass`,
+      `${valid.brandKey} ${valid.modelName} charger`,
+      `${valid.brandKey} ${valid.modelName} accessories Gurugram`
     ],
     alternates: {
-      canonical: `https://smartcaremobile.in/accessories/brand/${rawBrand.toLowerCase()}/${rawModel.toLowerCase()}`,
+      canonical: `https://smartcaremobile.in/accessories/brand/${valid.brandKey.toLowerCase()}/${valid.modelSlug}`,
     },
   };
 }
 
 export default async function ModelAccessoriesPage({ params }: ModelPageProps) {
   const { brand: rawBrand, model: rawModel } = await params;
-  const normalizedBrand = rawBrand.toLowerCase();
+  const valid = getValidBrandAndModel(rawBrand, rawModel);
+  if (!valid) {
+    notFound();
+  }
 
-  const matchedBrandKey = phoneData.brands.find(b => b.toLowerCase() === normalizedBrand)
-    || phoneData.brands.find(b => b.toLowerCase().includes(normalizedBrand) || normalizedBrand.includes(b.toLowerCase()))
-    || (normalizedBrand.includes("iphone") || normalizedBrand.includes("apple") ? "Apple" : "Apple");
-
-  const modelFormatted = rawModel.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  const matchedBrandKey = valid.brandKey;
+  const normalizedBrand = matchedBrandKey.toLowerCase();
+  const modelFormatted = valid.modelName;
 
   const faqs = [
     {

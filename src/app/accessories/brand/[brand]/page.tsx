@@ -9,33 +9,46 @@ interface BrandPageProps {
   params: Promise<{ brand: string }>;
 }
 
+function getValidBrand(rawBrand: string): string | null {
+  const normalized = rawBrand.toLowerCase().trim();
+  if (normalized === "iphone") return "Apple";
+  const found = phoneData.brands.find(b => b.toLowerCase() === normalized);
+  return found || null;
+}
+
 export async function generateMetadata({ params }: BrandPageProps): Promise<Metadata> {
   const { brand: rawBrand } = await params;
-  const brandName = rawBrand.charAt(0).toUpperCase() + rawBrand.slice(1).toLowerCase();
+  const matchedBrandKey = getValidBrand(rawBrand);
+  if (!matchedBrandKey) {
+    return {
+      title: "Accessories Brand Not Found | Smart Care Gurugram",
+      description: "Browse smartphone accessories by brand at Smart Care Gurugram.",
+    };
+  }
 
   return {
-    title: `${brandName} Phone Cases, Chargers & Accessories Store`,
-    description: `Shop genuine cases, 9H tempered glass screen protectors, GaN fast chargers, and Type-C cables compatible with all ${brandName} phone models at smartcaremobile.in.`,
+    title: `${matchedBrandKey} Phone Cases, Chargers & Accessories Store`,
+    description: `Shop genuine cases, 9H tempered glass screen protectors, GaN fast chargers, and Type-C cables compatible with all ${matchedBrandKey} phone models at smartcaremobile.in.`,
     keywords: [
-      `${brandName} accessories`,
-      `${brandName} phone cases Gurugram`,
-      `${brandName} chargers`,
-      `${brandName} tempered glass`
+      `${matchedBrandKey} accessories`,
+      `${matchedBrandKey} phone cases Gurugram`,
+      `${matchedBrandKey} chargers`,
+      `${matchedBrandKey} tempered glass`
     ],
     alternates: {
-      canonical: `https://smartcaremobile.in/accessories/brand/${rawBrand.toLowerCase()}`,
+      canonical: `https://smartcaremobile.in/accessories/brand/${matchedBrandKey.toLowerCase()}`,
     },
   };
 }
 
 export default async function BrandAccessoriesPage({ params }: BrandPageProps) {
   const { brand: rawBrand } = await params;
-  const normalizedBrand = rawBrand.toLowerCase();
+  const matchedBrandKey = getValidBrand(rawBrand);
+  if (!matchedBrandKey) {
+    notFound();
+  }
 
-  const matchedBrandKey = phoneData.brands.find(b => b.toLowerCase() === normalizedBrand)
-    || phoneData.brands.find(b => b.toLowerCase().includes(normalizedBrand) || normalizedBrand.includes(b.toLowerCase()))
-    || (normalizedBrand.includes("iphone") || normalizedBrand.includes("apple") ? "Apple" : "Apple");
-
+  const normalizedBrand = matchedBrandKey.toLowerCase();
   const brandModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[matchedBrandKey] || [];
 
   return (
