@@ -37,6 +37,55 @@ import { trackCTAClick, trackEvent } from "@/lib/analytics";
 // Client-side in-memory cache to prevent redundant Supabase fetches
 let cachedProductsList: AccessoryProduct[] | null = null;
 
+function getInitialProducts(): AccessoryProduct[] {
+  if (cachedProductsList && cachedProductsList.length > 0) {
+    return cachedProductsList;
+  }
+  let localItems: AccessoryProduct[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const savedCustom = localStorage.getItem("sc_custom_accessories");
+      if (savedCustom) {
+        const parsedCustom: any[] = JSON.parse(savedCustom);
+        if (Array.isArray(parsedCustom) && parsedCustom.length > 0) {
+          localItems = parsedCustom.map((item) => ({
+            id: String(item.id),
+            name: item.name || "Accessory Product",
+            category: item.category || "case",
+            brand: item.brand || "Generic",
+            price: Number(item.price || 0),
+            originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
+            inStock: item.inStock !== false,
+            isOnSale: item.isOnSale || false,
+            rating: Number(item.rating || 4.8),
+            reviewsCount: Number(item.reviewsCount || 15),
+            image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
+            images: item.images || [item.image || "/shop_accessories.png"],
+            specifications: item.specifications || {},
+            description: item.description || ""
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to parse initial custom accessories from localStorage:", e);
+    }
+  }
+  const combined = [...localItems, ...MOCK_ACCESSORIES];
+  const seen = new Set<string>();
+  const unique: AccessoryProduct[] = [];
+  for (const item of combined) {
+    if (!item) continue;
+    const idKey = String(item.id || "").trim();
+    const nameKey = String(item.name || "").toLowerCase().trim();
+    if (!seen.has(idKey) && !seen.has(nameKey)) {
+      if (idKey) seen.add(idKey);
+      if (nameKey) seen.add(nameKey);
+      unique.push(item);
+    }
+  }
+  return unique;
+}
+
 function AccessoriesContent() {
   const { addToCart } = useCart();
   const searchParams = useSearchParams();
@@ -88,10 +137,8 @@ function AccessoriesContent() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
   // Admin Panel & Supabase items
-  const [products, setProducts] = useState<AccessoryProduct[]>(
-    cachedProductsList && cachedProductsList.length > 0 ? cachedProductsList : []
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState<AccessoryProduct[]>(getInitialProducts);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // 1. Initial LocalStorage Hydration & Live Update Listener
   useEffect(() => {
@@ -142,15 +189,6 @@ function AccessoriesContent() {
         }
       }
 
-      // Render local custom / cached products instantly
-      if (cachedProductsList && cachedProductsList.length > 0) {
-        setProducts(cachedProductsList);
-        setIsLoading(false);
-      } else if (customMapped.length > 0) {
-        setProducts(customMapped);
-        setIsLoading(false);
-      }
-
       // 2. Background async Supabase sync (non-blocking)
       if (isSupabaseConfigured()) {
         try {
@@ -178,7 +216,7 @@ function AccessoriesContent() {
                 description: item.description || ""
               }));
 
-            const combinedRaw = [...customMapped, ...dbMapped];
+            const combinedRaw = [...customMapped, ...dbMapped, ...MOCK_ACCESSORIES];
 
             const seenKeys = new Set<string>();
             const finalUnique: AccessoryProduct[] = [];
@@ -197,6 +235,22 @@ function AccessoriesContent() {
 
             cachedProductsList = finalUnique;
             setProducts(finalUnique);
+          } else {
+            const combinedRaw = [...customMapped, ...MOCK_ACCESSORIES];
+            const seenKeys = new Set<string>();
+            const finalUnique: AccessoryProduct[] = [];
+            for (const item of combinedRaw) {
+              if (!item) continue;
+              const idKey = String(item.id || "").trim();
+              const nameKey = String(item.name || "").toLowerCase().trim();
+              if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
+                if (idKey) seenKeys.add(idKey);
+                if (nameKey) seenKeys.add(nameKey);
+                finalUnique.push(item);
+              }
+            }
+            cachedProductsList = finalUnique;
+            setProducts(finalUnique);
           }
         } catch (err) {
           console.error("Background error loading products from Supabase:", err);
@@ -204,6 +258,21 @@ function AccessoriesContent() {
           setIsLoading(false);
         }
       } else {
+        const combinedRaw = [...customMapped, ...MOCK_ACCESSORIES];
+        const seenKeys = new Set<string>();
+        const finalUnique: AccessoryProduct[] = [];
+        for (const item of combinedRaw) {
+          if (!item) continue;
+          const idKey = String(item.id || "").trim();
+          const nameKey = String(item.name || "").toLowerCase().trim();
+          if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
+            if (idKey) seenKeys.add(idKey);
+            if (nameKey) seenKeys.add(nameKey);
+            finalUnique.push(item);
+          }
+        }
+        cachedProductsList = finalUnique;
+        setProducts(finalUnique);
         setIsLoading(false);
       }
     }
@@ -600,12 +669,12 @@ function AccessoriesContent() {
       {/* Empty State */}
       {!isLoading && sortedProducts.length === 0 && (
         <div className="text-center py-20 bg-muted/20 border border-border rounded-3xl space-y-3">
-          <Smartphone className="h-10 w-10 text-muted-foreground mx-auto animate-pulse" />
+          <Smartphone className="h-10 w-10 text-muted-foreground mx-auto" />
           <h3 className="font-bold text-foreground">
-            {products.length === 0 ? "Products coming soon" : "No accessories match search terms"}
+            No accessories match search terms
           </h3>
           <p className="text-xs text-muted-foreground">
-            {products.length === 0 ? "We are currently updating our stock list. Please visit again soon!" : "Try clearing filters or search box query."}
+            Try clearing filters or search box query.
           </p>
         </div>
       )}
