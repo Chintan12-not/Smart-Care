@@ -28,7 +28,7 @@ import {
   Building2
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
-import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
+import { AccessoryProduct } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import confetti from "canvas-confetti";
@@ -62,7 +62,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<AccessoryProduct | null>(null);
-  const [productsList, setProductsList] = useState<AccessoryProduct[]>(MOCK_ACCESSORIES);
+  const [productsList, setProductsList] = useState<AccessoryProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isAutoSliding, setIsAutoSliding] = useState(true);

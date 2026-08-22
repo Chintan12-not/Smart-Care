@@ -70,7 +70,7 @@ function getInitialProducts(): AccessoryProduct[] {
       console.warn("Failed to parse initial custom accessories from localStorage:", e);
     }
   }
-  const combined = [...localItems, ...MOCK_ACCESSORIES];
+  const combined = [...localItems];
   const seen = new Set<string>();
   const unique: AccessoryProduct[] = [];
   for (const item of combined) {
@@ -216,7 +216,7 @@ function AccessoriesContent() {
                 description: item.description || ""
               }));
 
-            const combinedRaw = [...customMapped, ...dbMapped, ...MOCK_ACCESSORIES];
+            const combinedRaw = [...customMapped, ...dbMapped];
 
             const seenKeys = new Set<string>();
             const finalUnique: AccessoryProduct[] = [];
@@ -236,7 +236,7 @@ function AccessoriesContent() {
             cachedProductsList = finalUnique;
             setProducts(finalUnique);
           } else {
-            const combinedRaw = [...customMapped, ...MOCK_ACCESSORIES];
+            const combinedRaw = [...customMapped];
             const seenKeys = new Set<string>();
             const finalUnique: AccessoryProduct[] = [];
             for (const item of combinedRaw) {
@@ -258,7 +258,7 @@ function AccessoriesContent() {
           setIsLoading(false);
         }
       } else {
-        const combinedRaw = [...customMapped, ...MOCK_ACCESSORIES];
+        const combinedRaw = [...customMapped];
         const seenKeys = new Set<string>();
         const finalUnique: AccessoryProduct[] = [];
         for (const item of combinedRaw) {
@@ -671,10 +671,10 @@ function AccessoriesContent() {
         <div className="text-center py-20 bg-muted/20 border border-border rounded-3xl space-y-3">
           <Smartphone className="h-10 w-10 text-muted-foreground mx-auto" />
           <h3 className="font-bold text-foreground">
-            No accessories match search terms
+            {products.length === 0 ? "No accessories available yet" : "No accessories match search terms"}
           </h3>
           <p className="text-xs text-muted-foreground">
-            Try clearing filters or search box query.
+            {products.length === 0 ? "Products added from the Admin Panel will appear here." : "Try clearing filters or search box query."}
           </p>
         </div>
       )}

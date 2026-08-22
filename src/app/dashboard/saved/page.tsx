@@ -37,36 +37,33 @@ export default function WishlistPage() {
         return;
       }
 
+      let loadedItems: Accessory[] = [];
       if (isSupabaseConfigured()) {
-        const { data, error } = await supabase
-          .from("accessories")
-          .select("*")
-          .in("id", wishlistIds);
+        try {
+          const { data, error } = await supabase
+            .from("accessories")
+            .select("*")
+            .in("id", wishlistIds);
 
-        if (error) throw error;
-        setItems(data || []);
-      } else {
-        // Fallback: fetch from mock catalog (if exists) or mock data
-        const mockCatalog = localStorage.getItem("sc_mock_accessories");
-        if (mockCatalog) {
-          const allAccessories = JSON.parse(mockCatalog) as Accessory[];
-          setItems(allAccessories.filter(item => wishlistIds.includes(item.id)));
-        } else {
-          // Provide default mock items matching the ids
-          const defaultMocks: Accessory[] = [
-            {
-              id: "prod1",
-              name: "Ultra-Fast 65W GaN Charger",
-              category: "charger",
-              brand: "Anker",
-              price: 1499.00,
-              stock_quantity: 12,
-              images: []
-            }
-          ];
-          setItems(defaultMocks.filter(item => wishlistIds.includes(item.id)));
+          if (!error && data) {
+            loadedItems = data;
+          }
+        } catch (err) {
+          console.warn("Supabase wishlist load error:", err);
         }
       }
+
+      if (loadedItems.length === 0 && typeof window !== "undefined") {
+        const savedCustom = localStorage.getItem("sc_custom_accessories");
+        if (savedCustom) {
+          try {
+            const parsedCustom: Accessory[] = JSON.parse(savedCustom);
+            loadedItems = parsedCustom.filter(item => wishlistIds.includes(String(item.id)));
+          } catch (e) {}
+        }
+      }
+
+      setItems(loadedItems);
     } catch (e) {
       console.error("Error reading wishlist:", e);
     }

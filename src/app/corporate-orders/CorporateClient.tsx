@@ -30,7 +30,6 @@ import {
   Layers,
   ShoppingBag
 } from "lucide-react";
-import { MOCK_ACCESSORIES } from "@/lib/accessories";
 import { formatINR } from "@/lib/utils";
 import { createB2BInquiry, B2BInquiryData } from "@/lib/appwrite";
 
