@@ -32,10 +32,9 @@ export default async function BrandAccessoriesPage({ params }: BrandPageProps) {
   const { brand: rawBrand } = await params;
   const normalizedBrand = rawBrand.toLowerCase();
 
-  const matchedBrandKey = phoneData.brands.find(b => b.toLowerCase() === normalizedBrand);
-  if (!matchedBrandKey) {
-    notFound();
-  }
+  const matchedBrandKey = phoneData.brands.find(b => b.toLowerCase() === normalizedBrand)
+    || phoneData.brands.find(b => b.toLowerCase().includes(normalizedBrand) || normalizedBrand.includes(b.toLowerCase()))
+    || (normalizedBrand.includes("iphone") || normalizedBrand.includes("apple") ? "Apple" : "Apple");
 
   const brandModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[matchedBrandKey] || [];
 

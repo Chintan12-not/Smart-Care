@@ -11,8 +11,9 @@ interface ArticlePageProps {
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = ARTICLES.find((a) => a.slug === slug);
-  if (!article) return {};
+  const article = ARTICLES.find((a) => a.slug === slug)
+    || ARTICLES.find((a) => a.slug.includes(slug) || slug.includes(a.slug))
+    || ARTICLES[0];
 
   return {
     title: article.title,
@@ -34,10 +35,9 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = ARTICLES.find((a) => a.slug === slug);
-  if (!article) {
-    notFound();
-  }
+  const article = ARTICLES.find((a) => a.slug === slug)
+    || ARTICLES.find((a) => a.slug.includes(slug) || slug.includes(a.slug))
+    || ARTICLES[0];
 
   const articleSchema = {
     "@context": "https://schema.org",

@@ -1,4 +1,6 @@
 import { MetadataRoute } from "next";
+import phoneData from "@/data/phoneModels.json";
+import { ARTICLES } from "@/lib/articles";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://smartcaremobile.in";
@@ -21,40 +23,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/sitemap",
   ];
 
-  // Brand Accessories Pages
-  const brandRoutes = [
-    "/accessories/brand/apple",
-    "/accessories/brand/samsung",
-    "/accessories/brand/oneplus",
-    "/accessories/brand/vivo",
-    "/accessories/brand/oppo",
-    "/accessories/brand/xiaomi",
-    "/accessories/brand/realme",
-    "/accessories/brand/google",
-  ];
+  // Dynamically generate all Brand Routes from phoneData
+  const brandRoutes = phoneData.brands.map((brand) => `/accessories/brand/${brand.toLowerCase()}`);
 
-  // Model-Specific Accessories Pages
-  const modelRoutes = [
-    "/accessories/brand/apple/iphone-15",
-    "/accessories/brand/apple/iphone-15-pro",
-    "/accessories/brand/apple/iphone-15-pro-max",
-    "/accessories/brand/apple/iphone-14",
-    "/accessories/brand/samsung/galaxy-s24-ultra",
-    "/accessories/brand/samsung/galaxy-s23-5g",
-    "/accessories/brand/oneplus/oneplus-12",
-  ];
+  // Dynamically generate Model Routes from phoneData
+  const modelRoutes: string[] = [];
+  Object.entries(phoneData.brandModels).forEach(([brand, models]) => {
+    const brandLower = brand.toLowerCase();
+    (models as Array<{ name: string }>).forEach((m) => {
+      const modelSlug = m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      if (modelSlug) {
+        modelRoutes.push(`/accessories/brand/${brandLower}/${modelSlug}`);
+      }
+    });
+  });
 
-  // Blog Guides
-  const blogRoutes = [
-    "/blog/iphone-screen-replacement-cost-gurgaon",
-    "/blog/when-to-replace-phone-battery",
-    "/blog/why-is-phone-charging-slowly",
-    "/blog/why-smartphone-overheating-causes",
-    "/blog/how-to-choose-right-phone-charger",
-    "/blog/how-to-choose-tempered-glass-screen-protector",
-  ];
+  // Dynamically generate all Blog Routes from ARTICLES
+  const blogRoutes = ARTICLES.map((article) => `/blog/${article.slug}`);
 
-  const allUrls = [
+  const allUrls: MetadataRoute.Sitemap = [
     ...routes.map((route) => ({
       url: `${baseUrl}${route}`,
       lastModified: currentDate,
@@ -65,19 +52,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}${route}`,
       lastModified: currentDate,
       changeFrequency: "weekly" as const,
-      priority: 0.8,
+      priority: 0.85,
     })),
     ...modelRoutes.map((route) => ({
       url: `${baseUrl}${route}`,
       lastModified: currentDate,
       changeFrequency: "weekly" as const,
-      priority: 0.7,
+      priority: 0.75,
     })),
     ...blogRoutes.map((route) => ({
       url: `${baseUrl}${route}`,
       lastModified: currentDate,
       changeFrequency: "monthly" as const,
-      priority: 0.7,
+      priority: 0.8,
     })),
   ];
 
