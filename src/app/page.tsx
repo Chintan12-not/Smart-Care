@@ -818,6 +818,101 @@ export default function Home() {
         </div>
       </section>
 
+      {/* CUSTOM PHONE MODEL ACCESSORY REQUEST SECTION (FORMSUBMIT) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10 w-full border-t border-border/40">
+        <div className="glass-card rounded-3xl p-8 sm:p-10 border border-emerald-500/30 bg-emerald-500/5 max-w-4xl mx-auto shadow-xl space-y-6">
+          <div className="text-center space-y-2">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+              <Smartphone className="h-3.5 w-3.5" />
+              Instant Stock Request
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+              Can&apos;t Find Accessories for <span className="text-emerald-500">Your Phone Model?</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Request custom drop-tested cases, 9H tempered screen guards, fast chargers, or batteries for any smartphone model. We will source &amp; stock it for you within 24-48 hours.
+            </p>
+          </div>
+
+          {/* FormSubmit.co Direct Request Form */}
+          <form
+            action="https://formsubmit.co/chintanmaheshwari714@gmail.com"
+            method="POST"
+            className="p-6 rounded-2xl bg-card border border-border space-y-4 shadow-md text-foreground"
+          >
+            <input type="hidden" name="_subject" value="Homepage Customer Phone Model Accessory Request" />
+            <input type="hidden" name="_captcha" value="false" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Phone Brand *</label>
+                <input
+                  type="text"
+                  name="brand"
+                  placeholder="e.g. Apple, Samsung, OPPO, OnePlus..."
+                  className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Exact Phone Model *</label>
+                <input
+                  type="text"
+                  name="phone_model"
+                  placeholder="e.g. iPhone 16 Pro, S24 Ultra, Vivo V30..."
+                  className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Your Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Enter your name"
+                  className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">WhatsApp / Mobile No. *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="10-digit mobile number"
+                  className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Product / Accessory Needed *</label>
+              <input
+                type="text"
+                name="product_type"
+                placeholder="e.g. Shockproof Armor Case, 9H Glass Guard, Fast Wall Charger..."
+                className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                required
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Submit Accessory Stock Request</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
       {/* 7. CONTACT FORM & GOOGLE MAPS INTEGRATION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pb-24 sm:pb-16 relative z-10 w-full border-t border-border/40 flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
         
