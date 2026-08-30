@@ -8,16 +8,32 @@ import phoneData from "@/data/phoneModels.json";
 interface PhoneModelFinderProps {
   onSelectModel?: (brand: string, model: string) => void;
   isCompact?: boolean;
+  initialBrand?: string;
+  initialModel?: string;
+  availableBrands?: string[];
 }
 
-export default function PhoneModelFinder({ onSelectModel, isCompact = false }: PhoneModelFinderProps) {
+export default function PhoneModelFinder({
+  onSelectModel,
+  isCompact = false,
+  initialBrand = "Apple",
+  initialModel = "",
+  availableBrands
+}: PhoneModelFinderProps) {
   const router = useRouter();
 
-  const [selectedBrand, setSelectedBrand] = useState<string>("Apple");
-  const [selectedModel, setSelectedModel] = useState<string>("");
+  const [selectedBrand, setSelectedBrand] = useState<string>(initialBrand || "Apple");
+  const [selectedModel, setSelectedModel] = useState<string>(initialModel || "");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const brands = phoneData.brands;
+  React.useEffect(() => {
+    if (initialBrand) setSelectedBrand(initialBrand);
+    if (initialModel !== undefined) setSelectedModel(initialModel);
+  }, [initialBrand, initialModel]);
+
+  const rawBrands = availableBrands && availableBrands.length > 0 ? availableBrands : phoneData.brands;
+  // Ensure unique case-preserved brand list
+  const brands = Array.from(new Set([...rawBrands, ...phoneData.brands]));
   const brandModelsMap = phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>;
 
   const currentModels = brandModelsMap[selectedBrand] || [];

@@ -115,7 +115,27 @@ export default function ProductRequestModal({
         }
       }
 
-      // 3. Trigger Email Notification to Admin & Confirmation
+      // 3. Trigger FormSubmit.co Submission & Email Notification
+      try {
+        const formData = new FormData();
+        formData.append("name", requestData.customer_name);
+        formData.append("phone", requestData.phone);
+        formData.append("email", requestData.email || "customer@smartcaremobile.in");
+        formData.append("brand", requestData.brand);
+        formData.append("phone_model", requestData.phone_model);
+        formData.append("product_type", requestData.product_type);
+        formData.append("notes", requestData.notes);
+        formData.append("_subject", `Product Request: ${requestData.brand} ${requestData.phone_model}`);
+        formData.append("_captcha", "false");
+
+        await fetch("https://formsubmit.co/ajax/chintanmaheshwari714@gmail.com", {
+          method: "POST",
+          body: formData
+        });
+      } catch (fsErr) {
+        console.warn("FormSubmit POST error:", fsErr);
+      }
+
       try {
         await fetch("/api/v1/email", {
           method: "POST",

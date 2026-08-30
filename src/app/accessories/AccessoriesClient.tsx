@@ -33,6 +33,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
 import ProductRequestModal from "@/components/accessories/ProductRequestModal";
+import { isProductCompatibleWithModel } from "@/lib/compatibility";
 import { trackCTAClick, trackEvent } from "@/lib/analytics";
 
 // Client-side in-memory cache to prevent redundant Supabase fetches
@@ -50,40 +51,59 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
   const searchParams = useSearchParams();
   const queryBrand = searchParams.get("brand") || "";
   const queryModel = searchParams.get("model") || "";
+  const queryCategory = searchParams.get("category") || "all";
+  const queryQ = searchParams.get("q") || "";
   
-  // Search & Filter states
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("default");
+  // Phone selection & Filter states
+  const [selectedBrand, setSelectedBrand] = useState<string>(queryBrand || "Apple");
+  const [selectedModel, setSelectedModel] = useState<string>(queryModel || "");
+  const [search, setSearch] = useState<string>(queryQ || "");
+  const [category, setCategory] = useState<string>(queryCategory || "all");
+  const [sortBy, setSortBy] = useState<string>("default");
   
   // Progressive loading / batching state (initial 12 items)
   const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
     setVisibleCount(12);
-  }, [search, category, sortBy]);
+  }, [search, category, sortBy, selectedBrand, selectedModel]);
 
   useEffect(() => {
-    if (queryModel) {
-      setSearch(queryModel);
-      setCategory("all");
-    } else if (queryBrand) {
-      setSearch(queryBrand);
-      setCategory("all");
+    if (queryBrand) setSelectedBrand(queryBrand);
+    if (queryModel !== null && queryModel !== undefined) setSelectedModel(queryModel);
+    if (queryCategory) setCategory(queryCategory);
+    if (queryQ) setSearch(queryQ);
+  }, [queryBrand, queryModel, queryCategory, queryQ]);
+
+  const updateUrlParams = (brand: string, model: string, cat: string, qStr: string) => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams();
+      if (brand) params.set("brand", brand);
+      if (model) params.set("model", model);
+      if (cat && cat !== "all") params.set("category", cat);
+      if (qStr) params.set("q", qStr);
+      const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
+      window.history.replaceState(null, "", newUrl);
     }
-  }, [queryBrand, queryModel]);
+  };
 
   const handleSelectModelFromFinder = (brand: string, model: string) => {
-    setCategory("all");
-    if (model) {
-      setSearch(model);
-    } else {
-      setSearch(brand);
-    }
+    setSelectedBrand(brand);
+    setSelectedModel(model);
+    updateUrlParams(brand, model, category, search);
     const el = document.getElementById("accessories-grid-section");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const handleResetPhoneSelection = () => {
+    setSelectedBrand("Apple");
+    setSelectedModel("");
+    setSearch("");
+    setCategory("all");
+    setSortBy("default");
+    updateUrlParams("", "", "all", "");
   };
   
   // Interactive feature states
@@ -257,57 +277,13 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     }
   };
 
-  // 8. Enhanced Intelligent Search & AirPods Pro 2 Matching
+  // 8. Exact Compatibility Engine & Multi-Stage Filter Pipeline
   const filteredProducts = products.filter((prod) => {
-    if (!search.trim() && category === "all") return true;
+    // Stage 1: Exact Phone Model Compatibility
+    const isCompatible = isProductCompatibleWithModel(prod, selectedBrand, selectedModel);
+    if (!isCompatible) return false;
 
-    const sLower = search.toLowerCase().trim();
-    const sTokens = sLower.split(/\s+/).filter(Boolean);
-
-    // Build rich searchable text corpus for product
-    const prodCorpus = [
-      prod.name,
-      prod.brand,
-      prod.category,
-      prod.description || "",
-      prod.specifications ? JSON.stringify(prod.specifications) : ""
-    ].join(" ").toLowerCase();
-
-    let matchesSearch = !sLower;
-
-    if (sLower) {
-      const cleanSearch = sLower.replace(/\b(usb-c|lightning|case|cover)\b/g, "").trim();
-
-      // 1. Direct substring match
-      if (prodCorpus.includes(sLower) || (cleanSearch && prodCorpus.includes(cleanSearch))) {
-        matchesSearch = true;
-      }
-      // 2. Tokenized match (matches if any significant token is found in product corpus)
-      else if (sTokens.some(token => token.length > 1 && prodCorpus.includes(token))) {
-        matchesSearch = true;
-      }
-      // 3. Brand & Universal Accessory matching fallback
-      else {
-        const knownBrands = ["apple", "samsung", "oppo", "oneplus", "xiaomi", "redmi", "poco", "vivo", "realme", "google", "airpods"];
-        const matchedBrand = knownBrands.find(b => sLower.includes(b));
-        if (matchedBrand) {
-          const prodBrandLower = prod.brand.toLowerCase();
-          const prodCatLower = prod.category.toLowerCase();
-          if (
-            prodBrandLower.includes(matchedBrand) ||
-            prodCorpus.includes(matchedBrand) ||
-            prodCatLower.includes("charger") ||
-            prodCatLower.includes("cable") ||
-            prodCatLower.includes("power") ||
-            prodCatLower.includes("earbud")
-          ) {
-            matchesSearch = true;
-          }
-        }
-      }
-    }
-
-    // Flexible category matching
+    // Stage 2: Category Filter
     const prodCatNorm = prod.category.toLowerCase().trim();
     const selCatNorm = category.toLowerCase().trim();
     const prodStem = prodCatNorm.endsWith("s") ? prodCatNorm.slice(0, -1) : prodCatNorm;
@@ -318,7 +294,26 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
       prodCatNorm === selCatNorm ||
       prodStem === selStem;
 
-    return matchesSearch && matchesCategory;
+    if (!matchesCategory) return false;
+
+    // Stage 3: Search Bar Text Filter
+    if (!search.trim()) return true;
+
+    const sLower = search.toLowerCase().trim();
+    const sTokens = sLower.split(/\s+/).filter(Boolean);
+
+    const prodCorpus = [
+      prod.name,
+      prod.brand,
+      prod.category,
+      prod.description || "",
+      prod.specifications ? JSON.stringify(prod.specifications) : ""
+    ].join(" ").toLowerCase();
+
+    return (
+      prodCorpus.includes(sLower) ||
+      sTokens.some((token) => token.length > 1 && prodCorpus.includes(token))
+    );
   });
 
   // 9. Sorting execution
@@ -362,7 +357,30 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
       </div>
 
       {/* Interactive Phone Model Finder */}
-      <PhoneModelFinder onSelectModel={handleSelectModelFromFinder} />
+      <PhoneModelFinder 
+        onSelectModel={handleSelectModelFromFinder} 
+        initialBrand={selectedBrand}
+        initialModel={selectedModel}
+      />
+
+      {/* Active Phone Compatibility Status Indicator Bar */}
+      {(selectedBrand || selectedModel) && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-sm">
+          <div className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4 text-emerald-500 shrink-0" />
+            <span className="text-foreground">
+              Showing exact compatible accessories for: <strong className="text-emerald-500 font-extrabold">{selectedBrand} {selectedModel}</strong>
+            </span>
+          </div>
+          <button
+            onClick={handleResetPhoneSelection}
+            className="px-3.5 py-1.5 rounded-xl bg-muted hover:bg-border text-foreground font-bold text-[11px] flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+          >
+            <X className="h-3.5 w-3.5 text-red-400" />
+            <span>Reset / Change Phone</span>
+          </button>
+        </div>
+      )}
 
       {/* Banner for Custom Phone Model Product Request */}
       <div className="glass-card rounded-2xl p-5 border border-emerald-500/30 bg-emerald-500/5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
@@ -376,7 +394,7 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
           </div>
         </div>
         <button
-          onClick={() => handleOpenRequestModal(queryBrand, queryModel)}
+          onClick={() => handleOpenRequestModal(selectedBrand, selectedModel)}
           className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs whitespace-nowrap transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
         >
           <Plus className="h-4 w-4" />
@@ -394,7 +412,10 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
             type="text"
             placeholder="Search chargers, cases, brand..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              updateUrlParams(selectedBrand, selectedModel, category, e.target.value);
+            }}
             className="w-full bg-muted border border-border rounded-xl py-3 pl-11 pr-4 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
           />
         </div>
@@ -404,9 +425,13 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
           {categoriesList.map((cat) => (
             <button
               key={cat}
-              onClick={() => setCategory(cat.toLowerCase())}
+              onClick={() => {
+                const newCat = cat.toLowerCase();
+                setCategory(newCat);
+                updateUrlParams(selectedBrand, selectedModel, newCat, search);
+              }}
               className={cn(
-                "px-3.5 py-1.5 rounded-full border text-[11px] font-semibold whitespace-nowrap transition-all duration-200",
+                "px-3.5 py-1.5 rounded-full border text-[11px] font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer",
                 category === cat.toLowerCase()
                   ? "bg-foreground text-background border-foreground shadow-sm"
                   : "bg-card border-border text-muted-foreground hover:text-foreground"
@@ -423,7 +448,7 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-card border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 select-none"
+            className="bg-card border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 select-none cursor-pointer"
           >
             <option value="default">Default Sorting</option>
             <option value="price-asc">Price: Low to High</option>
@@ -594,27 +619,106 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
         </div>
       )}
 
-      {/* Empty State */}
+      {/* Empty State with FormSubmit Customer Request Form */}
       {!isLoading && sortedProducts.length === 0 && (
-        <div className="text-center py-16 bg-muted/20 border border-border rounded-3xl space-y-4 px-4">
-          <Smartphone className="h-10 w-10 text-emerald-500 mx-auto opacity-80" />
-          <div className="space-y-1">
-            <h3 className="font-bold text-foreground">
-              {products.length === 0 ? "No accessories available yet" : "No accessories match your search criteria"}
+        <div className="text-center py-12 bg-muted/20 border border-border rounded-3xl space-y-6 px-4 max-w-2xl mx-auto shadow-sm">
+          <Smartphone className="h-12 w-12 text-emerald-500 mx-auto opacity-80" />
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold text-foreground">
+              {products.length === 0 
+                ? "No accessories available yet" 
+                : `No accessories found for ${selectedBrand} ${selectedModel || ""} yet.`}
             </h3>
-            <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Looking for covers, screen guards, or chargers for a specific phone model? You can instantly request it and we will restock it for you!
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Can&apos;t find an accessory for your specific phone model? Request custom covers, tempered glass guards, chargers, or batteries for any model. We will stock it for you within 24-48 hours!
             </p>
           </div>
-          <div className="pt-2">
-            <button
-              onClick={() => handleOpenRequestModal(queryBrand, search || queryModel, category !== "all" ? category : "")}
-              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs inline-flex items-center gap-2 transition-colors cursor-pointer shadow-md"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Request Product For Your Phone Model</span>
-            </button>
-          </div>
+
+          {/* FormSubmit.co Inline Request Form */}
+          <form
+            action="https://formsubmit.co/chintanmaheshwari714@gmail.com"
+            method="POST"
+            className="p-5 rounded-2xl bg-card border border-border text-left space-y-3 shadow-md"
+          >
+            <input type="hidden" name="_subject" value={`Product Request for ${selectedBrand} ${selectedModel}`} />
+            <input type="hidden" name="_captcha" value="false" />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Phone Brand *</label>
+                <input
+                  type="text"
+                  name="brand"
+                  defaultValue={selectedBrand}
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Phone Model *</label>
+                <input
+                  type="text"
+                  name="phone_model"
+                  defaultValue={selectedModel}
+                  placeholder="e.g. iPhone 16 Pro, S24 Ultra"
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Your Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Customer Name"
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">WhatsApp / Phone *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="10-digit Mobile No."
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Product / Accessory Needed *</label>
+              <input
+                type="text"
+                name="product_type"
+                placeholder="e.g. Shockproof Case, 9H Tempered Glass, Fast Charger..."
+                className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="submit"
+                className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Submit Product Request</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOpenRequestModal(selectedBrand, selectedModel, category !== "all" ? category : "")}
+                className="py-3 px-4 rounded-xl bg-muted hover:bg-border text-foreground font-bold text-xs transition-colors cursor-pointer"
+              >
+                Open Full Modal
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
