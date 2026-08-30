@@ -32,6 +32,7 @@ import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
+import ProductRequestModal from "@/components/accessories/ProductRequestModal";
 import { trackCTAClick, trackEvent } from "@/lib/analytics";
 
 // Client-side in-memory cache to prevent redundant Supabase fetches
@@ -41,49 +42,7 @@ function getInitialProducts(): AccessoryProduct[] {
   if (cachedProductsList && cachedProductsList.length > 0) {
     return cachedProductsList;
   }
-  let localItems: AccessoryProduct[] = [];
-  if (typeof window !== "undefined") {
-    try {
-      const savedCustom = localStorage.getItem("sc_custom_accessories");
-      if (savedCustom) {
-        const parsedCustom: any[] = JSON.parse(savedCustom);
-        if (Array.isArray(parsedCustom) && parsedCustom.length > 0) {
-          localItems = parsedCustom.map((item) => ({
-            id: String(item.id),
-            name: item.name || "Accessory Product",
-            category: item.category || "case",
-            brand: item.brand || "Generic",
-            price: Number(item.price || 0),
-            originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
-            inStock: item.inStock !== false,
-            isOnSale: item.isOnSale || false,
-            rating: Number(item.rating || 4.8),
-            reviewsCount: Number(item.reviewsCount || 15),
-            image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
-            images: item.images || [item.image || "/shop_accessories.png"],
-            specifications: item.specifications || {},
-            description: item.description || ""
-          }));
-        }
-      }
-    } catch (e) {
-      console.warn("Failed to parse initial custom accessories from localStorage:", e);
-    }
-  }
-  const combined = [...localItems];
-  const seen = new Set<string>();
-  const unique: AccessoryProduct[] = [];
-  for (const item of combined) {
-    if (!item) continue;
-    const idKey = String(item.id || "").trim();
-    const nameKey = String(item.name || "").toLowerCase().trim();
-    if (!seen.has(idKey) && !seen.has(nameKey)) {
-      if (idKey) seen.add(idKey);
-      if (nameKey) seen.add(nameKey);
-      unique.push(item);
-    }
-  }
-  return unique;
+  return MOCK_ACCESSORIES;
 }
 
 function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryProduct[] }) {
@@ -135,6 +94,19 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedItemName, setAddedItemName] = useState("");
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  
+  // Product Request Modal State
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [requestModalParams, setRequestModalParams] = useState({
+    brand: "",
+    model: "",
+    productType: ""
+  });
+
+  const handleOpenRequestModal = (brand = "", model = "", productType = "") => {
+    setRequestModalParams({ brand, model, productType });
+    setIsRequestModalOpen(true);
+  };
 
   // Admin Panel & Supabase items
   const [products, setProducts] = useState<AccessoryProduct[]>(getInitialProducts);
@@ -157,39 +129,9 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     }
   }, []);
 
-  // 2. Fetch products from Supabase & LocalStorage (with live sync)
+  // 2. Fetch products directly from Supabase
   useEffect(() => {
     async function loadProducts() {
-      // 1. Instant local hydration (0ms UI render)
-      let customMapped: AccessoryProduct[] = [];
-      if (typeof window !== "undefined") {
-        const savedCustom = localStorage.getItem("sc_custom_accessories");
-        if (savedCustom) {
-          try {
-            const parsedCustom: any[] = JSON.parse(savedCustom);
-            customMapped = parsedCustom.map((item) => ({
-              id: String(item.id),
-              name: item.name || "Accessory Product",
-              category: item.category || "case",
-              brand: item.brand || "Generic",
-              price: Number(item.price || 0),
-              originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
-              inStock: item.inStock !== false,
-              isOnSale: item.isOnSale || false,
-              rating: Number(item.rating || 4.8),
-              reviewsCount: Number(item.reviewsCount || 15),
-              image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
-              images: item.images || [item.image || "/shop_accessories.png"],
-              specifications: item.specifications || {},
-              description: item.description || ""
-            }));
-          } catch (e) {
-            console.warn("Failed to parse custom accessories from localStorage:", e);
-          }
-        }
-      }
-
-      // 2. Background async Supabase sync (non-blocking)
       if (isSupabaseConfigured()) {
         try {
           const { data, error } = await supabase
@@ -216,12 +158,10 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
                 description: item.description || ""
               }));
 
-            const combinedRaw = [...customMapped, ...dbMapped];
-
             const seenKeys = new Set<string>();
             const finalUnique: AccessoryProduct[] = [];
 
-            for (const item of combinedRaw) {
+            for (const item of dbMapped) {
               if (!item) continue;
               const idKey = String(item.id || "").trim();
               const nameKey = String(item.name || "").toLowerCase().trim();
@@ -235,63 +175,27 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
 
             cachedProductsList = finalUnique;
             setProducts(finalUnique);
-          } else {
-            const combinedRaw = [...customMapped];
-            const seenKeys = new Set<string>();
-            const finalUnique: AccessoryProduct[] = [];
-            for (const item of combinedRaw) {
-              if (!item) continue;
-              const idKey = String(item.id || "").trim();
-              const nameKey = String(item.name || "").toLowerCase().trim();
-              if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
-                if (idKey) seenKeys.add(idKey);
-                if (nameKey) seenKeys.add(nameKey);
-                finalUnique.push(item);
-              }
-            }
-            cachedProductsList = finalUnique;
-            setProducts(finalUnique);
           }
         } catch (err) {
-          console.error("Background error loading products from Supabase:", err);
+          console.error("Error loading products from Supabase:", err);
         } finally {
           setIsLoading(false);
         }
-      } else {
-        const combinedRaw = [...customMapped];
-        const seenKeys = new Set<string>();
-        const finalUnique: AccessoryProduct[] = [];
-        for (const item of combinedRaw) {
-          if (!item) continue;
-          const idKey = String(item.id || "").trim();
-          const nameKey = String(item.name || "").toLowerCase().trim();
-          if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
-            if (idKey) seenKeys.add(idKey);
-            if (nameKey) seenKeys.add(nameKey);
-            finalUnique.push(item);
-          }
-        }
-        cachedProductsList = finalUnique;
-        setProducts(finalUnique);
-        setIsLoading(false);
       }
     }
 
     loadProducts();
 
-    // Re-fetch automatically when new products are uploaded in Admin
     const handleUpdate = () => {
       cachedProductsList = null;
       loadProducts();
     };
     if (typeof window !== "undefined") {
       window.addEventListener("sc-products-updated", handleUpdate);
-      window.addEventListener("storage", handleUpdate);
     }
     return () => {
       if (typeof window !== "undefined") {
         window.removeEventListener("sc-products-updated", handleUpdate);
-        window.removeEventListener("storage", handleUpdate);
       }
     };
   }, []);
@@ -458,6 +362,26 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
       {/* Interactive Phone Model Finder */}
       <PhoneModelFinder onSelectModel={handleSelectModelFromFinder} />
 
+      {/* Banner for Custom Phone Model Product Request */}
+      <div className="glass-card rounded-2xl p-5 border border-emerald-500/30 bg-emerald-500/5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 shrink-0">
+            <Smartphone className="h-5 w-5" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-foreground">Can&apos;t find an accessory for your specific phone model?</h4>
+            <p className="text-xs text-muted-foreground">Request custom covers, tempered glass guards, chargers, or batteries for any model.</p>
+          </div>
+        </div>
+        <button
+          onClick={() => handleOpenRequestModal(queryBrand, queryModel)}
+          className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs whitespace-nowrap transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Request For Your Model</span>
+        </button>
+      </div>
+
       {/* Catalog Search, Category Tabs, and Sorting Controls */}
       <div id="accessories-grid-section" className="glass-card rounded-2xl p-5 border border-border flex flex-col lg:flex-row gap-4 items-center justify-between">
         
@@ -578,12 +502,14 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
                     </div>
 
                     {/* Automatic Image Slider Container (z-10) */}
-                    <ProductCardImageSlider
-                      image={prod.image}
-                      images={prod.images}
-                      name={prod.name}
-                      priority={idx < 6}
-                    />
+                    <Link href={`/accessories/${prod.id}`} className="block w-full h-full cursor-pointer">
+                      <ProductCardImageSlider
+                        image={prod.image}
+                        images={prod.images}
+                        name={prod.name}
+                        priority={idx < 6}
+                      />
+                    </Link>
                   </div>
 
                   {/* Product details */}
@@ -668,14 +594,25 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
 
       {/* Empty State */}
       {!isLoading && sortedProducts.length === 0 && (
-        <div className="text-center py-20 bg-muted/20 border border-border rounded-3xl space-y-3">
-          <Smartphone className="h-10 w-10 text-muted-foreground mx-auto" />
-          <h3 className="font-bold text-foreground">
-            {products.length === 0 ? "No accessories available yet" : "No accessories match search terms"}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            {products.length === 0 ? "Products added from the Admin Panel will appear here." : "Try clearing filters or search box query."}
-          </p>
+        <div className="text-center py-16 bg-muted/20 border border-border rounded-3xl space-y-4 px-4">
+          <Smartphone className="h-10 w-10 text-emerald-500 mx-auto opacity-80" />
+          <div className="space-y-1">
+            <h3 className="font-bold text-foreground">
+              {products.length === 0 ? "No accessories available yet" : "No accessories match your search criteria"}
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+              Looking for covers, screen guards, or chargers for a specific phone model? You can instantly request it and we will restock it for you!
+            </p>
+          </div>
+          <div className="pt-2">
+            <button
+              onClick={() => handleOpenRequestModal(queryBrand, search || queryModel, category !== "all" ? category : "")}
+              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs inline-flex items-center gap-2 transition-colors cursor-pointer shadow-md"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Request Product For Your Phone Model</span>
+            </button>
+          </div>
         </div>
       )}
 
@@ -892,6 +829,15 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
           </div>
         </div>
       )}
+
+      {/* Modal: Product Request */}
+      <ProductRequestModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+        initialBrand={requestModalParams.brand}
+        initialModel={requestModalParams.model}
+        initialProductType={requestModalParams.productType}
+      />
 
     </div>
   );

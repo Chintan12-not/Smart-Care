@@ -208,15 +208,36 @@ export async function POST(req: NextRequest) {
           <p style="font-size: 11px; color: #94a3b8; text-align: center;">Smart Care & Mobile Point B2B Corporate Inquiry Notification</p>
         </div>
       `;
+    } else if (type === "product_request") {
+      subject = `Phone Model Product Request: ${payload.brand} ${payload.phone_model} (${payload.product_type})`;
+      htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; background-color: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; line-height: 1.6;">
+          <div style="text-align: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid #10b981;">
+            <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 160px; height: auto;" />
+          </div>
+          <h2 style="color: #059669; margin-top: 0; font-size: 20px;">New Customer Phone Model Product Request 📱</h2>
+          <div style="background-color: #ecfdf5; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #a7f3d0; font-size: 14px;">
+            <p style="margin: 0 0 8px 0;"><strong>Phone Brand:</strong> ${payload.brand}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Phone Model:</strong> ${payload.phone_model}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Requested Accessory:</strong> ${payload.product_type}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Customer Name:</strong> ${payload.customer_name}</p>
+            <p style="margin: 0 0 8px 0;"><strong>WhatsApp / Mobile:</strong> <a href="https://wa.me/91${payload.phone}" style="color: #059669; font-weight: bold;">${payload.phone}</a></p>
+            <p style="margin: 0 0 8px 0;"><strong>Customer Email:</strong> ${payload.email || "Not provided"}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Special Notes:</strong> ${payload.notes || "None"}</p>
+          </div>
+          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="font-size: 11px; color: #94a3b8; text-align: center;">Smart Care & Mobile Point Product Request System</p>
+        </div>
+      `;
     } else {
       return NextResponse.json({ success: false, error: "Invalid email type" }, { status: 400 });
     }
 
     // Build recipient targets based on email type:
     // - "welcome": ONLY send to the customer email [to]
-    // - "contact" or "b2b_quote": send directly to admin emails [enigcononline@gmail.com, chintanmaheshwari714@gmail.com]
+    // - "contact", "b2b_quote", or "product_request": send directly to admin emails [enigcononline@gmail.com, chintanmaheshwari714@gmail.com]
     // - "accessory" or "pickup": send to customer email [to] AND store owners [enigcononline@gmail.com, chintanmaheshwari714@gmail.com]
-    const recipientTargets = (type === "contact" || type === "b2b_quote")
+    const recipientTargets = (type === "contact" || type === "b2b_quote" || type === "product_request")
       ? adminRecipients
       : (type === "welcome" || type === "delivered")
         ? [to] 

@@ -34,6 +34,7 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import confetti from "canvas-confetti";
 import ProductReviews from "@/components/accessories/ProductReviews";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
+import ProductRequestModal from "@/components/accessories/ProductRequestModal";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -75,6 +76,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
   const [activeTab, setActiveTab] = useState<"description" | "specifications" | "reviews" | "shipping">("description");
   const [dynamicRating, setDynamicRating] = useState<number>(4.8);
   const [dynamicReviewsCount, setDynamicReviewsCount] = useState<number>(15);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
   const displayImages = product?.images && product.images.length > 0 
     ? product.images 
@@ -129,49 +131,6 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         );
       };
 
-      // 1. Search Custom LocalStorage Accessories (added via Admin panel)
-      if (typeof window !== "undefined") {
-        const savedCustom = localStorage.getItem("sc_custom_accessories");
-        if (savedCustom) {
-          try {
-            const parsedCustom: any[] = JSON.parse(savedCustom);
-            const customMapped: AccessoryProduct[] = parsedCustom.map((item) => ({
-              id: String(item.id),
-              name: item.name || "Accessory Product",
-              category: item.category || "case",
-              brand: item.brand || "Generic",
-              price: Number(item.price || 0),
-              originalPrice: item.originalPrice ? Number(item.originalPrice) : null,
-              inStock: item.inStock !== false,
-              isOnSale: item.isOnSale || false,
-              rating: Number(item.rating || 4.8),
-              reviewsCount: Number(item.reviewsCount || 15),
-              image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
-              images: item.images || [item.image || "/shop_accessories.png"],
-              specifications: item.specifications || {},
-              description: item.description || ""
-            }));
-
-            allFoundProducts = [...allFoundProducts, ...customMapped];
-
-            const customMatch = customMapped.find(isMatch);
-            if (customMatch) {
-              foundProd = customMatch;
-            }
-          } catch (e) {
-            console.warn("Failed to parse custom accessories from localStorage:", e);
-          }
-        }
-      }
-
-      // If local match exists, render IMMEDIATELY (0ms delay)
-      if (foundProd) {
-        setProduct(foundProd);
-        setProductsList(allFoundProducts);
-        setIsLoading(false);
-      }
-
-      // 3. Background Async Supabase fetch (non-blocking)
       if (isSupabaseConfigured()) {
         try {
           const { data: allData, error } = await supabase.from("accessories").select("*");
@@ -184,7 +143,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               price: Number(item.price || 0),
               originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
               inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
-              isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
+              isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.is_on_sale === "true" : false),
               rating: Number(item.rating_avg || 4.7),
               reviewsCount: Number(item.reviews_count || 24),
               image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
@@ -193,15 +152,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               description: item.description || ""
             }));
 
-            allFoundProducts = [...allFoundProducts, ...mappedAll];
-
+            allFoundProducts = mappedAll;
             const dbFound = mappedAll.find(isMatch);
             if (dbFound) {
               foundProd = dbFound;
             }
           }
         } catch (err) {
-          console.error("Background error loading products from Supabase:", err);
+          console.error("Error loading products from Supabase:", err);
         }
       }
 
@@ -1073,15 +1031,17 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
             {otherProducts.map(p => (
               <div key={p.id} className="glass-card rounded-2xl p-3 border border-border flex flex-col justify-between hover:border-cyan-500/20 group transition-all bg-card shadow-sm text-xs">
                 <div>
-                  <div className="h-28 w-full rounded-xl bg-white overflow-hidden flex items-center justify-center relative mb-2.5 p-1 border border-border/40">
+                  <Link href={`/accessories/${p.id}`} className="h-28 w-full rounded-xl bg-white overflow-hidden flex items-center justify-center relative mb-2.5 p-1 border border-border/40 block cursor-pointer">
                     <ProductCardImageSlider
                       image={p.image}
                       images={p.images}
                       name={p.name}
                     />
                     <span className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-red-500 text-white text-[8px] font-bold uppercase tracking-wider z-30 pointer-events-none">Sale</span>
-                  </div>
-                  <h4 className="font-bold text-[11px] text-foreground line-clamp-2 min-h-[32px] leading-tight mb-1">{p.name}</h4>
+                  </Link>
+                  <Link href={`/accessories/${p.id}`} className="block">
+                    <h4 className="font-bold text-[11px] text-foreground group-hover:text-cyan-500 transition-colors line-clamp-2 min-h-[32px] leading-tight mb-1">{p.name}</h4>
+                  </Link>
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="font-extrabold text-foreground text-xs">{formatINR(p.price)}</span>
                     <span className="text-[10px] text-muted-foreground line-through">{formatINR(Math.round(p.price * 2.2))}</span>
@@ -1114,6 +1074,24 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
         </section>
       )}
 
+      {/* PHONE MODEL PRODUCT REQUEST BANNER */}
+      <section className="border-t border-border/40 pt-10">
+        <div className="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-emerald-500/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-center sm:text-left">
+            <h3 className="text-base font-extrabold text-foreground">Need this accessory for a different phone model?</h3>
+            <p className="text-xs text-muted-foreground max-w-xl">
+              Can&apos;t find stock for your specific device model? Request custom stock and our team will acquire it within 24-48 hours.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsRequestModalOpen(true)}
+            className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs whitespace-nowrap transition-colors flex items-center gap-2 shadow-md cursor-pointer shrink-0"
+          >
+            <span>Request For Your Model</span>
+          </button>
+        </div>
+      </section>
+
       {/* Sticky Bottom Mobile Purchase Drawer */}
       <div className="fixed bottom-0 left-0 w-full z-40 bg-background/90 border-t border-border/80 p-4 flex sm:hidden items-center justify-between shadow-xl backdrop-blur-md">
         <div className="flex flex-col">
@@ -1136,6 +1114,14 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
           </button>
         </div>
       </div>
+
+      {/* Product Request Modal */}
+      <ProductRequestModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+        initialBrand={product.brand}
+        initialProductType={product.category}
+      />
 
     </div>
   );

@@ -54,13 +54,7 @@ export default function WishlistPage() {
       }
 
       if (loadedItems.length === 0 && typeof window !== "undefined") {
-        const savedCustom = localStorage.getItem("sc_custom_accessories");
-        if (savedCustom) {
-          try {
-            const parsedCustom: Accessory[] = JSON.parse(savedCustom);
-            loadedItems = parsedCustom.filter(item => wishlistIds.includes(String(item.id)));
-          } catch (e) {}
-        }
+        // Fallback if needed
       }
 
       setItems(loadedItems);
@@ -144,21 +138,25 @@ export default function WishlistPage() {
             <div key={item.id} className="glass-card rounded-2xl border border-border overflow-hidden flex flex-col group relative">
               {/* Product Image */}
               <div className="h-48 bg-muted border-b border-border flex items-center justify-center overflow-hidden relative">
-                {item.images && item.images.length > 0 ? (
-                  <img
-                    src={item.images[0]}
-                    alt={item.name}
-                    className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <Package className="h-12 w-12 text-muted-foreground" />
-                )}
+                <Link href={`/accessories/${item.id}`} className="block h-full w-full">
+                  {item.images && item.images.length > 0 ? (
+                    <img
+                      src={item.images[0]}
+                      alt={item.name}
+                      className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center">
+                      <Package className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                  )}
+                </Link>
                 
                 {/* Remove button overlay */}
                 <button
                   onClick={() => handleRemoveFromWishlist(item.id)}
                   title="Remove from wishlist"
-                  className="absolute top-3 right-3 h-8 w-8 rounded-lg bg-black/60 hover:bg-red-500/90 text-white flex items-center justify-center transition-all duration-200 backdrop-blur-sm"
+                  className="absolute top-3 right-3 h-8 w-8 rounded-lg bg-black/60 hover:bg-red-500/90 text-white flex items-center justify-center transition-all duration-200 backdrop-blur-sm z-10"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -170,9 +168,11 @@ export default function WishlistPage() {
                   <span className="text-[10px] uppercase font-bold text-emerald-500 tracking-wider">
                     {item.brand} • {item.category}
                   </span>
-                  <h4 className="font-semibold text-foreground text-sm line-clamp-2 min-h-[40px]">
-                    {item.name}
-                  </h4>
+                  <Link href={`/accessories/${item.id}`} className="block">
+                    <h4 className="font-semibold text-foreground text-sm line-clamp-2 min-h-[40px] hover:text-emerald-500 transition-colors">
+                      {item.name}
+                    </h4>
+                  </Link>
                 </div>
 
                 <div className="flex items-center justify-between">

@@ -88,6 +88,7 @@ export default async function BrandAccessoriesPage({ params }: BrandPageProps) {
                 <Link
                   key={m.id}
                   href={`/accessories/brand/${normalizedBrand}/${modelSlug}`}
+                  prefetch={false}
                   className="p-3.5 rounded-2xl bg-card border border-border/80 hover:border-emerald-500/50 hover:bg-muted/40 transition-all flex flex-col justify-between group"
                 >
                   <span className="font-extrabold text-xs text-foreground group-hover:text-emerald-500 transition-colors truncate">

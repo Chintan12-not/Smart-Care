@@ -4,7 +4,9 @@ import { ARTICLES } from "@/lib/articles";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.smartcaremobile.in";
-  const currentDate = new Date().toISOString();
+  
+  // Stable release timestamp for static platform pages
+  const staticReleaseDate = new Date("2026-08-01T00:00:00.000Z").toISOString();
 
   // Core Static & Service Landing Pages
   const routes = [
@@ -40,34 +42,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   });
 
-  // Dynamically generate all Blog Routes from ARTICLES
-  const blogRoutes = ARTICLES.map((article) => `/blog/${article.slug}`);
-
   const allUrls: MetadataRoute.Sitemap = [
     ...routes.map((route) => ({
       url: `${baseUrl}${route}`,
-      lastModified: currentDate,
+      lastModified: staticReleaseDate,
       changeFrequency: (route === "" ? "daily" : "weekly") as "daily" | "weekly",
       priority: route === "" ? 1.0 : route.includes("repair") || route.includes("replacement") ? 0.9 : 0.8,
     })),
     ...brandRoutes.map((route) => ({
       url: `${baseUrl}${route}`,
-      lastModified: currentDate,
+      lastModified: staticReleaseDate,
       changeFrequency: "weekly" as const,
       priority: 0.85,
     })),
     ...modelRoutes.map((route) => ({
       url: `${baseUrl}${route}`,
-      lastModified: currentDate,
+      lastModified: staticReleaseDate,
       changeFrequency: "weekly" as const,
       priority: 0.75,
     })),
-    ...blogRoutes.map((route) => ({
-      url: `${baseUrl}${route}`,
-      lastModified: currentDate,
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    })),
+    ...ARTICLES.map((article) => {
+      let articleIsoDate = staticReleaseDate;
+      try {
+        if (article.date) {
+          const parsed = new Date(article.date);
+          if (!isNaN(parsed.getTime())) {
+            articleIsoDate = parsed.toISOString();
+          }
+        }
+      } catch (e) {}
+      return {
+        url: `${baseUrl}/blog/${article.slug}`,
+        lastModified: articleIsoDate,
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      };
+    }),
   ];
 
   return allUrls;
