@@ -31,6 +31,9 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
     setSelectedBrand(brand);
     setSelectedModel("");
     setSearchQuery("");
+    if (onSelectModel) {
+      onSelectModel(brand, "");
+    }
   };
 
   const handleModelSelect = (modelName: string) => {
@@ -43,11 +46,14 @@ export default function PhoneModelFinder({ onSelectModel, isCompact = false }: P
   };
 
   const handleExploreClick = () => {
-    const modelToPass = selectedModel || (currentModels[0]?.name ?? "");
     if (onSelectModel) {
-      onSelectModel(selectedBrand, modelToPass);
+      onSelectModel(selectedBrand, selectedModel);
     } else {
-      router.push(`/accessories?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(modelToPass)}`);
+      if (selectedModel) {
+        router.push(`/accessories?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}`);
+      } else {
+        router.push(`/accessories?brand=${encodeURIComponent(selectedBrand)}`);
+      }
     }
   };
 

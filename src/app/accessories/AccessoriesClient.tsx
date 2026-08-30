@@ -282,25 +282,27 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
       if (prodCorpus.includes(sLower) || (cleanSearch && prodCorpus.includes(cleanSearch))) {
         matchesSearch = true;
       }
-      // 2. Tokenized match (e.g. "AirPods Pro 2" matches "Premium Leather AirPods Pro 2 Case")
-      else if (sTokens.length > 0) {
-        const matchedCount = sTokens.filter(token => prodCorpus.includes(token)).length;
-        if (matchedCount >= 1 && (sLower.includes("airpods") || sLower.includes("pro") || matchedCount >= Math.min(2, sTokens.length))) {
-          matchesSearch = true;
-        }
+      // 2. Tokenized match (matches if any significant token is found in product corpus)
+      else if (sTokens.some(token => token.length > 1 && prodCorpus.includes(token))) {
+        matchesSearch = true;
       }
-
-      // 3. Special AirPods & Earbuds fallback matching
-      if (!matchesSearch && (sLower.includes("airpods") || sLower.includes("airpod"))) {
-        const isAirPodsRelated = prod.name.toLowerCase().includes("airpod") || 
-                                 prod.name.toLowerCase().includes("pro 2") ||
-                                 prod.name.toLowerCase().includes("tws") ||
-                                 prod.category.toLowerCase().includes("case") ||
-                                 prod.category.toLowerCase().includes("earbud") ||
-                                 prod.brand.toLowerCase() === "apple" ||
-                                 prod.brand.toLowerCase() === "airpods";
-        if (isAirPodsRelated) {
-          matchesSearch = true;
+      // 3. Brand & Universal Accessory matching fallback
+      else {
+        const knownBrands = ["apple", "samsung", "oppo", "oneplus", "xiaomi", "redmi", "poco", "vivo", "realme", "google", "airpods"];
+        const matchedBrand = knownBrands.find(b => sLower.includes(b));
+        if (matchedBrand) {
+          const prodBrandLower = prod.brand.toLowerCase();
+          const prodCatLower = prod.category.toLowerCase();
+          if (
+            prodBrandLower.includes(matchedBrand) ||
+            prodCorpus.includes(matchedBrand) ||
+            prodCatLower.includes("charger") ||
+            prodCatLower.includes("cable") ||
+            prodCatLower.includes("power") ||
+            prodCatLower.includes("earbud")
+          ) {
+            matchesSearch = true;
+          }
         }
       }
     }
