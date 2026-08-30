@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
@@ -87,14 +87,20 @@ export default function AdminPage() {
     }
   }, [brand]);
 
-  // Multi-Brand Model Selector helper logic
-  const selectedModelsList = compatibleModels ? compatibleModels.split(",").map(s => s.trim()).filter(Boolean) : [];
+  // Multi-Brand Model Selector helper logic memoized to prevent input typing lag
+  const selectedModelsList = useMemo(() => {
+    return compatibleModels ? compatibleModels.split(",").map(s => s.trim()).filter(Boolean) : [];
+  }, [compatibleModels]);
   
-  const currentTabModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[modelBrandTab] || [];
+  const currentTabModels = useMemo(() => {
+    return (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[modelBrandTab] || [];
+  }, [modelBrandTab]);
   
-  const filteredBrandModels = currentTabModels.filter(m =>
-    m.name.toLowerCase().includes(modelSearchQuery.toLowerCase())
-  );
+  const filteredBrandModels = useMemo(() => {
+    if (!modelSearchQuery) return currentTabModels;
+    const query = modelSearchQuery.toLowerCase();
+    return currentTabModels.filter(m => m.name.toLowerCase().includes(query));
+  }, [currentTabModels, modelSearchQuery]);
 
   const toggleModelSelection = (modelName: string) => {
     if (selectedModelsList.includes(modelName)) {
@@ -806,18 +812,23 @@ export default function AdminPage() {
     }
   };
 
-  const filteredB2bInquiries = b2bInquiries.filter((inquiry) => {
-    const matchesSearch =
-      inquiry.name.toLowerCase().includes(b2bSearch.toLowerCase()) ||
-      inquiry.companyName.toLowerCase().includes(b2bSearch.toLowerCase()) ||
-      inquiry.email.toLowerCase().includes(b2bSearch.toLowerCase()) ||
-      inquiry.phone.toLowerCase().includes(b2bSearch.toLowerCase()) ||
-      inquiry.product.toLowerCase().includes(b2bSearch.toLowerCase());
+  const filteredB2bInquiries = useMemo(() => {
+    if (!b2bSearch && b2bStatusFilter === "All") return b2bInquiries;
+    const searchLower = b2bSearch.toLowerCase();
+    return b2bInquiries.filter((inquiry) => {
+      const matchesSearch =
+        !b2bSearch ||
+        inquiry.name.toLowerCase().includes(searchLower) ||
+        inquiry.companyName.toLowerCase().includes(searchLower) ||
+        inquiry.email.toLowerCase().includes(searchLower) ||
+        inquiry.phone.toLowerCase().includes(searchLower) ||
+        inquiry.product.toLowerCase().includes(searchLower);
 
-    const matchesStatus = b2bStatusFilter === "All" || inquiry.status === b2bStatusFilter;
+      const matchesStatus = b2bStatusFilter === "All" || inquiry.status === b2bStatusFilter;
 
-    return matchesSearch && matchesStatus;
-  });
+      return matchesSearch && matchesStatus;
+    });
+  }, [b2bInquiries, b2bSearch, b2bStatusFilter]);
 
   if (authLoading || !user || user.role !== "admin") {
     return (

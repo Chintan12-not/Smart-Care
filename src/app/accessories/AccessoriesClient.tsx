@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { 
@@ -281,60 +281,67 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     }
   };
 
-  // 8. Exact Compatibility Engine & Multi-Stage Filter Pipeline
-  const filteredProducts = products.filter((prod) => {
-    // Stage 1: Exact Phone Model Compatibility
-    const isCompatible = isProductCompatibleWithModel(prod, selectedBrand, selectedModel);
-    if (!isCompatible) return false;
+  // 8. Exact Compatibility Engine & Multi-Stage Filter Pipeline memoized
+  const filteredProducts = useMemo(() => {
+    return products.filter((prod) => {
+      // Stage 1: Exact Phone Model Compatibility
+      const isCompatible = isProductCompatibleWithModel(prod, selectedBrand, selectedModel);
+      if (!isCompatible) return false;
 
-    // Stage 2: Category Filter
-    const prodCatNorm = prod.category.toLowerCase().trim();
-    const selCatNorm = category.toLowerCase().trim();
-    const prodStem = prodCatNorm.endsWith("s") ? prodCatNorm.slice(0, -1) : prodCatNorm;
-    const selStem = selCatNorm.endsWith("s") ? selCatNorm.slice(0, -1) : selCatNorm;
+      // Stage 2: Category Filter
+      const prodCatNorm = prod.category.toLowerCase().trim();
+      const selCatNorm = category.toLowerCase().trim();
+      const prodStem = prodCatNorm.endsWith("s") ? prodCatNorm.slice(0, -1) : prodCatNorm;
+      const selStem = selCatNorm.endsWith("s") ? selCatNorm.slice(0, -1) : selCatNorm;
 
-    const matchesCategory = 
-      category === "all" || 
-      prodCatNorm === selCatNorm ||
-      prodStem === selStem;
+      const matchesCategory = 
+        category === "all" || 
+        prodCatNorm === selCatNorm ||
+        prodStem === selStem;
 
-    if (!matchesCategory) return false;
+      if (!matchesCategory) return false;
 
-    // Stage 3: Search Bar Text Filter
-    if (!search.trim()) return true;
+      // Stage 3: Search Bar Text Filter
+      if (!search.trim()) return true;
 
-    const sLower = search.toLowerCase().trim();
-    const sTokens = sLower.split(/\s+/).filter(Boolean);
+      const sLower = search.toLowerCase().trim();
+      const sTokens = sLower.split(/\s+/).filter(Boolean);
 
-    const prodCorpus = [
-      prod.name,
-      prod.brand,
-      prod.category,
-      prod.description || "",
-      prod.specifications ? JSON.stringify(prod.specifications) : ""
-    ].join(" ").toLowerCase();
+      const prodCorpus = [
+        prod.name,
+        prod.brand,
+        prod.category,
+        prod.description || "",
+        prod.specifications ? JSON.stringify(prod.specifications) : ""
+      ].join(" ").toLowerCase();
 
-    return (
-      prodCorpus.includes(sLower) ||
-      sTokens.some((token) => token.length > 1 && prodCorpus.includes(token))
-    );
-  });
+      return (
+        prodCorpus.includes(sLower) ||
+        sTokens.some((token) => token.length > 1 && prodCorpus.includes(token))
+      );
+    });
+  }, [products, selectedBrand, selectedModel, category, search]);
 
-  // 9. Sorting execution
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === "price-asc") return a.price - b.price;
-    if (sortBy === "price-desc") return b.price - a.price;
-    if (sortBy === "rating") return b.rating - a.rating;
-    return 0; // default
-  });
+  // 9. Sorting execution memoized
+  const sortedProducts = useMemo(() => {
+    const list = [...filteredProducts];
+    if (sortBy === "price-asc") return list.sort((a, b) => a.price - b.price);
+    if (sortBy === "price-desc") return list.sort((a, b) => b.price - a.price);
+    if (sortBy === "rating") return list.sort((a, b) => b.rating - a.rating);
+    return list;
+  }, [filteredProducts, sortBy]);
 
   const categoriesList = ["All", "Chargers", "Cables", "Tempered Glass", "Cases", "Earbuds", "Power Banks"];
 
-  // Filter out products mapped for comparison
-  const compareProductsList = products.filter(p => compareIds.includes(p.id));
+  // Filter out products mapped for comparison memoized
+  const compareProductsList = useMemo(() => {
+    return products.filter(p => compareIds.includes(p.id));
+  }, [products, compareIds]);
 
-  // Filter out recently viewed products
-  const recentlyViewedProductsList = products.filter(p => recentlyViewedIds.includes(p.id));
+  // Filter out recently viewed products memoized
+  const recentlyViewedProductsList = useMemo(() => {
+    return products.filter(p => recentlyViewedIds.includes(p.id));
+  }, [products, recentlyViewedIds]);
 
   return (
     <div className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

@@ -32,16 +32,20 @@ export default function PhoneModelFinder({
   }, [initialBrand, initialModel]);
 
   const rawBrands = availableBrands && availableBrands.length > 0 ? availableBrands : phoneData.brands;
-  // Ensure unique case-preserved brand list
-  const brands = Array.from(new Set([...rawBrands, ...phoneData.brands]));
+  // Ensure unique case-preserved brand list memoized
+  const brands = React.useMemo(() => Array.from(new Set([...rawBrands, ...phoneData.brands])), [rawBrands]);
   const brandModelsMap = phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>;
 
-  const currentModels = brandModelsMap[selectedBrand] || [];
+  const currentModels = React.useMemo(() => brandModelsMap[selectedBrand] || [], [brandModelsMap, selectedBrand]);
 
-  const filteredModels = currentModels.filter(m =>
-    m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    m.series.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredModels = React.useMemo(() => {
+    if (!searchQuery) return currentModels;
+    const query = searchQuery.toLowerCase();
+    return currentModels.filter(m =>
+      m.name.toLowerCase().includes(query) ||
+      m.series.toLowerCase().includes(query)
+    );
+  }, [currentModels, searchQuery]);
 
   const handleBrandClick = (brand: string) => {
     setSelectedBrand(brand);
@@ -179,7 +183,10 @@ export default function PhoneModelFinder({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={`Search ${selectedBrand} models...`}
-                className="w-full bg-muted/50 border border-border/80 rounded-xl pl-9 pr-8 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                className="w-full bg-muted/50 border border-border/80 rounded-xl pl-9 pr-8 py-2 text-base sm:text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
               />
               {searchQuery && (
                 <button
