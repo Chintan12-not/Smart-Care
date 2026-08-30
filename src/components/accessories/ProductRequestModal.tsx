@@ -55,9 +55,9 @@ export default function ProductRequestModal({
     }
   }, [isOpen, initialBrand, initialModel, initialProductType]);
 
-  const brandsList = React.useMemo(() => phoneData.brands || ["Apple", "Samsung", "OnePlus", "Xiaomi", "Vivo", "Oppo", "Realme", "Google"], []);
+  const brandsList = phoneData.brands || ["Apple", "Samsung", "OnePlus", "Xiaomi", "Vivo", "Oppo", "Realme", "Google"];
   const brandModelsMap = (phoneData.brandModels as Record<string, Array<{ id: string; name: string }>>) || {};
-  const availableModelsForBrand = React.useMemo(() => brandModelsMap[brand] || [], [brandModelsMap, brand]);
+  const availableModelsForBrand = brandModelsMap[brand] || [];
 
   if (!isOpen) return null;
 

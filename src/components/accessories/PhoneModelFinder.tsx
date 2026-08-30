@@ -32,11 +32,9 @@ export default function PhoneModelFinder({
   }, [initialBrand, initialModel]);
 
   const rawBrands = availableBrands && availableBrands.length > 0 ? availableBrands : phoneData.brands;
-  // Ensure unique case-preserved brand list memoized
-  const brands = React.useMemo(() => Array.from(new Set([...rawBrands, ...phoneData.brands])), [rawBrands]);
+  const brands = Array.from(new Set([...rawBrands, ...phoneData.brands]));
   const brandModelsMap = phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>;
-
-  const currentModels = React.useMemo(() => brandModelsMap[selectedBrand] || [], [brandModelsMap, selectedBrand]);
+  const currentModels = brandModelsMap[selectedBrand] || [];
 
   const filteredModels = React.useMemo(() => {
     if (!searchQuery) return currentModels;

@@ -92,9 +92,7 @@ export default function AdminPage() {
     return compatibleModels ? compatibleModels.split(",").map(s => s.trim()).filter(Boolean) : [];
   }, [compatibleModels]);
   
-  const currentTabModels = useMemo(() => {
-    return (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[modelBrandTab] || [];
-  }, [modelBrandTab]);
+  const currentTabModels = (phoneData.brandModels as Record<string, Array<{ id: string; name: string; series: string }>>)[modelBrandTab] || [];
   
   const filteredBrandModels = useMemo(() => {
     if (!modelSearchQuery) return currentTabModels;
