@@ -170,18 +170,9 @@ export default function ProductRequestModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative text-foreground">
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="w-full max-w-lg max-h-[90dvh] overflow-y-auto bg-card border border-border rounded-3xl p-4 sm:p-7 shadow-2xl space-y-4 sm:space-y-5 relative text-foreground my-auto scrollbar-none">
         
-        {/* Close Button */}
-        <button
-          onClick={resetAndClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-muted hover:bg-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-          aria-label="Close modal"
-        >
-          <X className="h-5 w-5" />
-        </button>
-
         {isSubmitted ? (
           <div className="text-center space-y-5 py-4 animate-in zoom-in-95 duration-300">
             <div className="h-16 w-16 bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 rounded-full flex items-center justify-center mx-auto">
@@ -227,18 +218,27 @@ export default function ProductRequestModal({
           </div>
         ) : (
           <>
-            {/* Header */}
-            <div className="space-y-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                <Smartphone className="h-3.5 w-3.5" />
-                Instant Accessory Request
-              </span>
-              <h2 className="text-2xl font-black tracking-tight text-foreground">
-                Request Product for <span className="text-emerald-500">Your Phone</span>
-              </h2>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Can&apos;t find an accessory for your specific phone model? Fill out this quick form and we&apos;ll stock it for you within 24-48 hours.
-              </p>
+            {/* Header & Close Button */}
+            <div className="flex justify-between items-start gap-2">
+              <div className="space-y-1">
+                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  <Smartphone className="h-3.5 w-3.5" />
+                  Instant Accessory Request
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                  Request Product for <span className="text-emerald-500">Your Phone</span>
+                </h2>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Can&apos;t find an accessory for your specific phone model? Fill out this quick form and we&apos;ll stock it for you within 24-48 hours.
+                </p>
+              </div>
+              <button
+                onClick={resetAndClose}
+                className="p-2 rounded-full bg-muted hover:bg-border text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0 mt-0.5"
+                aria-label="Close modal"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
 
             {errorMsg && (
