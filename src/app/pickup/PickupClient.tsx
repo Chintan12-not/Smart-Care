@@ -751,7 +751,8 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                           placeholder="John Doe"
                           value={customerName}
                           onChange={(e) => setCustomerName(e.target.value)}
-                          className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                          autoCapitalize="words"
+                          className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
                         />
                       </div>
 
@@ -763,11 +764,12 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                         </label>
                         <input
                           type="tel"
+                          inputMode="tel"
                           required
                           placeholder="e.g. +91 98765 43210"
                           value={mobileNumber}
                           onChange={(e) => setMobileNumber(e.target.value)}
-                          className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                          className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
                         />
                       </div>
                     </div>
@@ -778,10 +780,11 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                       <label className="text-[10px] uppercase font-bold text-muted-foreground">Alternate Number</label>
                       <input
                         type="tel"
+                        inputMode="tel"
                         placeholder="Alternative contact info"
                         value={alternateNumber}
                         onChange={(e) => setAlternateNumber(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
                       />
                     </div>
 
@@ -797,7 +800,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                         placeholder="e.g. Apple, Samsung, OnePlus"
                         value={deviceBrand}
                         onChange={(e) => setDeviceBrand(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
                       />
                     </div>
                   </div>
@@ -812,7 +815,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                         placeholder="e.g. iPhone 15 Pro, Galaxy S24"
                         value={deviceModel}
                         onChange={(e) => setDeviceModel(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
                       />
                     </div>
 
@@ -824,7 +827,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                         placeholder="e.g. Near HDFC Bank, Sector 37"
                         value={landmark}
                         onChange={(e) => setLandmark(e.target.value)}
-                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
                       />
                     </div>
                   </div>
@@ -851,7 +854,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                       value={pickupAddress}
                       onChange={(e) => setPickupAddress(e.target.value)}
                       onBlur={handleAddressBlur}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 min-h-[60px]"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 min-h-[60px]"
                     />
 
                     {/* Leaflet map container */}

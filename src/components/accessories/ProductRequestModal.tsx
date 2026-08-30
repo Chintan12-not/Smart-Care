@@ -57,9 +57,9 @@ export default function ProductRequestModal({
 
   if (!isOpen) return null;
 
-  const brandsList = phoneData.brands || ["Apple", "Samsung", "OnePlus", "Xiaomi", "Vivo", "Oppo", "Realme", "Google"];
+  const brandsList = React.useMemo(() => phoneData.brands || ["Apple", "Samsung", "OnePlus", "Xiaomi", "Vivo", "Oppo", "Realme", "Google"], []);
   const brandModelsMap = (phoneData.brandModels as Record<string, Array<{ id: string; name: string }>>) || {};
-  const availableModelsForBrand = brandModelsMap[brand] || [];
+  const availableModelsForBrand = React.useMemo(() => brandModelsMap[brand] || [], [brandModelsMap, brand]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -259,7 +259,7 @@ export default function ProductRequestModal({
                       setBrand(e.target.value);
                       setPhoneModel("");
                     }}
-                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     {brandsList.map((b) => (
                       <option key={b} value={b}>
@@ -272,22 +272,17 @@ export default function ProductRequestModal({
 
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Exact Phone Model *</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="e.g. iPhone 16 Pro, S24 Ultra..."
-                      value={phoneModel}
-                      onChange={(e) => setPhoneModel(e.target.value)}
-                      list="phone-model-suggestions"
-                      className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                      required
-                    />
-                    <datalist id="phone-model-suggestions">
-                      {availableModelsForBrand.map((m) => (
-                        <option key={m.id || m.name} value={m.name} />
-                      ))}
-                    </datalist>
-                  </div>
+                  <input
+                    type="text"
+                    placeholder="e.g. iPhone 16 Pro, S24 Ultra..."
+                    value={phoneModel}
+                    onChange={(e) => setPhoneModel(e.target.value)}
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    required
+                  />
                 </div>
               </div>
 
@@ -297,7 +292,7 @@ export default function ProductRequestModal({
                 <select
                   value={productType}
                   onChange={(e) => setProductType(e.target.value)}
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 >
                   {PRODUCT_TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -316,7 +311,8 @@ export default function ProductRequestModal({
                     placeholder="Enter your name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    autoCapitalize="words"
+                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
 
@@ -324,10 +320,11 @@ export default function ProductRequestModal({
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">WhatsApp / Mobile No. *</label>
                   <input
                     type="tel"
+                    inputMode="tel"
                     placeholder="10-digit mobile number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
                     required
                   />
                 </div>
@@ -338,10 +335,14 @@ export default function ProductRequestModal({
                 <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Email Address (Optional)</label>
                 <input
                   type="email"
+                  inputMode="email"
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2.5 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
 
@@ -353,7 +354,7 @@ export default function ProductRequestModal({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
+                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-base sm:text-xs text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none"
                 />
               </div>
 
