@@ -35,7 +35,7 @@ export function isProductCompatibleWithModel(
       (normBrand === "apple" && (prodBrand === "airpods" || prodCorpus.includes("iphone") || prodCorpus.includes("ipad"))) ||
       (normBrand === "airpods" && (prodBrand === "apple" || prodCorpus.includes("airpod")));
 
-    // Universal categories (chargers, cables, power banks, earbuds) match across brand if generic
+    // Universal categories (chargers, cables, power banks, earbuds, adapters) match across brands
     const isUniversalCategory = 
       prodCategory.includes("charger") ||
       prodCategory.includes("cable") ||
@@ -67,38 +67,34 @@ export function isProductCompatibleWithModel(
   }
 
   // 3. EXACT MODEL MATCHING & VARIANT ISOLATION
-  // Determine which variant modifiers exist in the selected model
-  const selectedModifiers = VARIANT_MODIFIERS.filter(mod => normModel.includes(mod));
+  // Compute short model string (e.g. "iphone 15 pro max" -> "15 pro max", "oppo a15" -> "a15", "samsung galaxy s24" -> "s24")
+  const shortModel = normModel
+    .replace(/^(apple\s+iphone|iphone|apple|samsung\s+galaxy|samsung|oppo|oneplus|poco|realme|redmi|vivo|xiaomi|google)\s+/, "")
+    .trim();
+
+  const compModelsSpec = (product.specifications?.["Compatible Phone Models"] || "").toLowerCase();
   
-  // Extract core model token (e.g. "iphone 15" from "iphone 15 pro max", "s24" from "galaxy s24 ultra")
-  const cleanSelectedModel = normModel;
+  const containsFullModel = prodCorpus.includes(normModel) || compModelsSpec.includes(normModel);
+  const containsShortModel = shortModel.length >= 2 && (prodCorpus.includes(shortModel) || compModelsSpec.includes(shortModel));
 
-  // Does product corpus contain the selected model?
-  const containsModelString = prodCorpus.includes(cleanSelectedModel);
-
-  if (!containsModelString) {
-    // Check if specifications has "Compatible Phone Models" array or list
-    const compModelsSpec = (product.specifications?.["Compatible Phone Models"] || "").toLowerCase();
-    if (!compModelsSpec.includes(cleanSelectedModel)) {
-      return false;
-    }
+  if (!containsFullModel && !containsShortModel) {
+    return false;
   }
 
   // Strict Modifier Isolation:
-  // If product mentions a variant modifier (e.g. "pro max", "ultra") NOT present in the selected model,
+  // If product mentions a variant modifier (e.g. "pro max", "ultra", "plus") NOT present in the selected model,
   // ensure the product explicitly lists the base/selected model separately.
+  const selectedModifiers = VARIANT_MODIFIERS.filter(mod => normModel.includes(mod));
+
   for (const mod of VARIANT_MODIFIERS) {
     const selectedHasMod = selectedModifiers.includes(mod);
-    const prodHasMod = prodCorpus.includes(mod);
+    const prodHasMod = prodCorpus.includes(mod) || compModelsSpec.includes(mod);
 
     if (prodHasMod && !selectedHasMod) {
       // E.g., Product has "pro", but selected model is "iPhone 15" (no "pro")
-      // Check if product explicitly lists the base model without the modifier
-      // E.g. "iPhone 15, iPhone 15 Pro" vs "iPhone 15 Pro Case"
-      const compModelsSpec = (product.specifications?.["Compatible Phone Models"] || "").toLowerCase();
-      
-      // Look for standalone mention of selectedModel in title or specs
-      const regexStandalone = new RegExp(`\\b${escapeRegExp(cleanSelectedModel)}\\b(?!\\s+${escapeRegExp(mod)})`, 'i');
+      // Look for standalone mention of shortModel / normModel in title or specs
+      const targetToken = shortModel || normModel;
+      const regexStandalone = new RegExp(`\\b${escapeRegExp(targetToken)}\\b(?!\\s+${escapeRegExp(mod)})`, 'i');
       const isStandaloneInTitle = regexStandalone.test(prodName);
       const isStandaloneInSpec = regexStandalone.test(compModelsSpec);
 
