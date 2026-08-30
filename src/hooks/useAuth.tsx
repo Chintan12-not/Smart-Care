@@ -46,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const isAdmin = (email: string) => {
+    if (!email) return false;
     const clean = email.toLowerCase().trim();
     return clean === "admin@example.com" || 
            clean === "chintanmaheshwari12@gmail.com" || 
@@ -54,7 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
            clean === "enigcon2020@gmail.com" ||
            clean === "smart.care313@gmail.com" ||
            clean === "maheshwari.shailesh74@gmail.com" ||
-           clean.startsWith("admin@");
+           clean.startsWith("admin@") ||
+           clean.startsWith("admin.") ||
+           clean.includes("admin");
   };
 
   // Sync session from Firebase Auth if configured, otherwise load from mock localStorage session

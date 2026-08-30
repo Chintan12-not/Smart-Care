@@ -27,6 +27,7 @@ import {
   Clock
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
@@ -47,6 +48,7 @@ function getInitialProducts(): AccessoryProduct[] {
 }
 
 function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryProduct[] }) {
+  const { user } = useAuth();
   const { addToCart } = useCart();
   const searchParams = useSearchParams();
   const queryBrand = searchParams.get("brand") || "";
@@ -91,9 +93,11 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     setSelectedBrand(brand);
     setSelectedModel(model);
     updateUrlParams(brand, model, category, search);
-    const el = document.getElementById("accessories-grid-section");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+    if (model) {
+      const el = document.getElementById("accessories-grid-section");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
@@ -346,14 +350,26 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
             Genuine protective covers, fast chargers, tempered glass, and cables compatible with 600+ phone models.
           </p>
         </div>
-        
-        {/* Banner notification */}
-        {addedItemName && (
-          <div className="px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-300">
-            <Check className="h-4 w-4" />
-            <span>Added {addedItemName.substring(0, 15)}... to cart</span>
-          </div>
-        )}
+
+        <div className="flex items-center gap-3 flex-wrap">
+          {user?.role === "admin" && (
+            <Link
+              href="/admin"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-xs shadow-md flex items-center gap-2 hover:opacity-90 transition-opacity"
+            >
+              <Plus className="h-4 w-4 text-white" />
+              <span>+ Add Product to Store (Admin Access)</span>
+            </Link>
+          )}
+
+          {/* Banner notification */}
+          {addedItemName && (
+            <div className="px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-300">
+              <Check className="h-4 w-4" />
+              <span>Added {addedItemName.substring(0, 15)}... to cart</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Interactive Phone Model Finder */}

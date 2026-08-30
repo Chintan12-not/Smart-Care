@@ -879,13 +879,13 @@ export default function AdminPage() {
         )}
 
         {/* Tab Selection */}
-        <div className="flex border-b border-border gap-4 my-2">
+        <div className="flex border-b border-border gap-2 sm:gap-4 my-2 overflow-x-auto scrollbar-none pb-1">
           <button
             onClick={() => setActiveTab("accessories")}
             className={cn(
-              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2",
+              "pb-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2.5 sm:px-3 whitespace-nowrap shrink-0",
               activeTab === "accessories"
-                ? "border-cyan-500 text-cyan-500"
+                ? "border-cyan-500 text-cyan-500 font-extrabold"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
@@ -894,9 +894,9 @@ export default function AdminPage() {
           <button
             onClick={() => setActiveTab("estimator")}
             className={cn(
-              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2",
+              "pb-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2.5 sm:px-3 whitespace-nowrap shrink-0",
               activeTab === "estimator"
-                ? "border-cyan-500 text-cyan-500"
+                ? "border-cyan-500 text-cyan-500 font-extrabold"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
@@ -908,7 +908,7 @@ export default function AdminPage() {
               loadB2bInquiries();
             }}
             className={cn(
-              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2 flex items-center gap-1.5",
+              "pb-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2.5 sm:px-3 flex items-center gap-1.5 whitespace-nowrap shrink-0",
               activeTab === "b2b"
                 ? "border-purple-500 text-purple-400 font-extrabold"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -924,7 +924,7 @@ export default function AdminPage() {
               loadCustomerOrders();
             }}
             className={cn(
-              "pb-3 text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2 flex items-center gap-1.5",
+              "pb-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 border-b-2 px-2.5 sm:px-3 flex items-center gap-1.5 whitespace-nowrap shrink-0",
               activeTab === "orders"
                 ? "border-emerald-500 text-emerald-400 font-extrabold"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -1229,7 +1229,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Price, Original Strike MRP, & Stock */}
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {/* Selling Price */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
@@ -1244,7 +1244,7 @@ export default function AdminPage() {
                       placeholder="e.g. 199"
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base md:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"
                     />
                   </div>
 
@@ -1261,7 +1261,7 @@ export default function AdminPage() {
                       placeholder="e.g. 499"
                       value={originalPrice}
                       onChange={(e) => setOriginalPrice(e.target.value)}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500 font-semibold"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base md:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500 font-semibold"
                     />
                   </div>
 
@@ -1277,13 +1277,13 @@ export default function AdminPage() {
                       placeholder="e.g. 50"
                       value={stockQuantity}
                       onChange={(e) => setStockQuantity(e.target.value)}
-                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-base md:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500 font-semibold"
                     />
                   </div>
                 </div>
 
                 {/* Stock Status & Sale Badges */}
-                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-muted/40 border border-border/50">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-muted/40 border border-border/50">
                   {/* In Stock / Out of Stock */}
                   <div className="flex items-center justify-between">
                     <div>
@@ -1293,14 +1293,14 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setInStock(!inStock)}
-                      className={cn("text-lg", inStock ? "text-emerald-500" : "text-red-500")}
+                      className={cn("text-lg min-h-[44px] flex items-center", inStock ? "text-emerald-500" : "text-red-500")}
                     >
-                      {inStock ? <ToggleRight className="h-7 w-7 text-emerald-500" /> : <ToggleLeft className="h-7 w-7 text-red-500" />}
+                      {inStock ? <ToggleRight className="h-8 w-8 text-emerald-500" /> : <ToggleLeft className="h-8 w-8 text-red-500" />}
                     </button>
                   </div>
 
                   {/* Put on Sale Toggle */}
-                  <div className="flex items-center justify-between border-l border-border/50 pl-3">
+                  <div className="flex items-center justify-between sm:border-l border-border/50 sm:pl-3 pt-2 sm:pt-0 border-t sm:border-t-0">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-foreground block">🔥 Put on Sale</span>
                       <span className="text-[9px] text-muted-foreground">{isOnSale ? "Sale Badge Active" : "Regular Price"}</span>
@@ -1308,9 +1308,9 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setIsOnSale(!isOnSale)}
-                      className="text-lg"
+                      className="text-lg min-h-[44px] flex items-center"
                     >
-                      {isOnSale ? <ToggleRight className="h-7 w-7 text-amber-500" /> : <ToggleLeft className="h-7 w-7 text-muted-foreground" />}
+                      {isOnSale ? <ToggleRight className="h-8 w-8 text-amber-500" /> : <ToggleLeft className="h-8 w-8 text-muted-foreground" />}
                     </button>
                   </div>
                 </div>

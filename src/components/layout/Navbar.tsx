@@ -16,13 +16,17 @@ import {
   Search,
   BookOpen,
   Truck,
-  Building2
+  Building2,
+  ShieldAlert,
+  Plus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   
   // Safe SSR Theme initialization
@@ -204,6 +208,16 @@ export default function Navbar() {
               )}
             </button>
 
+            {user?.role === "admin" && (
+              <Link
+                href="/admin"
+                className="px-3.5 py-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500 hover:text-black font-extrabold text-xs transition-all duration-200 flex items-center gap-1.5 shadow-sm"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>+ Add Product</span>
+              </Link>
+            )}
+
             <Link
               href="/dashboard"
               className="ml-1 px-4 py-2 rounded-lg bg-foreground text-background font-medium text-xs hover:opacity-90 transition-opacity duration-200 flex items-center gap-1.5 shadow-sm"
@@ -288,12 +302,30 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+
+              {user?.role === "admin" && (
+                <div className="pt-2 border-t border-border/60">
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-xs uppercase tracking-wider shadow-lg min-h-[44px]"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Plus className="h-4 w-4 text-white" />
+                      <span>+ Add Product (Admin Panel)</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-white text-black text-[9px] font-black uppercase">
+                      Admin
+                    </span>
+                  </Link>
+                </div>
+              )}
               
               <div className="pt-2 border-t border-border/60">
                 <Link
                   href="/dashboard"
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-extrabold text-xs uppercase tracking-wider shadow-md hover:opacity-90 transition-opacity"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-extrabold text-xs uppercase tracking-wider shadow-md hover:opacity-90 transition-opacity min-h-[44px]"
                 >
                   <User className="h-4 w-4" />
                   <span>User Dashboard</span>

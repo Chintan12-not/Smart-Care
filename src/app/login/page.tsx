@@ -163,14 +163,14 @@ function LoginContent() {
             <div className="space-y-1.5">
               <label htmlFor="name" className="text-xs font-medium text-muted-foreground">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4.5 w-4.5 text-muted-foreground" />
+                <User className="absolute left-3 top-3.5 h-4.5 w-4.5 text-muted-foreground" />
                 <input
                   id="name"
                   type="text"
                   placeholder="Enter your name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
                 />
               </div>
             </div>
@@ -180,14 +180,14 @@ function LoginContent() {
           <div className="space-y-1.5">
             <label htmlFor="email" className="text-xs font-medium text-muted-foreground">Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-4.5 w-4.5 text-muted-foreground" />
+              <Mail className="absolute left-3 top-3.5 h-4.5 w-4.5 text-muted-foreground" />
               <input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
+                className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
               />
             </div>
           </div>
@@ -197,14 +197,14 @@ function LoginContent() {
             <div className="space-y-1.5 animate-in fade-in duration-200">
               <label htmlFor="phone" className="text-xs font-medium text-muted-foreground">Phone Number</label>
               <div className="relative">
-                <span className="absolute left-3 top-3 text-xs text-muted-foreground font-bold font-mono">+91</span>
+                <span className="absolute left-3 top-3.5 text-xs text-muted-foreground font-bold font-mono">+91</span>
                 <input
                   id="phone"
                   type="tel"
                   placeholder="92899 42313"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-muted border border-border rounded-xl py-2.5 pl-12 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200 font-semibold"
+                  className="w-full bg-muted border border-border rounded-xl py-2.5 pl-12 pr-4 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200 font-semibold"
                 />
               </div>
             </div>
@@ -217,14 +217,14 @@ function LoginContent() {
               {isLogin && <span className="text-[10px] text-muted-foreground/80">(Leave blank for magic OTP)</span>}
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-4.5 w-4.5 text-muted-foreground" />
+              <Lock className="absolute left-3 top-3.5 h-4.5 w-4.5 text-muted-foreground" />
               <input
                 id="password"
                 type="password"
                 placeholder={isLogin ? "•••••••• (or verify via email)" : "Create a password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
+                className="w-full bg-muted border border-border rounded-xl py-2.5 pl-10 pr-4 text-base sm:text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
               />
             </div>
           </div>
