@@ -500,7 +500,7 @@ export default function BillingPage() {
                       </span>
                       <span className="text-[11px] text-muted-foreground">
                         {isGurgaonAddress()
-                          ? "Same-day / 24-hour doorstep delivery calculated for Gurugram area (₹50 Flat Charge)"
+                          ? "Same-day / 24-hour express delivery calculated for Gurugram area (₹50 Flat Charge)"
                           : "3-5 business days courier shipping calculated from your Pincode (₹120 Flat Charge)"}
                       </span>
                     </div>
@@ -549,7 +549,7 @@ export default function BillingPage() {
                     <span className="text-xl">💵</span>
                     <div>
                       <span className="text-[11px] font-extrabold text-foreground block">Cash on Delivery</span>
-                      <span className="text-[9px] text-muted-foreground block mt-0.5">Pay at Doorstep</span>
+                      <span className="text-[9px] text-muted-foreground block mt-0.5">Pay on Delivery</span>
                     </div>
                   </label>
 

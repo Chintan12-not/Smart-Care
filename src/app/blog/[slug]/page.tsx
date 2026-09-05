@@ -119,7 +119,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
         <div className="glass-card rounded-3xl p-6 sm:p-8 border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 via-background to-sky-950/20 shadow-xl space-y-4 mt-8">
           <h3 className="text-lg font-bold text-foreground">Need Smartphone Repair in Gurugram?</h3>
           <p className="text-xs text-muted-foreground">
-            Contact Smart Care & Mobile Point for doorstep pickup, express screen replacement, OEM battery swap, and genuine accessories in Sector 37C, Gurugram.
+            Contact Smart Care & Mobile Point for express pickup & drop, express screen replacement, OEM battery swap, and genuine accessories in Sector 37C, Gurugram.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link

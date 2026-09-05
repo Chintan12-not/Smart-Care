@@ -75,7 +75,7 @@ export default async function ModelAccessoriesPage({ params }: ModelPageProps) {
     },
     {
       q: `Do you deliver accessories in Gurugram?`,
-      a: `Yes, we provide fast delivery across Gurugram, and doorstep pickup is also available if you need screen guard installation at your location.`
+      a: `Yes, we provide fast delivery across Gurugram, and express pickup is also available if you need screen guard installation at your location.`
     }
   ];
 

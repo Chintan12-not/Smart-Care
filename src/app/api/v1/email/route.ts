@@ -27,13 +27,13 @@ export async function POST(req: NextRequest) {
             <img src="https://smartcaremobile.in/logo.png" alt="Smart Care & Mobile Point Logo" style="width: 180px; height: auto;" />
           </div>
           <h2 style="color: #0f172a; margin-top: 0; font-size: 22px;">Thank You for Joining Us, ${payload.name || "Valued Customer"}! 🎉</h2>
-          <p style="font-size: 14px; color: #475569;">Welcome to <strong>Smart Care & Mobile Point</strong> — Gurugram's Trusted Doorstep Mobile Repair & Genuine Accessories Store!</p>
+          <p style="font-size: 14px; color: #475569;">Welcome to <strong>Smart Care & Mobile Point</strong> — Gurugram's Trusted Express Mobile Repair & Genuine Accessories Store!</p>
           <p style="font-size: 14px; color: #475569;">Your account is now fully active. You can now log into your dashboard anytime to access exclusive customer benefits:</p>
           
           <div style="background-color: #f8fafc; padding: 18px; border-radius: 12px; margin: 20px 0; border: 1px solid #cbd5e1;">
             <h4 style="margin: 0 0 10px 0; color: #10b981; font-size: 14px;">Your Member Privileges:</h4>
             <ul style="padding-left: 20px; margin: 0; font-size: 13px; color: #334155;">
-              <li style="margin-bottom: 8px;"><strong>45-Minute Doorstep Mobile Repair</strong>: Free pickup & delivery across all Gurugram sectors.</li>
+              <li style="margin-bottom: 8px;"><strong>45-Minute Express Mobile Repair</strong>: Free pickup & delivery across all Gurugram sectors.</li>
               <li style="margin-bottom: 8px;"><strong>Genuine Phone Accessories</strong>: Covers, 9H tempered glass, and fast chargers for 600+ models.</li>
               <li style="margin-bottom: 8px;"><strong>Document Printing & Xerox</strong>: In-store express document services at Shop No. 28, Ninex Residency.</li>
               <li style="margin-bottom: 0;"><strong>Corporate Bulk Discounts</strong>: Direct wholesale rates with 100% GST invoices.</li>
@@ -50,15 +50,15 @@ export async function POST(req: NextRequest) {
         </div>
       `;
     } else if (type === "pickup") {
-      subject = `Doorstep Pickup Request Registered - #${payload.bookingId || "SRV"}`;
+      subject = `Pickup Request Registered - #${payload.bookingId || "SRV"}`;
       htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.6;">
           <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://smartcaremobile.in/logo.png" alt="Smart Care Logo" style="width: 150px; height: auto;" />
           </div>
-          <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 8px;">Doorstep Pickup Booking Confirmed!</h2>
+          <h2 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 8px;">Pickup Booking Confirmed!</h2>
           <p>Dear ${payload.customerName},</p>
-          <p>Thank you for choosing Smart Care. We have successfully registered your doorstep pickup request.</p>
+          <p>Thank you for choosing Smart Care. We have successfully registered your pickup request.</p>
           
           <div style="background-color: #f9f9f9; padding: 15px; border-radius: 12px; margin: 20px 0; font-size: 14px; border: 1px solid #eee;">
             <p style="margin: 0 0 8px 0;"><strong>Device Details:</strong> ${payload.deviceBrand} ${payload.deviceModel}</p>

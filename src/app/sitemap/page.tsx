@@ -16,7 +16,7 @@ import {
 
 export const metadata: Metadata = {
   title: "HTML Sitemap | Smart Care & Mobile Point Gurugram",
-  description: "Complete sitemap directory of Smart Care & Mobile Point. Explore doorstep mobile repair services in Gurugram, genuine accessories by phone model, blog guides, and corporate services.",
+  description: "Complete sitemap directory of Smart Care & Mobile Point. Explore express mobile repair services in Gurugram, genuine accessories by phone model, blog guides, and corporate services.",
   alternates: {
     canonical: "https://www.smartcaremobile.in/sitemap",
   },
@@ -46,11 +46,11 @@ export default function HtmlSitemapPage() {
   ];
 
   const repairLandingPages = [
-    { name: "Doorstep Mobile Repair in Gurugram", href: "/mobile-repair-gurugram" },
+    { name: "Express Mobile Repair in Gurugram", href: "/mobile-repair-gurugram" },
     { name: "Apple iPhone Repair Center Gurugram", href: "/iphone-repair-gurugram" },
     { name: "Samsung Galaxy Repair Service Gurugram", href: "/samsung-repair-gurugram" },
     { name: "Screen & Glass Replacement Gurugram", href: "/screen-replacement-gurugram" },
-    { name: "Book Doorstep Repair Pickup", href: "/pickup" },
+    { name: "Book Repair Pickup", href: "/pickup" },
     { name: "AI Diagnostics Cost Estimator", href: "/repair" },
   ];
 
@@ -105,7 +105,7 @@ export default function HtmlSitemapPage() {
               </li>
               <li>
                 <Link href="/pickup" className="flex items-center justify-between text-foreground hover:text-emerald-500 transition-colors">
-                  <span>Doorstep Repair Pickup Booking</span>
+                  <span>Repair Pickup Booking</span>
                   <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                 </Link>
               </li>
@@ -140,7 +140,7 @@ export default function HtmlSitemapPage() {
           <div className="p-6 bg-card border border-border rounded-3xl space-y-4 shadow-sm">
             <div className="flex items-center gap-2 text-cyan-500 font-extrabold text-sm uppercase tracking-wider border-b border-border/60 pb-3">
               <Wrench className="h-5 w-5" />
-              <span>Gurugram Doorstep Mobile Repair Pages</span>
+              <span>Gurugram Express Mobile Repair Pages</span>
             </div>
             <ul className="space-y-2.5 text-xs font-medium">
               {repairLandingPages.map((item) => (

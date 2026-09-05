@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
             <span>Our Zero-Data-Inspection Commitment</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            At <strong>Smart Care & Mobile Point</strong>, your privacy and device data confidentiality are our top priorities. During hardware screen replacements, battery repairs, or doorstep pickups in Gurugram, our certified technicians strictly perform repair diagnostics without accessing, copying, or inspecting your photos, messages, apps, or private files.
+            At <strong>Smart Care & Mobile Point</strong>, your privacy and device data confidentiality are our top priorities. During hardware screen replacements, battery repairs, or pickup services in Gurugram, our certified technicians strictly perform repair diagnostics without accessing, copying, or inspecting your photos, messages, apps, or private files.
           </p>
         </div>
 
@@ -53,10 +53,10 @@ export default function PrivacyPolicyPage() {
             1. Information We Collect
           </h2>
           <p>
-            When you request doorstep mobile repairs, order phone accessories, book pickup services, or create a customer account on <strong>smartcaremobile.in</strong>, we collect necessary personal details including:
+            When you request mobile repairs, order phone accessories, book pickup services, or create a customer account on <strong>smartcaremobile.in</strong>, we collect necessary personal details including:
           </p>
           <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-            <li><strong>Contact Details:</strong> Your full name, mobile number, email address, and doorstep pickup address in Gurugram or Delhi NCR.</li>
+            <li><strong>Contact Details:</strong> Your full name, mobile number, email address, and pickup address in Gurugram or Delhi NCR.</li>
             <li><strong>Device Repair Specs:</strong> Smartphone brand, model number, fault description, and warranty preference.</li>
             <li><strong>Order History & Invoices:</strong> Accessories purchased, billing records, transaction reference IDs, and fulfillment status.</li>
             <li><strong>Technical Analytics:</strong> Anonymized IP addresses, browser types, and device telemetry to optimize user navigation speed and security.</li>
@@ -71,7 +71,7 @@ export default function PrivacyPolicyPage() {
           </h2>
           <p>We process your personal information solely for legitimate operational and customer service purposes:</p>
           <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-            <li>To arrange doorstep mobile repair pickups and technician visit scheduling in Gurugram.</li>
+            <li>To arrange mobile repair pickups and technician scheduling in Gurugram.</li>
             <li>To send automated transactional order confirmations, tracking details, and digital tax invoices via Resend email service to your inbox.</li>
             <li>To provide customer support on WhatsApp (+91 92899 42313) regarding repair progress or accessory availability.</li>
             <li>To process secure online payments via Razorpay integration (Cash on Delivery, UPI, Credit/Debit Cards, NetBanking).</li>

@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     default: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
     template: "%s | Smart Care & Mobile Point",
   },
-  description: "Doorstep mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models. Contact Smart Care & Mobile Point today.",
+  description: "Express mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models. Contact Smart Care & Mobile Point today.",
   keywords: [
     "mobile repair in Gurugram", 
     "mobile repair shop in Gurgaon", 
-    "doorstep mobile repair Gurgaon", 
+    "express mobile repair Gurgaon", 
     "phone repair Gurgaon", 
     "iPhone repair Gurgaon", 
     "Samsung repair Gurgaon", 
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point",
-    description: "Doorstep mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models.",
+    description: "Express mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models.",
     url: "https://www.smartcaremobile.in",
     siteName: "Smart Care & Mobile Point",
     locale: "en_IN",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Mobile Repair & Accessories in Gurugram | Smart Care",
-    description: "Doorstep mobile repair & genuine accessories store in Gurugram. Contact Smart Care today.",
+    description: "Express mobile repair & genuine accessories store in Gurugram. Contact Smart Care today.",
     images: ["https://www.smartcaremobile.in/hero_background.png"],
   },
   robots: {
@@ -105,7 +105,7 @@ export default function RootLayout({
       "https://www.smartcaremobile.in/shop_front.png",
       "https://www.smartcaremobile.in/shop_shelf.png"
     ],
-    "description": "Gurugram's premier certified doorstep mobile repair center, genuine phone accessories store, and document printing & photocopy hub.",
+    "description": "Gurugram's premier certified express mobile repair center, genuine phone accessories store, and document printing & photocopy hub.",
     "telephone": "+919289942313",
     "priceRange": "₹₹",
     "address": {

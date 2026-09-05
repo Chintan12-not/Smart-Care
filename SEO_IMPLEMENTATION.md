@@ -22,7 +22,7 @@
 
 ## 2. New SEO Routes Created
 
-1. **`https://www.smartcaremobile.in/mobile-repair-gurugram`**: Doorstep Mobile Repair Landing Page in Gurugram.
+1. **`https://www.smartcaremobile.in/mobile-repair-gurugram`**: Express Mobile Repair Landing Page in Gurugram.
 2. **`https://www.smartcaremobile.in/iphone-repair-gurugram`**: Apple iPhone Repair Service Landing Page in Gurugram.
 3. **`https://www.smartcaremobile.in/samsung-repair-gurugram`**: Samsung Galaxy Repair Service Landing Page in Gurugram.
 4. **`https://www.smartcaremobile.in/screen-replacement-gurugram`**: Screen & Glass Replacement Landing Page in Gurugram.
@@ -40,7 +40,7 @@
 ### Global Metadata (`src/app/layout.tsx`):
 - `metadataBase`: `new URL("https://www.smartcaremobile.in")`
 - `title`: `Mobile Repair & Accessories in Gurugram | Smart Care & Mobile Point`
-- `description`: `Doorstep mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models. Contact Smart Care & Mobile Point today.`
+- `description`: `Express mobile repair in Gurugram for screen, battery and charging-port issues. Shop mobile accessories for 600+ phone models. Contact Smart Care & Mobile Point today.`
 - `canonical`: `https://www.smartcaremobile.in`
 
 ### Implemented Schemas:

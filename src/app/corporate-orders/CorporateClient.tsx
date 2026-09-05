@@ -260,7 +260,7 @@ export default function CorporateClient() {
     { title: "Competitive Bulk Pricing", desc: "Tiered wholesale discounts that scale with your order volume.", icon: Zap },
     { title: "100% GST Compliant Invoices", desc: "Input tax credit (ITC) claims with complete business GST billing.", icon: FileText },
     { title: "Flexible Order Quantities", desc: "No rigid minimums—order from 25 units up to 10,000+ units.", icon: PackageCheck },
-    { title: "Express Regional Delivery", desc: "Same-day doorstep delivery inside Gurugram & fast shipping across India.", icon: Truck },
+    { title: "Express Regional Delivery", desc: "Same-day express delivery inside Gurugram & fast shipping across India.", icon: Truck },
     { title: "Tested & Certified Quality", desc: "Multi-tier tested accessories with quality inspection & instant replacement support.", icon: ShieldCheck },
     { title: "Dedicated B2B Account Manager", desc: "Direct single-point support for custom quotes & purchase orders.", icon: PhoneCall },
   ];
@@ -323,7 +323,7 @@ export default function CorporateClient() {
             </div>
             <div className="p-3.5 rounded-2xl bg-card/50 border border-border/40">
               <p className="text-xl font-black text-foreground">Fast Dispatch</p>
-              <p className="text-[10px] text-muted-foreground font-semibold">Doorstep Corporate Delivery</p>
+              <p className="text-[10px] text-muted-foreground font-semibold">Express Corporate Delivery</p>
             </div>
           </div>
         </div>

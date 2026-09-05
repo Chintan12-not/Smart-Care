@@ -5,7 +5,7 @@ import { FileText, ShieldAlert, CheckCircle2, ArrowLeft, Mail, Phone, MapPin, Sc
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | Smart Care & Mobile Point Gurugram",
-  description: "Terms & Conditions for Smart Care & Mobile Point. Learn about our doorstep mobile repair policies, transparent pricing, quality assurance, and customer terms.",
+  description: "Terms & Conditions for Smart Care & Mobile Point. Learn about our mobile repair policies, transparent pricing, quality assurance, and customer terms.",
   alternates: {
     canonical: "https://www.smartcaremobile.in/terms",
   },
@@ -42,7 +42,7 @@ export default function TermsAndConditionsPage() {
             <span>Smart Care Transparent Service Terms</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            By booking a doorstep repair, purchasing phone accessories, or utilizing in-store document printing services at <strong>Smart Care & Mobile Point</strong> (Shop No. 28, Ninex Residency, Sector 37C, Gurugram), you agree to the terms outlined below.
+            By booking a repair pickup, purchasing phone accessories, or utilizing in-store document printing services at <strong>Smart Care & Mobile Point</strong> (Shop No. 28, Ninex Residency, Sector 37C, Gurugram), you agree to the terms outlined below.
           </p>
         </div>
 
@@ -50,11 +50,11 @@ export default function TermsAndConditionsPage() {
         <section className="space-y-3">
           <h2 className="text-base font-extrabold text-foreground flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-cyan-500" />
-            1. Doorstep Mobile Repair & Pickup Services
+            1. Mobile Repair & Pickup Services
           </h2>
           <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-            <li><strong>Service Coverage:</strong> Doorstep pickup and repair services are provided across all sectors in Gurugram (Sector 37C, Sector 45, DLF Phase 1-5, Sohna Road, Golf Course Road) and select NCR areas.</li>
-            <li><strong>Pickup Charges:</strong> Delivery and doorstep logistics charges are clear and communicated upfront based on location distance.</li>
+            <li><strong>Service Coverage:</strong> Pickup and repair services are provided across all sectors in Gurugram (Sector 37C, Sector 45, DLF Phase 1-5, Sohna Road, Golf Course Road) and select NCR areas.</li>
+            <li><strong>Pickup Charges:</strong> Delivery and pickup logistics charges are clear and communicated upfront based on location distance.</li>
             <li><strong>Diagnostic Approval:</strong> Our experienced technician provides an upfront repair estimate after initial physical inspection. Repairs proceed only upon your explicit approval.</li>
           </ul>
         </section>

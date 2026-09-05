@@ -392,7 +392,7 @@ export default function PickupClient() {
         tracking_history: [
           {
             status: "booked",
-            notes: "Doorstep pickup scheduled. FREE PHONE COVER included.",
+            notes: "Pickup scheduled. FREE PHONE COVER included.",
             timestamp: new Date().toISOString()
           }
         ]
@@ -436,7 +436,7 @@ export default function PickupClient() {
         },
         body: JSON.stringify({
           access_key: "c30177c2-2365-458f-a261-474f35fdc4d5",
-          subject: `[DOORSTEP PICKUP BOOKING] ${customerName} - ${deviceBrand} ${deviceModel}`,
+          subject: `[PICKUP REPAIR BOOKING] ${customerName} - ${deviceBrand} ${deviceModel}`,
           from_name: customerName,
           name: customerName,
           phone: mobileNumber,
@@ -481,7 +481,7 @@ export default function PickupClient() {
 
       // Construct WhatsApp redirect
       const whatsappNum = "919289942313";
-      const formattedMessage = `Hello Smart Care! I would like to book a Doorstep Pickup & Drop repair service:
+      const formattedMessage = `Hello Smart Care! I would like to book a Pickup & Drop repair service:
 
 👤 *Customer Details*:
 • Name: ${customerName}
@@ -503,7 +503,7 @@ ${landmark ? `• Landmark: ${landmark}` : ""}
 
 🎁 *FREE GIFT BUNDLE*: FREE 9H Screen Guard + FREE Phone Cover Included!
 
-Please confirm my doorstep pickup schedule. Thank you!`;
+Please confirm my pickup schedule. Thank you!`;
 
       const waUrl = `https://wa.me/${whatsappNum}?text=${encodeURIComponent(formattedMessage)}`;
       
@@ -518,7 +518,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
     if (!submissionData) return "#";
     
     const whatsappNum = "919289942313";
-    const formattedMessage = `Hello Smart Care! I would like to book a Doorstep Pickup & Drop repair service:
+    const formattedMessage = `Hello Smart Care! I would like to book a Pickup & Drop repair service:
 
 👤 *Customer Details*:
 • Name: ${submissionData.customerName}
@@ -538,7 +538,7 @@ ${submissionData.landmark ? `• Landmark: ${submissionData.landmark}` : ""}
 • Distance: ${submissionData.distanceKm} km
 • Pickup & Drop Fee: ${submissionData.pickupCharge === 0 ? "FREE" : formatINR(submissionData.pickupCharge)}
 
-Please confirm my doorstep pickup schedule. Thank you!`;
+Please confirm my pickup schedule. Thank you!`;
 
     return `https://wa.me/${whatsappNum}?text=${encodeURIComponent(formattedMessage)}`;
   };
@@ -573,7 +573,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
           Free Pickup & Drop Service
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-          Gurugram&apos;s leading hassle-free smartphone repair pick-and-drop service. We collect from your doorstep, repair using genuine spares, test for quality assurance, and deliver safely back to you.
+          Gurugram&apos;s leading hassle-free smartphone repair pick-and-drop service. We collect from your address, repair using genuine spares, test for quality assurance, and deliver safely back to you.
         </p>
       </div>
 
@@ -656,7 +656,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
               <div className="relative">
                 <span className="absolute -left-[33px] top-0 h-5 w-5 rounded-full bg-cyan-500 text-black flex items-center justify-center font-bold text-[10px] shadow-sm">1</span>
                 <div>
-                  <h4 className="text-xs font-bold text-foreground">Step 1: Doorstep Pickup</h4>
+                  <h4 className="text-xs font-bold text-foreground">Step 1: Express Pickup</h4>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Our agent visits your address, runs visual diagnostic verification, and bags your device safely.</p>
                 </div>
               </div>
@@ -710,9 +710,9 @@ Please confirm my doorstep pickup schedule. Thank you!`;
               </div>
               
               <div className="space-y-2">
-                <h2 className="text-xl font-bold text-foreground">Sign In to Book Doorstep Pickup</h2>
+                <h2 className="text-xl font-bold text-foreground">Sign In to Book Pickup & Drop</h2>
                 <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
-                  Please log in or create a Smart Care account to schedule a doorstep pickup. This ensures we can securely link and track your repair status live in your customer dashboard.
+                  Please log in or create a Smart Care account to schedule a repair pickup. This ensures we can securely link and track your repair status live in your customer dashboard.
                 </p>
               </div>
 
@@ -737,7 +737,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                   className="glass-card rounded-3xl p-8 border border-border shadow-xl space-y-6"
                 >
                   <div className="border-b border-border/60 pb-4">
-                    <h2 className="text-xl font-bold text-foreground">Book Your Doorstep Pickup</h2>
+                    <h2 className="text-xl font-bold text-foreground">Book Your Repair Pickup</h2>
                     <p className="text-xs text-muted-foreground mt-0.5">Enter details below. Charges calculate automatically based on your address location.</p>
                   </div>
 

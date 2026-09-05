@@ -2236,7 +2236,7 @@ CREATE POLICY "Allow authenticated insert" ON public.repair_estimator_config FOR
                 <div className="flex items-center justify-between">
                   <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
                     <Truck className="h-5 w-5 text-cyan-500" />
-                    Doorstep Pickup &amp; Drop Repair Bookings ({repairBookings.length})
+                    Pickup &amp; Drop Repair Bookings ({repairBookings.length})
                   </h3>
                   <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
                     <Gift className="h-3.5 w-3.5" /> FREE PHONE COVER ELIGIBLE

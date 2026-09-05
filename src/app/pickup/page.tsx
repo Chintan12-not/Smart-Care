@@ -3,10 +3,10 @@ import { Metadata } from "next";
 import PickupClient from "./PickupClient";
 
 export const metadata: Metadata = {
-  title: "Doorstep Mobile Repair Pickup & Delivery in Gurugram",
-  description: "Book doorstep mobile repair pickup across Sector 37C, Sector 45, DLF, Sohna Road & Cyber City in Gurugram. Fast 45-min repair, anti-static safety packaging & doorstep payment.",
+  title: "Mobile Repair Pickup & Delivery in Gurugram",
+  description: "Book mobile repair pickup across Sector 37C, Sector 45, DLF, Sohna Road & Cyber City in Gurugram. Fast 45-min repair, anti-static safety packaging & easy payment.",
   keywords: [
-    "doorstep mobile repair Gurugram",
+    "express mobile repair Gurugram",
     "mobile pickup repair Gurgaon",
     "mobile screen replacement pickup Gurgaon",
     "phone repair home delivery Sector 37C"
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     canonical: "https://www.smartcaremobile.in/pickup",
   },
   openGraph: {
-    title: "Doorstep Mobile Repair Pickup & Delivery in Gurugram | Smart Care",
-    description: "Free doorstep mobile repair pickup within 5 km in Gurugram. Same-day screen & battery service.",
+    title: "Mobile Repair Pickup & Delivery in Gurugram | Smart Care",
+    description: "Free mobile repair pickup within 5 km in Gurugram. Same-day screen & battery service.",
     url: "https://www.smartcaremobile.in/pickup",
   },
 };
@@ -25,7 +25,7 @@ export default function PickupPage() {
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": "Doorstep Mobile Repair Pickup & Delivery Gurugram",
+    "name": "Mobile Repair Pickup & Delivery Gurugram",
     "provider": {
       "@type": "MobilePhoneStore",
       "name": "Smart Care & Mobile Point",
@@ -33,8 +33,8 @@ export default function PickupPage() {
       "url": "https://www.smartcaremobile.in"
     },
     "areaServed": "Gurugram",
-    "serviceType": "Doorstep Smartphone Logistics & Repair",
-    "description": "Safe anti-static doorstep pickup, express workshop repair, and same-day delivery back to customer address."
+    "serviceType": "Smartphone Logistics & Repair",
+    "description": "Safe anti-static pickup, express workshop repair, and same-day delivery back to customer address."
   };
 
   const breadcrumbSchema = {

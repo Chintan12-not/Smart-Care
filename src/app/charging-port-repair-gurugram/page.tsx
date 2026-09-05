@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Mobile Charging Port Repair Service in Gurugram | Smart Care",
-    description: "Express Type-C & Lightning charging port repair in Gurugram. Doorstep pickup available.",
+    description: "Express Type-C & Lightning charging port repair in Gurugram. Express pickup available.",
     url: "https://www.smartcaremobile.in/charging-port-repair-gurugram",
   },
 };

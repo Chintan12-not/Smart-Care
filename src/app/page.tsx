@@ -188,7 +188,7 @@ export default function Home() {
 
   // Static trust highlights (Policy Compliant)
   const stats = [
-    { value: "Same-Day", label: "Doorstep Repair" },
+    { value: "Same-Day", label: "Express Repair" },
     { value: "600+", label: "Supported Models" },
     { value: "Transparent", label: "Diagnostic Pricing" },
     { value: "Sector 37C", label: "Gurugram Service Hub" }
@@ -281,7 +281,7 @@ export default function Home() {
         </video>
       </div>
 
-      {/* Floating lights */}
+      {/* Decorative Glow Elements */}
       <div className="absolute top-[-150px] left-1/3 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute top-[-50px] right-1/4 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none z-0" />
 
@@ -289,18 +289,18 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center space-y-8 relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-500 shadow-sm">
           <ShieldCheck className="h-4 w-4" />
-          <span>Trusted Doorstep Mobile Repair &amp; Pickup Service in Gurugram</span>
+          <span>Trusted Express Mobile Repair &amp; Pickup Service in Gurugram</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl mx-auto leading-[1.12]">
-          Expert Doorstep Mobile Repair &{" "}
+          Expert Express Mobile Repair &{" "}
           <span className="text-emerald-500">
             Express Service
           </span>
         </h1>
 
         <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Doorstep mobile repair pickup, 45-minute express screen replacement, genuine OEM screen/battery spares for 600+ phone models, and corporate device maintenance.
+          Express mobile repair pickup, 45-minute express screen replacement, genuine OEM screen/battery spares for 600+ phone models, and corporate device maintenance.
         </p>
 
         {/* Global search */}
@@ -326,7 +326,7 @@ export default function Home() {
             className="px-6 py-3.5 rounded-2xl bg-emerald-500 text-black font-extrabold text-xs flex items-center gap-2 hover:bg-emerald-400 shadow-md transition-all active:scale-[0.99]"
           >
             <Truck className="h-4 w-4" />
-            Book Doorstep Pickup & Repair
+            Book Express Pickup & Repair
           </Link>
           <Link
             href="/corporate-orders"
@@ -438,7 +438,7 @@ export default function Home() {
             </p>
 
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
-              Don&apos;t let a cracked screen or failing battery ruin your device. Book doorstep pickup or visit our Gurugram store. We diagnose, repair, install your free 9H screen guard &amp; phone cover, and deliver your mobile back safely!
+              Don&apos;t let a cracked screen or failing battery ruin your device. Book express pickup or visit our Gurugram store. We diagnose, repair, install your free 9H screen guard &amp; phone cover, and deliver your mobile back safely!
             </p>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2.5 text-xs font-bold text-foreground pt-1">
@@ -1190,7 +1190,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Welcome to Smart Care</h2>
                 <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto">
-                  Log in or sign up to schedule doorstep phone pickups, use AI diagnostics helper, and browse premium products inside Gurugram.
+                  Log in or sign up to schedule express phone pickups, use AI diagnostics helper, and browse premium products inside Gurugram.
                 </p>
               </div>
 

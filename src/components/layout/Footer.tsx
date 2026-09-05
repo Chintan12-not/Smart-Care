@@ -80,7 +80,7 @@ export default function Footer() {
                 <Truck className="h-6 w-6" />
               </span>
               <div>
-                <h4 className="text-sm font-bold text-foreground">Free Doorstep Pickup</h4>
+                <h4 className="text-sm font-bold text-foreground">Free Pickup & Drop</h4>
                 <p className="text-xs text-muted-foreground mt-0.5">Convenient pickup & drop across Gurugram and Delhi NCR.</p>
               </div>
             </div>
@@ -88,33 +88,63 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Main Footer Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo & Info */}
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-white shadow-sm">
-                <HeartPulse className="h-5 w-5" />
-              </span>
-              <div className="flex flex-col">
-                <span className="font-semibold text-base leading-none tracking-tight">Smart Care</span>
-                <span className="text-[10px] text-muted-foreground font-medium tracking-wider uppercase mt-[2px]">
-                  & Mobile Point
-                </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          
+          {/* Brand Col */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 relative overflow-hidden rounded-xl">
+                <img
+                  src="/logo.png"
+                  alt="Smart Care & Mobile Point Logo"
+                  className="h-full w-full object-contain"
+                />
               </div>
-            </Link>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Your premium destination for smartphone diagnostics, professional repair services, and high-fidelity mobile accessories. Delivering trust and quality support since 2018.
+              <div>
+                <span className="font-extrabold text-foreground text-sm block">Smart Care</span>
+                <span className="text-[10px] text-muted-foreground block -mt-1">& Mobile Point</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
+              Gurugram&apos;s trusted mobile repair lab and genuine accessories store. Express screen replacement, OEM battery swap, fast charging cables, cases &amp; document printing.
             </p>
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="https://wa.me/919289942313"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl bg-muted/60 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-500/10 transition-colors"
+                title="WhatsApp Us"
+              >
+                <Phone className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
-          {/* Repair Services */}
+          {/* Quick Links */}
           <div>
-            <h3 className="text-xs font-bold text-foreground tracking-wider uppercase mb-4">Gurugram Repair Services</h3>
-            <ul className="space-y-2 text-xs">
+            <h3 className="text-xs font-bold text-foreground tracking-wider uppercase mb-4">Store Services</h3>
+            <ul className="space-y-2.5 text-xs">
               <li>
                 <Link href="/mobile-repair-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
                   Mobile Repair Gurugram
+                </Link>
+              </li>
+              <li>
+                <Link href="/accessories" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Phone Accessories Store
+                </Link>
+              </li>
+              <li>
+                <Link href="/print-xerox-services-gurugram" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Print & Xerox Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/pickup" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                  Pickup & Drop Repair
                 </Link>
               </li>
               <li>
@@ -149,7 +179,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/pickup" className="text-muted-foreground hover:text-emerald-500 transition-colors">
-                  Doorstep Pickup & Repair
+                  Pickup & Drop Repair
                 </Link>
               </li>
             </ul>

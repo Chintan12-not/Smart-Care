@@ -5,7 +5,7 @@ import { Smartphone, BatteryCharging, ShieldCheck, Truck, ChevronRight, PhoneCal
 
 export const metadata: Metadata = {
   title: "Mobile Battery Replacement in Gurugram | Fast Battery Swap",
-  description: "Certified smartphone battery replacement in Gurugram. Fast OEM battery swap for iPhone, Samsung, OnePlus, Vivo, Oppo & Xiaomi at Sector 37C workshop with doorstep pickup.",
+  description: "Certified smartphone battery replacement in Gurugram. Fast OEM battery swap for iPhone, Samsung, OnePlus, Vivo, Oppo & Xiaomi at Sector 37C workshop with express pickup & drop.",
   keywords: [
     "battery replacement Gurugram",
     "iPhone battery replacement Gurgaon",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Mobile Battery Replacement Service in Gurugram | Smart Care",
-    description: "Express smartphone battery swap in Gurugram. Doorstep pickup & expert technician installation.",
+    description: "Express smartphone battery swap in Gurugram. Express pickup & drop & expert technician installation.",
     url: "https://www.smartcaremobile.in/battery-replacement-gurugram",
   },
 };
@@ -31,7 +31,7 @@ export default function BatteryReplacementGurugramPage() {
     },
     {
       q: "How long does mobile battery replacement take?",
-      a: "Battery replacement takes approximately 30 to 45 minutes at our Sector 37C counter. For doorstep pickup orders, devices are serviced and returned on the same day."
+      a: "Battery replacement takes approximately 30 to 45 minutes at our Sector 37C counter. For pickup & drop orders, devices are serviced and returned on the same day."
     },
     {
       q: "Are the replacement battery cells safe and tested?",

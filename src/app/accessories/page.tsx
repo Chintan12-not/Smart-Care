@@ -6,7 +6,7 @@ import { AccessoryProduct } from "@/lib/accessories";
 
 export const metadata: Metadata = {
   title: "Mobile Accessories & Phone Cases Store in Gurugram",
-  description: "Shop genuine phone cases, fast chargers, tempered glass protectors, and Type-C cables for 600+ phone models in Gurugram. Express doorstep delivery & in-store fitting.",
+  description: "Shop genuine phone cases, fast chargers, tempered glass protectors, and Type-C cables for 600+ phone models in Gurugram. Express delivery & in-store fitting.",
   keywords: [
     "mobile accessories Gurugram",
     "phone cases Gurgaon",

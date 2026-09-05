@@ -5,7 +5,7 @@ import { Smartphone, Wrench, ShieldCheck, Truck, ChevronRight, PhoneCall, Check,
 
 export const metadata: Metadata = {
   title: "iPhone Repair Service in Gurugram | Screen, Battery & Back Glass",
-  description: "Certified iPhone repair in Gurugram. Fast screen replacement, OEM battery swap, and back glass repair for iPhone 11, 12, 13, 14, 15 & 16 series. Doorstep pickup available.",
+  description: "Certified iPhone repair in Gurugram. Fast screen replacement, OEM battery swap, and back glass repair for iPhone 11, 12, 13, 14, 15 & 16 series. Express pickup available.",
   keywords: [
     "iPhone repair Gurgaon", 
     "iPhone screen replacement Gurugram", 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "iPhone Repair Service in Gurugram | Smart Care & Mobile Point",
-    description: "Express iPhone repair service in Gurugram. Free doorstep pickup & original OEM display replacement.",
+    description: "Express iPhone repair service in Gurugram. Free express pickup & original OEM display replacement.",
     url: "https://www.smartcaremobile.in/iphone-repair-gurugram",
   },
 };

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Mobile Screen & Glass Replacement in Gurugram | Smart Care",
-    description: "45-minute display replacement lab in Gurugram. Free doorstep pickup available.",
+    description: "45-minute display replacement lab in Gurugram. Free express pickup available.",
     url: "https://www.smartcaremobile.in/screen-replacement-gurugram",
   },
 };

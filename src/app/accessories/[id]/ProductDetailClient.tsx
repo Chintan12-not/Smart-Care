@@ -586,7 +586,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                   How fast is delivery in Gurugram?
                 </h5>
                 <p className="text-[10px] text-muted-foreground mt-1 pl-5">
-                  Orders placed before 4 PM receive same-day express doorstep delivery within Gurugram & NCR.
+                  Orders placed before 4 PM receive same-day express delivery within Gurugram & NCR.
                 </p>
               </div>
 
@@ -705,7 +705,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
               </div>
               <div className="text-right space-y-1">
                 <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-[9px] font-extrabold uppercase tracking-wider">In Stock</span>
-                <span className="text-[9px] text-muted-foreground block mt-1">Free Doorstep Delivery</span>
+                <span className="text-[9px] text-muted-foreground block mt-1">Free Express Delivery</span>
               </div>
             </div>
           </div>
@@ -909,7 +909,7 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
                 <div className="p-4 bg-muted/30 border border-border/40 rounded-2xl text-center space-y-2">
                   <Lock className="h-6 w-6 text-amber-500 mx-auto" />
                   <p className="font-bold text-foreground text-xs uppercase tracking-wider">Secure Payment</p>
-                  <p className="text-[10px] text-muted-foreground">Pay with Cash on Delivery or Secure UPI at the doorstep.</p>
+                  <p className="text-[10px] text-muted-foreground">Pay with Cash on Delivery or Secure UPI on delivery.</p>
                 </div>
               </div>
             </div>

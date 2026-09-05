@@ -44,7 +44,7 @@ export default function NotFound() {
               <h3 className="font-extrabold text-xs text-foreground group-hover:text-emerald-500 transition-colors">
                 Mobile Repair Services
               </h3>
-              <p className="text-[11px] text-muted-foreground">Doorstep pickup & screen repair in Gurugram</p>
+              <p className="text-[11px] text-muted-foreground">Express pickup & screen repair in Gurugram</p>
             </div>
           </Link>
 

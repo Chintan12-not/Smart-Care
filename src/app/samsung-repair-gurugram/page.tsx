@@ -46,7 +46,7 @@ export default function SamsungRepairGurugramPage() {
           <div className="flex flex-wrap gap-4 pt-2">
             <Link href="/pickup" className="px-6 py-3.5 rounded-2xl bg-sky-500 text-black font-extrabold text-xs uppercase tracking-wider hover:bg-sky-400 shadow-md flex items-center gap-2">
               <Truck className="h-4 w-4" />
-              <span>Book Doorstep Pickup</span>
+              <span>Book Repair Pickup</span>
             </Link>
             <a href="https://wa.me/919289942313?text=Hi%20Smart%20Care,%20I%20need%20a%20Samsung%20repair%20quote." target="_blank" rel="noopener noreferrer" className="px-6 py-3.5 rounded-2xl bg-card border border-border text-foreground font-extrabold text-xs uppercase tracking-wider hover:bg-muted flex items-center gap-2">
               <PhoneCall className="h-4 w-4 text-sky-400" />

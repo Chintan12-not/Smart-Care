@@ -4,11 +4,11 @@ import { Metadata } from "next";
 import { Smartphone, Wrench, ShieldCheck, Truck, Clock, Check, PhoneCall, ChevronRight, Star, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Doorstep Mobile Repair in Gurugram | Screen, Battery & Diagnostics",
-  description: "Certified doorstep mobile repair in Gurugram. Fast 45-minute screen replacement, OEM battery swap, and charging port repair across Sector 37C, Sector 45, DLF & Sohna Road.",
+  title: "Express Mobile Repair in Gurugram | Screen, Battery & Diagnostics",
+  description: "Certified express mobile repair in Gurugram. Fast 45-minute screen replacement, OEM battery swap, and charging port repair across Sector 37C, Sector 45, DLF & Sohna Road.",
   keywords: [
     "mobile repair in Gurugram", 
-    "doorstep mobile repair Gurgaon", 
+    "express mobile repair Gurgaon", 
     "mobile repair shop Sector 37C Gurugram", 
     "phone repair near me Gurgaon",
     "mobile screen replacement Gurgaon"
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     canonical: "https://www.smartcaremobile.in/mobile-repair-gurugram",
   },
   openGraph: {
-    title: "Doorstep Mobile Repair Service in Gurugram | Smart Care",
-    description: "Express mobile repair service in Gurugram. Free doorstep pickup & same-day delivery.",
+    title: "Express Mobile Repair Service in Gurugram | Smart Care",
+    description: "Express mobile repair service in Gurugram. Free express pickup & same-day delivery.",
     url: "https://www.smartcaremobile.in/mobile-repair-gurugram",
   },
 };
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default function MobileRepairGurugramPage() {
   const faqs = [
     {
-      q: "How does doorstep mobile repair work in Gurugram?",
+      q: "How does mobile repair pickup work in Gurugram?",
       a: "Simply fill out our online booking form or message us on WhatsApp (+91 9289942313). A logistics executive collects your phone from your home or office in Gurugram, our certified lab replaces the component, and we return it to you safely on the same day."
     },
     {
@@ -52,7 +52,7 @@ export default function MobileRepairGurugramPage() {
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": "Doorstep Mobile Repair Gurugram",
+    "name": "Express Mobile Repair Gurugram",
     "provider": {
       "@type": "MobilePhoneStore",
       "name": "Smart Care & Mobile Point",
@@ -88,7 +88,7 @@ export default function MobileRepairGurugramPage() {
         <nav className="flex items-center gap-2 text-xs text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <Link href="/pickup" className="hover:text-foreground transition-colors">Doorstep Repair Pickup</Link>
+          <Link href="/pickup" className="hover:text-foreground transition-colors">Repair Pickup & Drop</Link>
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="text-foreground font-semibold">Mobile Repair Gurugram</span>
         </nav>
@@ -97,7 +97,7 @@ export default function MobileRepairGurugramPage() {
         <section className="glass-card rounded-3xl p-8 sm:p-12 border border-border bg-gradient-to-r from-emerald-950/20 via-background to-sky-950/20 shadow-xl space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
             <ShieldCheck className="h-4 w-4" />
-            <span>Gurugram Doorstep &amp; In-Store Repair</span>
+            <span>Gurugram Express &amp; In-Store Repair</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
@@ -105,7 +105,7 @@ export default function MobileRepairGurugramPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
-            Fast, transparent, and reliable smartphone repairs for iPhone, Samsung, OnePlus, Vivo, Oppo, Xiaomi &amp; Realme. Free doorstep pickup across all Gurugram sectors.
+            Fast, transparent, and reliable smartphone repairs for iPhone, Samsung, OnePlus, Vivo, Oppo, Xiaomi &amp; Realme. Free express pickup across all Gurugram sectors.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
@@ -114,7 +114,7 @@ export default function MobileRepairGurugramPage() {
               className="px-6 py-3.5 rounded-2xl bg-emerald-500 text-black font-extrabold text-xs uppercase tracking-wider hover:bg-emerald-400 shadow-md flex items-center gap-2 transition-all"
             >
               <Truck className="h-4 w-4" />
-              <span>Book Doorstep Repair</span>
+              <span>Book Repair Pickup</span>
             </Link>
             <a
               href="https://wa.me/919289942313?text=Hi%20Smart%20Care,%20I%20need%20mobile%20repair%20quote%20in%20Gurugram."
