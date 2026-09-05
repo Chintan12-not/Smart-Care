@@ -128,6 +128,27 @@ export default function MobileRepairGurugramPage() {
           </div>
         </section>
 
+        {/* FREE GIFT PROMO BANNER */}
+        <section className="glass-card rounded-3xl p-6 sm:p-8 border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-cyan-500/10 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="space-y-2 text-left">
+            <span className="px-3.5 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm animate-pulse">
+              🎁 EXCLUSIVE FREE GIFTS WITH REPAIR
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground">
+              FREE <span className="text-emerald-400">9H Screen Guard</span> + FREE <span className="text-cyan-400">Phone Cover</span>
+            </h2>
+            <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
+              Get a complimentary 9H Tempered Glass Screen Guard &amp; protective back cover installed 100% FREE on all completed mobile screen, battery, or component repairs in Gurugram!
+            </p>
+          </div>
+          <Link
+            href="/pickup"
+            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-black text-xs uppercase tracking-wider hover:opacity-95 shadow-md shrink-0 transition-all flex items-center gap-2"
+          >
+            <span>Claim Free Gifts &amp; Book Repair</span>
+          </Link>
+        </section>
+
         {/* Services Offered Grid */}
         <section className="space-y-6">
           <div className="text-center space-y-2">

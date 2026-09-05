@@ -501,7 +501,7 @@ ${landmark ? `• Landmark: ${landmark}` : ""}
 • Distance: ${distanceKm || "TBD"} km
 • Pickup & Drop Fee: ${cost === 0 ? "FREE" : formatINR(cost)}
 
-🎁 *FREE GIFT*: FREE PHONE COVER Included!
+🎁 *FREE GIFT BUNDLE*: FREE 9H Screen Guard + FREE Phone Cover Included!
 
 Please confirm my doorstep pickup schedule. Thank you!`;
 
@@ -582,27 +582,31 @@ Please confirm my doorstep pickup schedule. Thank you!`;
         {/* Left Column: Pricing & Process (5 cols) - shown below form on mobile */}
         <div className="lg:col-span-5 space-y-6 order-2 lg:order-1">
           
-          {/* FREE PHONE COVER PROMO CARD */}
-          <div className="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-cyan-500/5 to-indigo-500/10 relative overflow-hidden shadow-xl">
+          {/* FREE SCREEN GUARD & PHONE COVER PROMO CARD */}
+          <div className="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 relative overflow-hidden shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-3">
-              <span className="px-3 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                <Gift className="h-3.5 w-3.5" /> FREE GIFT
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-black text-[10px] uppercase tracking-wider flex items-center gap-1.5 shadow-sm animate-pulse">
+                <Gift className="h-3.5 w-3.5" /> BUNDLE FREE GIFTS
               </span>
-              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Smart Care Exclusive</span>
+              <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Smart Care Exclusive</span>
             </div>
 
-            <h3 className="text-xl font-extrabold text-foreground tracking-tight">FREE PHONE COVER</h3>
+            <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight flex flex-wrap items-center gap-1.5">
+              <span className="text-emerald-400">FREE 9H SCREEN GUARD</span>
+              <span className="text-muted-foreground">+</span>
+              <span className="text-cyan-400">FREE PHONE COVER</span>
+            </h3>
             
-            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-              Book our Pickup &amp; Drop repair service and get a phone cover <span className="font-extrabold text-emerald-400 uppercase">FREE</span> from Smart Care.
+            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-medium">
+              Book any Pickup &amp; Drop repair service and get a <span className="font-bold text-emerald-400">9H Tempered Glass Screen Guard</span> &amp; <span className="font-bold text-cyan-400">Protective Phone Cover</span> 100% <span className="font-extrabold text-emerald-400 uppercase">FREE</span> from Smart Care.
             </p>
 
             <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-[11px]">
               <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Offer available on eligible repair bookings.
+                <Sparkles className="h-3.5 w-3.5 text-amber-400" /> Free gift bundle applied to your repair.
               </span>
               <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold text-[9px]">
-                INCLUDED
+                2 GIFTS INCLUDED
               </span>
             </div>
           </div>
@@ -1056,7 +1060,7 @@ Please confirm my doorstep pickup schedule. Thank you!`;
                   
                   <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-extrabold text-xs max-w-md mx-auto flex items-center justify-center gap-2 shadow-sm">
                     <Gift className="h-4 w-4 shrink-0 text-emerald-400" />
-                    <span>Your FREE PHONE COVER is included with this Pickup &amp; Drop repair booking.</span>
+                    <span>Your FREE 9H Screen Guard &amp; FREE Phone Cover are included with this repair booking!</span>
                   </div>
 
                   <p className="text-xs text-muted-foreground max-w-md mx-auto pt-1">

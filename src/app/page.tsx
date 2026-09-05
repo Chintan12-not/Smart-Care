@@ -417,28 +417,39 @@ export default function Home() {
           
           <div className="md:col-span-8 space-y-4 text-left">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-emerald-500 text-black font-black text-[10px] uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                <Gift className="h-3.5 w-3.5" /> FREE GIFT OFFER
+              <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-black text-[10px] uppercase tracking-wider flex items-center gap-1.5 shadow-md animate-pulse">
+                <Gift className="h-3.5 w-3.5" /> BUNDLE FREE GIFTS OFFER
               </span>
               <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Smart Care Exclusive</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-              FREE PHONE COVER
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground flex flex-wrap items-center gap-2">
+              <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-sm">FREE SCREEN GUARD</span>
+              <span className="text-muted-foreground text-xl sm:text-2xl font-black">+</span>
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent drop-shadow-sm">FREE PHONE COVER</span>
             </h2>
 
-            <p className="text-xs sm:text-sm font-bold text-emerald-400">
-              Book our Pickup &amp; Drop repair service and get a phone cover FREE from Smart Care.
+            <p className="text-xs sm:text-sm font-extrabold text-emerald-400 flex items-center gap-1.5 flex-wrap">
+              <span>🎁 Book any mobile repair service &amp; get a</span>
+              <span className="px-2 py-0.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">9H Tempered Glass Screen Guard</span>
+              <span>&amp;</span>
+              <span className="px-2 py-0.5 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-300">Protective Phone Cover</span>
+              <span>100% FREE!</span>
             </p>
 
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
-              Don&apos;t let a cracked screen ruin your day. Book doorstep pickup. We will fetch your mobile, diagnose and swap components, package it securely, and deliver it back to you with your free gift.
+              Don&apos;t let a cracked screen or failing battery ruin your device. Book doorstep pickup or visit our Gurugram store. We diagnose, repair, install your free 9H screen guard &amp; phone cover, and deliver your mobile back safely!
             </p>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-foreground pt-1">
-              <span className="flex items-center gap-1.5 text-emerald-400">✓ FREE Phone Cover Included</span>
-              <span className="flex items-center gap-1.5">✓ Safe Anti-Static Pack</span>
-              <span className="flex items-center gap-1.5">✓ Cash/UPI at Doorstep</span>
+            <div className="flex flex-wrap gap-x-6 gap-y-2.5 text-xs font-bold text-foreground pt-1">
+              <span className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                ✓ FREE 9H Screen Guard Included
+              </span>
+              <span className="flex items-center gap-1.5 text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                ✓ FREE Protective Phone Cover Included
+              </span>
+              <span className="flex items-center gap-1.5 text-amber-400">✓ Safe Anti-Static Pack</span>
+              <span className="flex items-center gap-1.5 text-foreground">✓ Pay Cash/UPI on Delivery</span>
             </div>
 
             <p className="text-[10px] text-muted-foreground/80 italic pt-1">
