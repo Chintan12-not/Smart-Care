@@ -27,6 +27,14 @@ export function isProductCompatibleWithModel(
 
   // 1. BRAND LEVEL CHECK
   if (normBrand) {
+    // Cross-check conflicting brand keywords in product title to fix miscategorized DB entries
+    if (normBrand === "apple" && (prodName.includes("samsung") || prodName.includes("galaxy") || prodName.includes("oneplus") || prodName.includes("oppo") || prodName.includes("vivo") || prodName.includes("realme") || prodName.includes("redmi") || prodName.includes("xiaomi") || prodName.includes("poco"))) {
+      return false;
+    }
+    if (normBrand === "samsung" && (prodName.includes("iphone") || prodName.includes("apple") || prodName.includes("ipad") || prodName.includes("airpod") || prodName.includes("macbook"))) {
+      return false;
+    }
+
     const isGenericBrand = prodBrand === "generic" || prodBrand === "universal" || prodBrand === "all";
     const brandMatches = 
       prodBrand === normBrand ||
@@ -35,12 +43,11 @@ export function isProductCompatibleWithModel(
       (normBrand === "apple" && (prodBrand === "airpods" || prodCorpus.includes("iphone") || prodCorpus.includes("ipad"))) ||
       (normBrand === "airpods" && (prodBrand === "apple" || prodCorpus.includes("airpod")));
 
-    // Universal categories (chargers, cables, power banks, earbuds, adapters) match across brands
+    // Universal categories (chargers, cables, power banks, adapters) match across brands
     const isUniversalCategory = 
       prodCategory.includes("charger") ||
       prodCategory.includes("cable") ||
       prodCategory.includes("power") ||
-      prodCategory.includes("earbud") ||
       prodCategory.includes("adapter");
 
     if (!brandMatches && !isGenericBrand && !isUniversalCategory) {
@@ -53,12 +60,20 @@ export function isProductCompatibleWithModel(
     return true; // Only brand filter was active
   }
 
-  // Universal accessories (chargers, wall adapters, power banks, audio cables) match all models of that brand
+  // If a specific phone model (e.g. "iPhone 17e" or "Galaxy S24") is selected, earbud/AirPods cases should not be matched as universal phone accessories
+  const isAirPodsCase = prodCorpus.includes("airpod") || prodCorpus.includes("earbud case") || prodCorpus.includes("bud case");
+  const isPhoneModel = normModel.includes("iphone") || normModel.includes("galaxy") || normModel.includes("pixel") || /\d/.test(normModel);
+
+  if (isAirPodsCase && isPhoneModel && !normModel.includes("airpod")) {
+    return false;
+  }
+
+  // Universal power/charging accessories match all phone models of that brand
   const isUniversalAccessory = 
     prodCategory.includes("charger") ||
     prodCategory.includes("cable") ||
     prodCategory.includes("power") ||
-    prodCategory.includes("earbud") ||
+    prodCategory.includes("adapter") ||
     prodSpecs.includes("universal") ||
     prodSpecs.includes("all models");
 

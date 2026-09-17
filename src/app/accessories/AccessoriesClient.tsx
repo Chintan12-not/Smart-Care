@@ -55,7 +55,7 @@ export default function AccessoriesClient({
   const queryQ = searchParams.get("q") || "";
 
   // Filter & Search states
-  const [selectedBrand, setSelectedBrand] = useState<string>(queryBrand || "Apple");
+  const [selectedBrand, setSelectedBrand] = useState<string>(queryBrand || "");
   const [selectedModel, setSelectedModel] = useState<string>(queryModel || "");
   const [search, setSearch] = useState<string>(queryQ || "");
   const [category, setCategory] = useState<string>(queryCategory || "all");

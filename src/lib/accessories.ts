@@ -21,7 +21,7 @@ export interface AccessoryProduct {
 export const MOCK_ACCESSORIES: AccessoryProduct[] = [];
 
 export const ACCESSORY_CARD_FIELDS = 
-  "id, name, category, brand, price, stock_quantity, rating_avg, reviews_count, is_active, specifications, description";
+  "id, name, category, brand, price, stock_quantity, rating_avg, reviews_count, images, is_active, specifications, description";
 
 export function mapSupabaseRowToProduct(item: any): AccessoryProduct {
   let rawImages: string[] = [];
@@ -33,12 +33,12 @@ export function mapSupabaseRowToProduct(item: any): AccessoryProduct {
     rawImages = ["/shop_accessories.png"];
   }
 
-  // Filter out massive inline base64 strings (>100KB) that degrade database and DOM rendering performance
+  // Preserve user-uploaded product images (both HTTP URLs and base64 data URIs)
   const cleanImages = rawImages.map(img => {
-    if (typeof img === "string" && img.startsWith("data:image/") && img.length > 100000) {
-      return "/shop_accessories.png";
+    if (typeof img === "string" && img.trim().length > 0) {
+      return img.trim();
     }
-    return img || "/shop_accessories.png";
+    return "/shop_accessories.png";
   });
 
   const primaryImage = cleanImages[0] || "/shop_accessories.png";
