@@ -14,7 +14,7 @@ export default function ProductCardImageSlider({
   image,
   images = [],
   name,
-  autoSlideInterval = 3200,
+  autoSlideInterval = 2800,
   priority = false
 }: ProductCardImageSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,30 +39,40 @@ export default function ProductCardImageSlider({
     return list;
   }, [image, images]);
 
+  // Cycle images ONLY when hovered to prevent background performance drain
   useEffect(() => {
-    if (imageList.length <= 1) return;
+    if (imageList.length <= 1 || !isHovered) return;
 
-    // Cycle through images automatically when tab is active
     const interval = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
       setCurrentIndex((prev) => (prev + 1) % imageList.length);
     }, autoSlideInterval);
 
     return () => clearInterval(interval);
-  }, [imageList, autoSlideInterval]);
+  }, [imageList, isHovered, autoSlideInterval]);
+
+  const primarySrc = imageList[0];
 
   return (
     <div 
-      className="relative w-full h-full flex items-center justify-center overflow-hidden"
+      className="relative w-full aspect-square flex items-center justify-center overflow-hidden rounded-xl bg-muted/20"
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setCurrentIndex(0);
+      }}
+      onTouchStart={() => {
+        if (imageList.length > 1) {
+          setCurrentIndex((prev) => (prev + 1) % imageList.length);
+        }
+      }}
     >
-      {/* Sliding & Fading Product Images */}
+      {/* Primary & Hover Images */}
       <div className="w-full h-full flex items-center justify-center relative">
         {imageList.map((src, idx) => {
-          // Render active image and adjacent next image to avoid memory overhead
           const isVisible = idx === currentIndex;
-          if (imageList.length > 1 && !isVisible && Math.abs(idx - currentIndex) > 1) {
+          // Only render visible image or primary image to minimize DOM memory footprint
+          if (!isVisible && idx !== 0) {
             return null;
           }
 
@@ -73,11 +83,11 @@ export default function ProductCardImageSlider({
               alt={`${name} - view ${idx + 1}`}
               loading={priority && idx === 0 ? "eager" : "lazy"}
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-contain p-1 rounded-xl transition-all duration-700 ease-in-out ${
+              className={`absolute inset-0 w-full h-full object-contain p-2 rounded-xl transition-all duration-500 ease-in-out ${
                 isVisible
                   ? "opacity-100 scale-100 z-10"
                   : "opacity-0 scale-95 z-0 pointer-events-none"
-              } ${isHovered && isVisible ? "scale-[1.06]" : ""}`}
+              } ${isHovered && isVisible ? "scale-[1.05]" : ""}`}
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = "/shop_accessories.png";
@@ -87,16 +97,16 @@ export default function ProductCardImageSlider({
         })}
       </div>
 
-      {/* Pagination indicators when product has multiple images */}
+      {/* Pagination indicators when hovered or has multiple images */}
       {imageList.length > 1 && (
-        <div className="absolute bottom-1.5 left-0 right-0 flex justify-center items-center gap-1 z-20 pointer-events-none">
+        <div className={`absolute bottom-2 left-0 right-0 flex justify-center items-center gap-1.5 z-20 pointer-events-none transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-40 sm:opacity-0"}`}>
           {imageList.map((_, idx) => (
             <span
               key={idx}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              className={`h-1 rounded-full transition-all duration-300 ${
                 idx === currentIndex
-                  ? "w-4 bg-emerald-500 shadow-sm"
-                  : "w-1.5 bg-black/30 dark:bg-white/40"
+                  ? "w-3 bg-emerald-500 shadow-sm"
+                  : "w-1 bg-black/40 dark:bg-white/50"
               }`}
             />
           ))}

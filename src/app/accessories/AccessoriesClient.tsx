@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { 
@@ -12,7 +12,6 @@ import {
   Check, 
   Smartphone, 
   Heart, 
-  HeartOff,
   Percent,
   Plus,
   Zap,
@@ -22,54 +21,56 @@ import {
   Eye,
   ArrowUpDown,
   X,
-  Share2,
   PhoneCall,
-  Clock
+  Clock,
+  Loader2
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
-import { MOCK_ACCESSORIES, AccessoryProduct } from "@/lib/accessories";
+import { AccessoryProduct, fetchAccessoriesFromSupabase } from "@/lib/accessories";
 import { formatINR, cn } from "@/lib/utils";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import PhoneModelFinder from "@/components/accessories/PhoneModelFinder";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
 import ProductRequestModal from "@/components/accessories/ProductRequestModal";
 import { isProductCompatibleWithModel } from "@/lib/compatibility";
-import { trackCTAClick, trackEvent } from "@/lib/analytics";
 
-// Client-side in-memory cache to prevent redundant Supabase fetches
-let cachedProductsList: AccessoryProduct[] | null = null;
-
-function getInitialProducts(): AccessoryProduct[] {
-  if (cachedProductsList && cachedProductsList.length > 0) {
-    return cachedProductsList;
-  }
-  return MOCK_ACCESSORIES;
+interface AccessoriesClientProps {
+  initialProducts?: AccessoryProduct[];
+  initialTotalCount?: number;
+  initialHasMore?: boolean;
 }
 
-function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryProduct[] }) {
+export default function AccessoriesClient({ 
+  initialProducts = [],
+  initialTotalCount = 0,
+  initialHasMore = false
+}: AccessoriesClientProps) {
   const { user } = useAuth();
   const { addToCart } = useCart();
   const searchParams = useSearchParams();
+  
   const queryBrand = searchParams.get("brand") || "";
   const queryModel = searchParams.get("model") || "";
   const queryCategory = searchParams.get("category") || "all";
   const queryQ = searchParams.get("q") || "";
-  
-  // Phone selection & Filter states
+
+  // Filter & Search states
   const [selectedBrand, setSelectedBrand] = useState<string>(queryBrand || "Apple");
   const [selectedModel, setSelectedModel] = useState<string>(queryModel || "");
   const [search, setSearch] = useState<string>(queryQ || "");
   const [category, setCategory] = useState<string>(queryCategory || "all");
   const [sortBy, setSortBy] = useState<string>("default");
+
+  // Product List & Pagination states
+  const [products, setProducts] = useState<AccessoryProduct[]>(initialProducts);
+  const [page, setPage] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(initialHasMore);
+  const [totalCount, setTotalCount] = useState<number>(initialTotalCount || initialProducts.length);
   
-  // Progressive loading / batching state (initial 12 items)
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
-  useEffect(() => {
-    setVisibleCount(12);
-  }, [search, category, sortBy, selectedBrand, selectedModel]);
-
+  // Synchronize URL search params
   useEffect(() => {
     if (queryBrand) setSelectedBrand(queryBrand);
     if (queryModel !== null && queryModel !== undefined) setSelectedModel(queryModel);
@@ -87,6 +88,75 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
       const newUrl = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
       window.history.replaceState(null, "", newUrl);
     }
+  };
+
+  // Primary Database Query Runner (Handles Brand, Model, Category, Search, Sort & Pagination)
+  const executeQuery = useCallback(async (
+    targetPage: number,
+    brandVal: string,
+    modelVal: string,
+    catVal: string,
+    searchVal: string,
+    sortVal: string,
+    append: boolean = false
+  ) => {
+    if (append) {
+      setIsLoadingMore(true);
+    } else {
+      setIsLoading(true);
+    }
+
+    try {
+      const res = await fetchAccessoriesFromSupabase({
+        page: targetPage,
+        pageSize: 24,
+        brand: brandVal,
+        model: modelVal,
+        category: catVal,
+        search: searchVal,
+        sortBy: sortVal
+      });
+
+      // Apply strict boundary compatibility filter on returned items
+      const compatibleBatch = res.products.filter(p => isProductCompatibleWithModel(p, brandVal, modelVal));
+
+      if (append) {
+        setProducts(prev => {
+          const seen = new Set(prev.map(p => p.id));
+          const newItems = compatibleBatch.filter(p => !seen.has(p.id));
+          return [...prev, ...newItems];
+        });
+      } else {
+        setProducts(compatibleBatch);
+      }
+
+      setHasMore(res.hasMore);
+      setTotalCount(res.totalCount);
+      setPage(targetPage);
+    } catch (err) {
+      console.error("Error fetching accessories from Supabase:", err);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  }, []);
+
+  // Trigger Supabase query when filters or selected model change
+  const isInitialMount = React.useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      // Skip query on initial mount if server already provided initial products and no model/filter override
+      if (initialProducts.length > 0 && !queryModel && category === "all" && !search) {
+        return;
+      }
+    }
+    executeQuery(0, selectedBrand, selectedModel, category, search, sortBy, false);
+  }, [selectedBrand, selectedModel, category, search, sortBy, executeQuery]);
+
+  const handleLoadMore = () => {
+    if (isLoadingMore || !hasMore) return;
+    executeQuery(page + 1, selectedBrand, selectedModel, category, search, sortBy, true);
   };
 
   const handleSelectModelFromFinder = (brand: string, model: string) => {
@@ -109,13 +179,12 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     setSortBy("default");
     updateUrlParams("", "", "all", "");
   };
-  
+
   // Interactive feature states
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<AccessoryProduct | null>(null);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addedItemName, setAddedItemName] = useState("");
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   
@@ -132,20 +201,14 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     setIsRequestModalOpen(true);
   };
 
-  // Admin Panel & Supabase items
-  const [products, setProducts] = useState<AccessoryProduct[]>(getInitialProducts);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // 1. Initial LocalStorage Hydration & Live Update Listener
+  // LocalStorage Hydration
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Wishlist
       const savedWishlist = localStorage.getItem("sc_wishlist");
       if (savedWishlist) {
         try { setWishlist(JSON.parse(savedWishlist)); } catch (e) {}
       }
       
-      // Recently Viewed
       const savedRecent = localStorage.getItem("sc_recently_viewed");
       if (savedRecent) {
         try { setRecentlyViewedIds(JSON.parse(savedRecent)); } catch (e) {}
@@ -153,78 +216,6 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     }
   }, []);
 
-  // 2. Fetch products directly from Supabase
-  useEffect(() => {
-    async function loadProducts() {
-      if (isSupabaseConfigured()) {
-        try {
-          const { data, error } = await supabase
-            .from("accessories")
-            .select("*");
-
-          if (!error && data && data.length > 0) {
-            const dbMapped: AccessoryProduct[] = data
-              .filter((item) => item.is_active !== false)
-              .map((item) => ({
-                id: String(item.id),
-                name: item.name || "Accessory",
-                category: item.category || "General",
-                brand: item.brand || "Generic",
-                price: Number(item.price || 0),
-                originalPrice: item.original_price ? Number(item.original_price) : (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
-                inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
-                isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.specifications.is_on_sale === "true" : false),
-                rating: Number(item.rating_avg || item.rating || 4.8),
-                reviewsCount: Number(item.reviews_count || item.reviewsCount || 15),
-                image: (item.images && item.images.length > 0) ? item.images[0] : (item.image || "/shop_accessories.png"),
-                images: item.images || [item.image || "/shop_accessories.png"],
-                specifications: item.specifications || {},
-                description: item.description || ""
-              }));
-
-            const seenKeys = new Set<string>();
-            const finalUnique: AccessoryProduct[] = [];
-
-            for (const item of dbMapped) {
-              if (!item) continue;
-              const idKey = String(item.id || "").trim();
-              const nameKey = String(item.name || "").toLowerCase().trim();
-              
-              if (!seenKeys.has(idKey) && !seenKeys.has(nameKey)) {
-                if (idKey) seenKeys.add(idKey);
-                if (nameKey) seenKeys.add(nameKey);
-                finalUnique.push(item);
-              }
-            }
-
-            cachedProductsList = finalUnique;
-            setProducts(finalUnique);
-          }
-        } catch (err) {
-          console.error("Error loading products from Supabase:", err);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadProducts();
-
-    const handleUpdate = () => {
-      cachedProductsList = null;
-      loadProducts();
-    };
-    if (typeof window !== "undefined") {
-      window.addEventListener("sc-products-updated", handleUpdate);
-    }
-    return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("sc-products-updated", handleUpdate);
-      }
-    };
-  }, []);
-
-  // 3. Wishlist persistent toggle
   const toggleWishlist = (id: string) => {
     let updated;
     if (wishlist.includes(id)) {
@@ -236,14 +227,12 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     localStorage.setItem("sc_wishlist", JSON.stringify(updated));
   };
 
-  // 4. Track Recently Viewed
   const trackRecentlyViewed = (id: string) => {
     const updated = [id, ...recentlyViewedIds.filter((item) => item !== id)].slice(0, 4);
     setRecentlyViewedIds(updated);
     localStorage.setItem("sc_recently_viewed", JSON.stringify(updated));
   };
 
-  // 5. Compare toggler
   const toggleCompare = (id: string) => {
     if (compareIds.includes(id)) {
       setCompareIds(compareIds.filter((item) => item !== id));
@@ -256,14 +245,11 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     }
   };
 
-  // 6. Open Specs & Track Recently Viewed
   const handleOpenQuickView = (product: AccessoryProduct) => {
     setSelectedProduct(product);
-    setActiveImageIndex(0);
     trackRecentlyViewed(product.id);
   };
 
-  // 7. Cart adder
   const handleAddToCart = (product: AccessoryProduct) => {
     addToCart({
       id: product.id,
@@ -275,16 +261,15 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
     setAddedItemName(product.name);
     setTimeout(() => setAddedItemName(""), 2000);
     
-    // Slide open Cart Drawer
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("open-cart-drawer"));
     }
   };
 
-  // 8. Exact Compatibility Engine & Multi-Stage Filter Pipeline memoized
+  // Final List Filtering for Display (guarantees boundary compliance)
   const filteredProducts = useMemo(() => {
     return products.filter((prod) => {
-      // Stage 1: Exact Phone Model Compatibility
+      // Stage 1: Compatibility Check
       const isCompatible = isProductCompatibleWithModel(prod, selectedBrand, selectedModel);
       if (!isCompatible) return false;
 
@@ -301,12 +286,10 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
 
       if (!matchesCategory) return false;
 
-      // Stage 3: Search Bar Text Filter
+      // Stage 3: Search Text Filter
       if (!search.trim()) return true;
 
       const sLower = search.toLowerCase().trim();
-      const sTokens = sLower.split(/\s+/).filter(Boolean);
-
       const prodCorpus = [
         prod.name,
         prod.brand,
@@ -315,30 +298,16 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
         prod.specifications ? JSON.stringify(prod.specifications) : ""
       ].join(" ").toLowerCase();
 
-      return (
-        prodCorpus.includes(sLower) ||
-        sTokens.some((token) => token.length > 1 && prodCorpus.includes(token))
-      );
+      return prodCorpus.includes(sLower);
     });
   }, [products, selectedBrand, selectedModel, category, search]);
 
-  // 9. Sorting execution memoized
-  const sortedProducts = useMemo(() => {
-    const list = [...filteredProducts];
-    if (sortBy === "price-asc") return list.sort((a, b) => a.price - b.price);
-    if (sortBy === "price-desc") return list.sort((a, b) => b.price - a.price);
-    if (sortBy === "rating") return list.sort((a, b) => b.rating - a.rating);
-    return list;
-  }, [filteredProducts, sortBy]);
-
   const categoriesList = ["All", "Chargers", "Cables", "Tempered Glass", "Cases", "Earbuds", "Power Banks"];
 
-  // Filter out products mapped for comparison memoized
   const compareProductsList = useMemo(() => {
     return products.filter(p => compareIds.includes(p.id));
   }, [products, compareIds]);
 
-  // Filter out recently viewed products memoized
   const recentlyViewedProductsList = useMemo(() => {
     return products.filter(p => recentlyViewedIds.includes(p.id));
   }, [products, recentlyViewedIds]);
@@ -369,7 +338,6 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
             </Link>
           )}
 
-          {/* Banner notification */}
           {addedItemName && (
             <div className="px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-300">
               <Check className="h-4 w-4" />
@@ -481,12 +449,12 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
         </div>
       </div>
 
-      {/* Product Grid with Progressive Item Batching */}
+      {/* Product Grid & Loading States */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="glass-card rounded-2xl p-5 border border-border space-y-4 animate-pulse">
-              <div className="h-44 w-full rounded-xl bg-muted" />
+              <div className="aspect-square w-full rounded-xl bg-muted" />
               <div className="h-4 w-2/3 bg-muted rounded" />
               <div className="h-4 w-1/3 bg-muted rounded" />
               <div className="h-10 w-full bg-muted rounded-xl" />
@@ -496,7 +464,7 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
       ) : (
         <div className="space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {sortedProducts.slice(0, visibleCount).map((prod, idx) => {
+            {filteredProducts.map((prod, idx) => {
               const isWishlisted = wishlist.includes(prod.id);
               const isCompared = compareIds.includes(prod.id);
 
@@ -504,9 +472,9 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
                 <div key={prod.id} className="glass-card rounded-2xl p-5 border border-border flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group">
                   
                   {/* Product Image Container with Badges & Action Buttons */}
-                  <div className="aspect-square rounded-2xl bg-white overflow-hidden relative border border-white/20 group-hover:border-cyan-500/50 transition-all flex items-center justify-center p-3 pt-12 mb-4 shadow-sm">
+                  <div className="relative mb-4">
                     
-                    {/* Badges: On Sale, Discount %, Out of Stock (Top Left z-30) */}
+                    {/* Badges */}
                     <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-30 pointer-events-none">
                       {prod.isOnSale && (
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500 text-black shadow-md flex items-center gap-0.5">
@@ -528,7 +496,7 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
                       )}
                     </div>
 
-                    {/* Wishlist & Compare float buttons (Top Right z-30) */}
+                    {/* Wishlist & Compare float buttons */}
                     <div className="absolute top-2.5 right-2.5 z-30 flex items-center gap-1.5">
                       <button
                         onClick={() => toggleCompare(prod.id)}
@@ -551,13 +519,13 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
                       </button>
                     </div>
 
-                    {/* Automatic Image Slider Container (z-10) */}
-                    <Link href={`/accessories/${prod.id}`} className="block w-full h-full cursor-pointer">
+                    {/* Image Slider */}
+                    <Link href={`/accessories/${prod.id}`} className="block w-full cursor-pointer">
                       <ProductCardImageSlider
                         image={prod.image}
                         images={prod.images}
                         name={prod.name}
-                        priority={idx < 6}
+                        priority={idx < 4}
                       />
                     </Link>
                   </div>
@@ -572,7 +540,6 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
                       </div>
                     </div>
                     
-                    {/* Title links to detailed dynamic product page */}
                     <Link href={`/accessories/${prod.id}`} className="block">
                       <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors line-clamp-1">{prod.name}</h3>
                     </Link>
@@ -625,127 +592,140 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
             })}
           </div>
 
-          {/* Progressive Load More Controls */}
-          {visibleCount < sortedProducts.length && (
+          {/* Database Pagination / Load More */}
+          {hasMore && (
             <div className="flex flex-col items-center justify-center pt-6 pb-2 space-y-3 border-t border-border/40">
               <p className="text-xs text-muted-foreground font-medium">
-                Showing <span className="font-bold text-foreground">{Math.min(visibleCount, sortedProducts.length)}</span> of <span className="font-bold text-foreground">{sortedProducts.length}</span> accessories
+                Showing <span className="font-bold text-foreground">{filteredProducts.length}</span> accessories
               </p>
               <button
-                onClick={() => setVisibleCount((prev) => prev + 12)}
-                className="px-6 py-3 rounded-2xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all shadow-md active:scale-95"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="px-6 py-3 rounded-2xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all shadow-md active:scale-95 flex items-center gap-2"
               >
-                Load More Accessories
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Loading Next Batch...</span>
+                  </>
+                ) : (
+                  <span>Load More Accessories</span>
+                )}
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* Empty State with FormSubmit Customer Request Form */}
-      {!isLoading && sortedProducts.length === 0 && (
+      {/* Empty State */}
+      {!isLoading && filteredProducts.length === 0 && (
         <div className="text-center py-12 bg-muted/20 border border-border rounded-3xl space-y-6 px-4 max-w-2xl mx-auto shadow-sm">
           <Smartphone className="h-12 w-12 text-emerald-500 mx-auto opacity-80" />
           <div className="space-y-2">
             <h3 className="text-xl font-bold text-foreground">
-              {products.length === 0 
-                ? "No accessories available yet" 
-                : `No accessories found for ${selectedBrand} ${selectedModel || ""} yet.`}
+              No compatible accessories found for {selectedBrand} {selectedModel || ""}
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Can&apos;t find an accessory for your specific phone model? Request custom covers, tempered glass guards, chargers, or batteries for any model. We will stock it for you within 24-48 hours!
+              We don&apos;t have pre-listed accessories for this exact model right now. Request custom covers, tempered glass guards, chargers, or batteries and we will arrange it for you!
             </p>
           </div>
 
-          {/* FormSubmit.co Inline Request Form */}
-          <form
-            action="https://formsubmit.co/chintanmaheshwari714@gmail.com"
-            method="POST"
-            className="p-5 rounded-2xl bg-card border border-border text-left space-y-3 shadow-md"
+          <button
+            onClick={() => handleOpenRequestModal(selectedBrand, selectedModel, category !== "all" ? category : "")}
+            className="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider transition-all shadow-md inline-flex items-center gap-2 cursor-pointer"
           >
-            <input type="hidden" name="_subject" value={`Product Request for ${selectedBrand} ${selectedModel}`} />
-            <input type="hidden" name="_captcha" value="false" />
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Phone Brand *</label>
-                <input
-                  type="text"
-                  name="brand"
-                  defaultValue={selectedBrand}
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Phone Model *</label>
-                <input
-                  type="text"
-                  name="phone_model"
-                  defaultValue={selectedModel}
-                  placeholder="e.g. iPhone 16 Pro, S24 Ultra"
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Your Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Customer Name"
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">WhatsApp / Phone *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="10-digit Mobile No."
-                  className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Product / Accessory Needed *</label>
-              <input
-                type="text"
-                name="product_type"
-                placeholder="e.g. Shockproof Case, 9H Tempered Glass, Fast Charger..."
-                className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-xs text-foreground font-medium"
-                required
-              />
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                type="submit"
-                className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Submit Product Request</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleOpenRequestModal(selectedBrand, selectedModel, category !== "all" ? category : "")}
-                className="py-3 px-4 rounded-xl bg-muted hover:bg-border text-foreground font-bold text-xs transition-colors cursor-pointer"
-              >
-                Open Full Modal
-              </button>
-            </div>
-          </form>
+            <Plus className="h-4 w-4" />
+            <span>Request Accessory for {selectedBrand} {selectedModel}</span>
+          </button>
         </div>
       )}
 
-      {/* FLOATING COMPARE BAR */}
+      {/* Recently Viewed Products */}
+      {recentlyViewedProductsList.length > 0 && (
+        <section className="border-t border-border/40 pt-10 mt-10">
+          <h2 className="text-xs font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-1">
+            <Clock className="h-4 w-4 text-cyan-500" />
+            Recently Viewed Accessories
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {recentlyViewedProductsList.map(p => (
+              <Link href={`/accessories/${p.id}`} key={p.id} className="p-3 bg-card border border-border/80 rounded-xl hover:border-cyan-500/20 transition-all flex items-center gap-3 group">
+                <div className="h-10 w-10 rounded-lg bg-muted border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
+                  <img src={p.image} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
+                </div>
+                <div className="truncate">
+                  <h4 className="text-[11px] font-bold text-foreground truncate group-hover:text-cyan-500 transition-colors">{p.name}</h4>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{formatINR(p.price)}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Modals */}
+      {isRequestModalOpen && (
+        <ProductRequestModal
+          isOpen={isRequestModalOpen}
+          onClose={() => setIsRequestModalOpen(false)}
+          initialBrand={requestModalParams.brand}
+          initialModel={requestModalParams.model}
+          initialProductType={requestModalParams.productType}
+        />
+      )}
+
+      {/* Quick View Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-xl bg-card border border-border rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-start border-b border-border pb-3">
+              <div>
+                <span className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest">{selectedProduct.brand}</span>
+                <h3 className="text-base font-bold text-foreground mt-0.5">{selectedProduct.name}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="p-1 rounded-lg bg-muted text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="aspect-square rounded-2xl bg-white p-3 border border-border flex items-center justify-center">
+                <img src={selectedProduct.image} alt="" className="max-h-full max-w-full object-contain" />
+              </div>
+              <div className="space-y-3 text-xs">
+                <p className="text-muted-foreground leading-relaxed">{selectedProduct.description}</p>
+                <div className="text-lg font-extrabold text-foreground">{formatINR(selectedProduct.price)}</div>
+                
+                <div className="space-y-1 border-t border-border pt-2">
+                  <h4 className="font-bold text-foreground uppercase text-[10px] tracking-wider">Specifications</h4>
+                  {Object.entries(selectedProduct.specifications || {}).map(([key, value]) => (
+                    <div key={key} className="flex justify-between py-1 border-b border-border/40 text-[11px]">
+                      <span className="text-muted-foreground font-medium">{key}</span>
+                      <span className="font-bold text-foreground text-right">{value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => {
+                    handleAddToCart(selectedProduct);
+                    setSelectedProduct(null);
+                  }}
+                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  <span>Add to Cart</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Compare Bar */}
       {compareIds.length > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-zinc-950/95 border border-zinc-800 shadow-2xl rounded-2xl p-4 flex items-center justify-between gap-6 max-w-lg w-[90%] animate-in slide-in-from-bottom duration-300">
           <div className="flex items-center gap-2">
@@ -772,217 +752,6 @@ function AccessoriesContent({ initialProducts }: { initialProducts?: AccessoryPr
           </div>
         </div>
       )}
-
-      {/* 10. RECENTLY VIEWED PRODUCTS CAROUSEL */}
-      {recentlyViewedProductsList.length > 0 && (
-        <section className="border-t border-border/40 pt-10 mt-10">
-          <h2 className="text-xs font-bold text-foreground uppercase tracking-wider mb-4 flex items-center gap-1">
-            <Clock className="h-4 w-4 text-cyan-500" />
-            Recently Viewed Accessories
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {recentlyViewedProductsList.map(p => (
-              <Link href={`/accessories/${p.id}`} key={p.id} className="p-3 bg-card border border-border/80 rounded-xl hover:border-cyan-500/20 transition-all flex items-center gap-3 group">
-                <div className="h-10 w-10 rounded-lg bg-muted border border-border overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  <img src={p.image} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
-                </div>
-                <div className="truncate">
-                  <h4 className="text-[11px] font-bold text-foreground truncate group-hover:text-cyan-500 transition-colors">{p.name}</h4>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{formatINR(p.price)}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* MODAL: Compare Specifications */}
-      {isCompareModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-card border border-border rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-border pb-3">
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Accessory Comparison Grid</h3>
-              <button onClick={() => setIsCompareModalOpen(false)} className="p-1 text-muted-foreground hover:text-foreground">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <div className="grid grid-cols-4 gap-4 text-xs min-w-[400px]">
-                <div className="font-bold text-muted-foreground border-r border-border/40 p-2 flex items-center">Feature</div>
-                {compareProductsList.map(p => (
-                  <div key={p.id} className="p-2 border border-border/40 rounded-xl bg-muted/20 text-center space-y-2">
-                    <img src={p.image} alt="" className="h-12 w-12 rounded-lg object-cover mx-auto" onError={(e) => { e.currentTarget.src = '/shop_accessories.png'; }} />
-                    <p className="font-bold text-foreground truncate">{p.name}</p>
-                  </div>
-                ))}
-                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
-
-                {/* Price */}
-                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Price</div>
-                {compareProductsList.map(p => <div key={p.id} className="p-2 font-extrabold text-foreground text-center">{formatINR(p.price)}</div>)}
-                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
-
-                {/* Brand */}
-                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Brand</div>
-                {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-muted-foreground font-medium">{p.brand}</div>)}
-                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
-
-                {/* Rating */}
-                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Rating</div>
-                {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-foreground font-bold flex items-center justify-center gap-1"><Star className="h-3 w-3 fill-amber-500 text-amber-500" /> {p.rating}</div>)}
-                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
-
-                {/* Category */}
-                <div className="font-bold text-muted-foreground border-r border-border/40 p-2">Category</div>
-                {compareProductsList.map(p => <div key={p.id} className="p-2 text-center text-muted-foreground">{p.category}</div>)}
-                {[...Array(3 - compareProductsList.length)].map((_, i) => <div key={i} className="bg-transparent" />)}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* QUICK VIEW MODAL (OLD SPEC SHEET) */}
-      {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-xl bg-card border border-border rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
-            
-            {/* Modal Header */}
-            <div className="flex justify-between items-start border-b border-border pb-3">
-              <div>
-                <span className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest">{selectedProduct.brand}</span>
-                <h3 className="text-base font-bold text-foreground mt-0.5">{selectedProduct.name}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="p-1 rounded-lg bg-muted text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Product Sliding Images Carousel */}
-            <div className="relative h-64 w-full rounded-2xl bg-muted overflow-hidden flex items-center justify-center border border-border/80 group/carousel">
-              {(() => {
-                const productImages = selectedProduct.images || [];
-                if (productImages.length > 0) {
-                  return (
-                    <>
-                      <img
-                        src={productImages[activeImageIndex]}
-                        alt={`${selectedProduct.name} View ${activeImageIndex + 1}`}
-                        className="w-full h-full object-cover transition-all duration-300"
-                        onError={(e) => { e.currentTarget.src = '/placeholder_acc.png'; }}
-                      />
-                      
-                      {/* Left Arrow */}
-                      {productImages.length > 1 && (
-                        <button
-                          onClick={() => setActiveImageIndex((prev) => (prev === 0 ? productImages.length - 1 : prev - 1))}
-                          className="absolute left-3 p-2 rounded-full bg-black/60 text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity"
-                        >
-                          <ChevronLeft className="h-4.5 w-4.5" />
-                        </button>
-                      )}
-                      {/* Right Arrow */}
-                      {productImages.length > 1 && (
-                        <button
-                          onClick={() => setActiveImageIndex((prev) => (prev === productImages.length - 1 ? 0 : prev + 1))}
-                          className="absolute right-3 p-2 rounded-full bg-black/60 text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity"
-                        >
-                          <ChevronRight className="h-4.5 w-4.5" />
-                        </button>
-                      )}
-                      {/* Indicators */}
-                      {productImages.length > 1 && (
-                        <div className="absolute bottom-3 flex gap-1.5">
-                          {productImages.map((_, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setActiveImageIndex(idx)}
-                              className={cn(
-                                "h-2 w-2 rounded-full transition-all",
-                                activeImageIndex === idx ? "bg-cyan-500 w-4" : "bg-white/40"
-                              )}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  );
-                }
-                return <Smartphone className="h-16 w-16 text-muted-foreground opacity-50" />;
-              })()}
-            </div>
-
-            {/* Description */}
-            <div className="text-xs text-muted-foreground leading-relaxed">
-              <p className="font-semibold text-foreground">Overview</p>
-              <p className="mt-1">{selectedProduct.description || "No product overview details listed."}</p>
-            </div>
-
-            {/* Technical Specifications */}
-            <div className="space-y-2 border-t border-border pt-4">
-              <p className="text-xs font-bold text-foreground">Technical Specifications</p>
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
-                {Object.entries(selectedProduct.specifications).map(([key, value]) => (
-                  <div key={key} className="p-2 bg-muted/30 border border-border/40 rounded-xl">
-                    <span className="text-muted-foreground block font-medium">{key}</span>
-                    <span className="text-foreground font-semibold block mt-0.5">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Buy now direct links */}
-            <div className="flex gap-2 justify-end pt-4 border-t border-border mt-4">
-              <Link
-                href={`/accessories/${selectedProduct.id}`}
-                className="px-4 py-2.5 rounded-xl bg-muted border border-border text-foreground font-bold text-xs"
-              >
-                Full Product Page
-              </Link>
-              <button
-                onClick={() => {
-                  handleAddToCart(selectedProduct);
-                  setSelectedProduct(null);
-                }}
-                className="px-4 py-2.5 rounded-xl bg-cyan-500 text-black font-bold text-xs flex items-center gap-1 hover:bg-cyan-400"
-              >
-                <ShoppingBag className="h-4 w-4" />
-                Add to Cart {formatINR(selectedProduct.price)}
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Product Request */}
-      <ProductRequestModal
-        isOpen={isRequestModalOpen}
-        onClose={() => setIsRequestModalOpen(false)}
-        initialBrand={requestModalParams.brand}
-        initialModel={requestModalParams.model}
-        initialProductType={requestModalParams.productType}
-      />
-
     </div>
-  );
-}
-
-export default function AccessoriesClient({ initialProducts }: { initialProducts?: AccessoryProduct[] }) {
-  if (initialProducts && initialProducts.length > 0 && !cachedProductsList) {
-    cachedProductsList = initialProducts;
-  }
-  return (
-    <Suspense fallback={
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <div className="h-8 w-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
-      <AccessoriesContent initialProducts={initialProducts} />
-    </Suspense>
   );
 }

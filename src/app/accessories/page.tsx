@@ -1,8 +1,8 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Metadata } from "next";
 import AccessoriesClient from "./AccessoriesClient";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { AccessoryProduct } from "@/lib/accessories";
+import { fetchAccessoriesFromSupabase, AccessoryProduct } from "@/lib/accessories";
+import { Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Mobile Accessories & Phone Cases Store in Gurugram",
@@ -26,34 +26,17 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; // ISR revalidate catalog every hour
 
-async function getInitialServerAccessories(): Promise<AccessoryProduct[]> {
-  if (!isSupabaseConfigured()) return [];
+async function getInitialServerAccessories(): Promise<{ products: AccessoryProduct[]; totalCount: number; hasMore: boolean }> {
   try {
-    const { data } = await supabase.from("accessories").select("*");
-    if (!data) return [];
-    return data.map((item: any) => ({
-      id: String(item.id),
-      name: item.name || "Accessory Product",
-      category: item.category || "case",
-      brand: item.brand || "Generic",
-      price: Number(item.price || 0),
-      originalPrice: item.original_price ? Number(item.original_price) : null,
-      inStock: item.in_stock !== false,
-      isOnSale: item.is_on_sale || false,
-      rating: Number(item.rating || 4.8),
-      reviewsCount: Number(item.reviews_count || 15),
-      image: item.image || (item.images && item.images[0]) || "/shop_accessories.png",
-      images: item.images || [item.image || "/shop_accessories.png"],
-      specifications: item.specifications || {},
-      description: item.description || ""
-    }));
+    const res = await fetchAccessoriesFromSupabase({ page: 0, pageSize: 24 });
+    return res;
   } catch (e) {
-    return [];
+    return { products: [], totalCount: 0, hasMore: false };
   }
 }
 
 export default async function AccessoriesPage() {
-  const initialProducts = await getInitialServerAccessories();
+  const initialData = await getInitialServerAccessories();
 
   const storeSchema = {
     "@context": "https://schema.org",
@@ -78,11 +61,11 @@ export default async function AccessoriesPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       {/* Crawlable initial HTML product catalog for Search Engines */}
-      {initialProducts.length > 0 && (
+      {initialData.products.length > 0 && (
         <div className="sr-only" id="server-rendered-accessories-catalog">
           <h2>Smart Care Mobile Accessories Catalog</h2>
           <ul>
-            {initialProducts.map((p) => (
+            {initialData.products.map((p) => (
               <li key={p.id}>
                 <h3>{p.name}</h3>
                 <p>Category: {p.category} | Brand: {p.brand} | Price: ₹{p.price}</p>
@@ -94,7 +77,17 @@ export default async function AccessoriesPage() {
         </div>
       )}
 
-      <AccessoriesClient initialProducts={initialProducts} />
+      <Suspense fallback={
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      }>
+        <AccessoriesClient 
+          initialProducts={initialData.products} 
+          initialTotalCount={initialData.totalCount}
+          initialHasMore={initialData.hasMore}
+        />
+      </Suspense>
     </>
   );
 }
