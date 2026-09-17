@@ -34,12 +34,13 @@ export function mapSupabaseRowToProduct(item: any): AccessoryProduct {
   }
 
   // Preserve user-uploaded product images (both HTTP URLs and base64 data URIs)
-  const cleanImages = rawImages.map(img => {
-    if (typeof img === "string" && img.trim().length > 0) {
-      return img.trim();
-    }
-    return "/shop_accessories.png";
-  });
+  const validImages = rawImages
+    .map(img => (typeof img === "string" ? img.trim() : ""))
+    .filter(img => img.length > 0);
+
+  // Prioritize real uploaded images (base64 data URIs or image URLs) over placeholder fallbacks
+  const userUploadedImages = validImages.filter(img => img !== "/shop_accessories.png" && img !== "/placeholder.png");
+  const cleanImages = userUploadedImages.length > 0 ? userUploadedImages : validImages;
 
   const primaryImage = cleanImages[0] || "/shop_accessories.png";
 
