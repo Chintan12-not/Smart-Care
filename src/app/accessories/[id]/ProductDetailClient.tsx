@@ -133,46 +133,80 @@ export default function ProductDetailClient({ productId }: ProductDetailClientPr
 
       if (isSupabaseConfigured()) {
         try {
-          const { data: allData, error } = await supabase.from("accessories").select("*");
-          if (!error && allData && allData.length > 0) {
-            const mappedAll: AccessoryProduct[] = allData.map(item => ({
-              id: String(item.id),
-              name: item.name || "Accessory Product",
-              category: item.category || "case",
-              brand: item.brand || "Generic",
-              price: Number(item.price || 0),
-              originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
-              inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
-              isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.is_on_sale === "true" : false),
-              rating: Number(item.rating_avg || 4.7),
-              reviewsCount: Number(item.reviews_count || 24),
-              image: (item.images && item.images.length > 0) ? item.images[0] : "/shop_accessories.png",
-              images: item.images || [],
-              specifications: item.specifications || {},
-              description: item.description || ""
-            }));
+          const decodedId = decodeURIComponent(productId || "").trim();
+          const cleanName = decodedId.replace(/-/g, " ");
+          const isNumeric = /^\d+$/.test(decodedId);
 
-            allFoundProducts = mappedAll;
-            const dbFound = mappedAll.find(isMatch);
-            if (dbFound) {
-              foundProd = dbFound;
+          let query = supabase
+            .from("accessories")
+            .select("id, name, category, brand, price, original_price, in_stock, stock_quantity, is_on_sale, rating_avg, reviews_count, images, specifications, description");
+
+          if (isNumeric) {
+            query = query.eq("id", Number(decodedId));
+          } else {
+            query = query.or(`id.eq.${decodedId},name.ilike.%${cleanName}%`);
+          }
+
+          const { data, error } = await query.limit(5);
+
+          if (!error && data && data.length > 0) {
+            const isMatch = (p: any): boolean => {
+              if (!p) return false;
+              const pId = String(p.id || "").trim();
+              const pName = String(p.name || "").trim();
+              const pSlug = pName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+              const decLower = decodedId.toLowerCase();
+
+              return (
+                pId === String(productId) ||
+                pId === decodedId ||
+                pId.toLowerCase() === decLower ||
+                pSlug === decLower ||
+                pName.toLowerCase() === decLower ||
+                (pId.replace(/^acc-custom-/, "") === decLower.replace(/^acc-custom-/, "") && decLower.length > 3)
+              );
+            };
+
+            const dbFoundRow = data.find(isMatch) || data[0];
+            if (dbFoundRow) {
+              const item = dbFoundRow;
+              let rawImages: string[] = [];
+              if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+                rawImages = item.images;
+              } else if ((item as any).image) {
+                rawImages = [(item as any).image];
+              } else {
+                rawImages = ["/shop_accessories.png"];
+              }
+
+              const validImages = rawImages
+                .map((img: any) => (typeof img === "string" ? img.trim() : ""))
+                .filter((img: string) => img.length > 0);
+
+              const primaryImage = validImages[0] || "/shop_accessories.png";
+
+              foundProd = {
+                id: String(item.id),
+                name: item.name || "Accessory Product",
+                category: item.category || "case",
+                brand: item.brand || "Generic",
+                price: Number(item.price || 0),
+                originalPrice: item.original_price ?? (item.specifications?.original_price ? parseFloat(item.specifications.original_price) : null),
+                inStock: item.in_stock ?? (item.specifications?.in_stock !== undefined ? item.specifications.in_stock === "true" : true),
+                isOnSale: item.is_on_sale ?? (item.specifications?.is_on_sale !== undefined ? item.is_on_sale === "true" : false),
+                rating: Number(item.rating_avg || 4.7),
+                reviewsCount: Number(item.reviews_count || 24),
+                image: primaryImage,
+                images: validImages,
+                specifications: item.specifications || {},
+                description: item.description || ""
+              };
             }
           }
         } catch (err) {
-          console.error("Error loading products from Supabase:", err);
+          console.error("Error loading product from Supabase:", err);
         }
       }
-
-      // Deduplicate productsList for related products
-      const seen = new Set();
-      const uniqueList: AccessoryProduct[] = [];
-      for (const p of allFoundProducts) {
-        if (p && p.id && !seen.has(p.id)) {
-          seen.add(p.id);
-          uniqueList.push(p);
-        }
-      }
-      setProductsList(uniqueList);
 
       if (foundProd) {
         setProduct(foundProd);

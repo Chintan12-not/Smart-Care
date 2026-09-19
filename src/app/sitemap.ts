@@ -30,11 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Dynamically generate all Brand Routes from phoneData
   const brandRoutes = phoneData.brands.map((brand) => `/accessories/brand/${brand.toLowerCase()}`);
 
-  // Dynamically generate Model Routes from phoneData
+  // Include top featured model routes per brand to avoid massive bot crawler regeneration overhead
   const modelRoutes: string[] = [];
   Object.entries(phoneData.brandModels).forEach(([brand, models]) => {
     const brandLower = brand.toLowerCase();
-    (models as Array<{ name: string }>).forEach((m) => {
+    const topModels = (models as Array<{ name: string }>).slice(0, 5);
+    topModels.forEach((m) => {
       const modelSlug = m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       if (modelSlug) {
         modelRoutes.push(`/accessories/brand/${brandLower}/${modelSlug}`);

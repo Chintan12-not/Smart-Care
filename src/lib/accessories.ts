@@ -116,7 +116,33 @@ export async function fetchAccessoriesFromSupabase(options: FetchAccessoriesOpti
     }
 
     // Filter by Brand or Model at DB level
-    if (brand && brand !== "all") {
+    if (model && model.trim()) {
+      const modelNorm = model.toLowerCase().trim();
+      const shortModel = modelNorm
+        .replace(/^(apple\s+iphone|iphone|apple|samsung\s+galaxy|samsung|oppo|oneplus|poco|realme|redmi|vivo|xiaomi|google)\s+/, "")
+        .trim();
+
+      const modelTerms = [modelNorm];
+      if (shortModel && shortModel.length >= 2 && shortModel !== modelNorm) {
+        modelTerms.push(shortModel);
+      }
+
+      const orConditions = modelTerms
+        .flatMap(term => [
+          `name.ilike.%${term}%`,
+          `description.ilike.%${term}%`
+        ])
+        .concat([
+          "category.ilike.%charger%",
+          "category.ilike.%cable%",
+          "category.ilike.%power%",
+          "brand.ilike.Generic",
+          "brand.ilike.Universal"
+        ])
+        .join(",");
+
+      query = query.or(orConditions);
+    } else if (brand && brand !== "all") {
       const brandNorm = brand.toLowerCase().trim();
       query = query.or(`brand.ilike.%${brandNorm}%,name.ilike.%${brandNorm}%,description.ilike.%${brandNorm}%,brand.ilike.Generic,brand.ilike.Universal`);
     }

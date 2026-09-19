@@ -7,6 +7,26 @@ import phoneData from "@/data/phoneModels.json";
 import { formatINR } from "@/lib/utils";
 import ProductCardImageSlider from "@/components/accessories/ProductCardImageSlider";
 
+export const revalidate = 86400; // Cache model landing pages for 24 hours
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const params: Array<{ brand: string; model: string }> = [];
+  const featuredBrands = ["Apple", "Samsung", "OnePlus"];
+  
+  featuredBrands.forEach((brandKey) => {
+    const models = (phoneData.brandModels as Record<string, Array<{ name: string }>>)[brandKey] || [];
+    models.slice(0, 8).forEach((m) => {
+      const modelSlug = m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      if (modelSlug) {
+        params.push({ brand: brandKey.toLowerCase(), model: modelSlug });
+      }
+    });
+  });
+
+  return params;
+}
+
 interface ModelPageProps {
   params: Promise<{ brand: string; model: string }>;
 }

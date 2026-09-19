@@ -42,7 +42,7 @@ export default function WishlistPage() {
         try {
           const { data, error } = await supabase
             .from("accessories")
-            .select("*")
+            .select("id, name, category, brand, price, original_price, images, description, in_stock, stock_quantity")
             .in("id", wishlistIds);
 
           if (!error && data) {

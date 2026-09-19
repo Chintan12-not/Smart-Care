@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
               const { data: profile, error } = await supabase
                 .from("profiles")
-                .select("*")
+                .select("id, full_name, phone, role")
                 .eq("id", firebaseUser.uid)
                 .single();
 
