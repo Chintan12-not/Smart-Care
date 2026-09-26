@@ -29,7 +29,14 @@ export async function POST(req: Request) {
       }
     }
 
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "8aD2Kd9Fr55IM6AiHW17GXXU";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+
+    if (!keySecret) {
+      return NextResponse.json(
+        { success: false, error: "Razorpay secret key not configured." },
+        { status: 500 }
+      );
+    }
 
     // HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
     const generatedSignature = crypto

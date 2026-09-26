@@ -108,7 +108,7 @@ export default function CorporateClient() {
       }
 
       // 2. Dispatch to Web3Forms API
-      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "c30177c2-2365-458f-a261-474f35fdc4d5";
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY || "";
       const web3Res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {

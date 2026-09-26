@@ -23,8 +23,15 @@ export async function POST(req: Request) {
       }
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TOsdFkVaG73hSI";
-    const keySecret = process.env.RAZORPAY_KEY_SECRET || "8aD2Kd9Fr55IM6AiHW17GXXU";
+    const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+
+    if (!keyId || !keySecret) {
+      return NextResponse.json(
+        { success: false, error: "Razorpay environment credentials not configured." },
+        { status: 500 }
+      );
+    }
 
     // Convert INR to Paise if provided in INR, or ensure minimum 100 paise
     const amountInPaise = Number(amount) < 100 ? Math.round(Number(amount) * 100) : Math.round(Number(amount));
