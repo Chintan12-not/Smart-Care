@@ -1,7 +1,7 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, OAuthProvider, Auth } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
-import { getStorage, FirebaseStorage } from "firebase/storage";
+import type { FirebaseApp } from "firebase/app";
+import type { Auth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
+import type { Firestore } from "firebase/firestore";
+import type { FirebaseStorage } from "firebase/storage";
 
 let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
@@ -28,6 +28,7 @@ export function getFirebaseApp(): FirebaseApp | null {
   if (typeof window === "undefined") return null;
   if (!_app) {
     if (!isFirebaseConfigured()) return null;
+    const { initializeApp, getApps, getApp } = require("firebase/app");
     const firebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "auth.smartcaremobile.in",
@@ -49,6 +50,7 @@ export function getFirebaseAuth(): Auth | null {
   if (!_auth) {
     const app = getFirebaseApp();
     if (!app) return null;
+    const { getAuth } = require("firebase/auth");
     _auth = getAuth(app);
   }
   return _auth;
@@ -62,6 +64,7 @@ export function getFirebaseDb(): Firestore | null {
   if (!_db) {
     const app = getFirebaseApp();
     if (!app) return null;
+    const { getFirestore } = require("firebase/firestore");
     _db = getFirestore(app);
   }
   return _db;
@@ -75,14 +78,13 @@ export function getFirebaseStorage(): FirebaseStorage | null {
   if (!_storage) {
     const app = getFirebaseApp();
     if (!app) return null;
+    const { getStorage } = require("firebase/storage");
     _storage = getStorage(app);
   }
   return _storage;
 }
 
 // Client-only Transparent Proxies for backward compatibility with existing imports:
-// import { auth, db, storage, googleProvider, appleProvider } from "@/lib/firebase";
-
 export const auth = new Proxy({} as Auth, {
   get(_, prop) {
     const instance = getFirebaseAuth();
@@ -114,6 +116,7 @@ export const googleProvider = new Proxy({} as GoogleAuthProvider, {
   get(_, prop) {
     if (typeof window === "undefined") return undefined;
     if (!_googleProvider) {
+      const { GoogleAuthProvider } = require("firebase/auth");
       _googleProvider = new GoogleAuthProvider();
     }
     const val = Reflect.get(_googleProvider, prop, _googleProvider);
@@ -125,6 +128,7 @@ export const appleProvider = new Proxy({} as OAuthProvider, {
   get(_, prop) {
     if (typeof window === "undefined") return undefined;
     if (!_appleProvider) {
+      const { OAuthProvider } = require("firebase/auth");
       _appleProvider = new OAuthProvider("apple.com");
     }
     const val = Reflect.get(_appleProvider, prop, _appleProvider);

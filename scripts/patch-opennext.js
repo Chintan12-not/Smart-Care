@@ -8,6 +8,21 @@ const workerPath = path.resolve(".open-next/worker.js");
 const shim = `import { createRequire as __createRequire } from "node:module";
 const __nativeRequire = typeof globalThis.require !== "undefined" ? globalThis.require : __createRequire(typeof import.meta !== "undefined" && import.meta.url ? import.meta.url : "file:///worker.js");
 
+try {
+  const __NativeFunction = globalThis.Function;
+  if (typeof globalThis.__patchedFunction === "undefined") {
+    globalThis.__patchedFunction = true;
+    globalThis.Function = function (...args) {
+      try {
+        return __NativeFunction(...args);
+      } catch (e) {
+        return function () { return {}; };
+      }
+    };
+    Object.setPrototypeOf(globalThis.Function, __NativeFunction);
+  }
+} catch (e) {}
+
 const __dummyFs = {
   mkdirSync: () => {},
   writeFileSync: () => {},
@@ -91,6 +106,8 @@ function __makeMutable(mod) {
   if (typeof mod !== "object" || mod === null) return mod;
   return new Proxy(mod, {
     get(target, prop, receiver) {
+      if (prop === "prototype") return target.prototype || {};
+      if (prop === "constructor") return target.constructor || Object;
       if (prop === "__esModule") return true;
       if (prop === "default") {
         let val;
